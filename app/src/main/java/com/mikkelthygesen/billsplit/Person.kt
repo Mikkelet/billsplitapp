@@ -2,10 +2,12 @@ package com.mikkelthygesen.billsplit
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 class Person(
-    val name: String,
+    name: String,
     owed: Float
 ) {
-    val owed by mutableStateOf(owed)
+    var name by mutableStateOf(name)
+    var owed by mutableStateOf(owed)
 }

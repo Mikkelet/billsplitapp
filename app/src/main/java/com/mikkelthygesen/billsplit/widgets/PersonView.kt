@@ -4,19 +4,24 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.tryCatchDefault
+import com.mikkelthygesen.billsplit.tryParseToFloat
 
 
 @Composable
@@ -24,11 +29,15 @@ fun PersonView(
     person: Person,
     onChangeListener: (Float) -> Unit,
     onRemoveClicked: (() -> Unit)?,
-    owed: String
+    owed: String,
+    enableNameChange: Boolean = true
 ) {
     var textFieldValue by remember {
         val state = if (person.owed == 0F) "" else "${person.owed}"
         mutableStateOf(state)
+    }
+    var showDialog by remember {
+        mutableStateOf(false)
     }
     Row {
         Image(
@@ -37,7 +46,22 @@ fun PersonView(
             modifier = Modifier.padding(8.dp)
         )
         Column {
-            Text(text = person.name)
+            if (showDialog)
+                ChangeNameDialog(
+                    textFieldValue = person.name,
+                    onConfirm = {
+                        person.name = it
+                        showDialog = false
+                    },
+                    onDismiss = { showDialog = false })
+            ClickableText(
+                text = AnnotatedString(person.name),
+                onClick = {
+                    if (enableNameChange)
+                        showDialog = true
+                },
+                style = TextStyle(fontSize = 7f.em)
+            )
             TextField(
                 value = textFieldValue,
                 singleLine = true,
@@ -46,11 +70,8 @@ fun PersonView(
                 onValueChange = {
                     textFieldValue = it
                     val changeValue = when {
-                        it.isNotBlank() -> try {
+                        it.isNotBlank() -> tryCatchDefault(0F) {
                             textFieldValue.toFloat()
-                        } catch (e: Exception) {
-                            println("qqq error=$e")
-                            0F
                         }
                         else -> 0F
                     }
@@ -71,9 +92,47 @@ fun PersonView(
     }
 }
 
-private fun tryParseToFloat(person: Person, value: String) = try {
-    person.owed = value.toFloat()
-    false
-} catch (e: Exception) {
-    true
+@Composable
+private fun ChangeNameDialog(
+    textFieldValue: String,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var changeNameTextFieldValue by remember {
+        mutableStateOf(textFieldValue)
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Change participant's name") },
+        text = {
+            TextField(
+                value = changeNameTextFieldValue,
+                onValueChange = { changeNameTextFieldValue = it },
+                isError = changeNameTextFieldValue.isBlank(),
+                placeholder = {
+                    Text(text = "Enter a name")
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { changeNameTextFieldValue = "" }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_outline_cancel_24),
+                            contentDescription = "Clear text"
+                        )
+                    }
+                }
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (changeNameTextFieldValue.isNotBlank())
+                        onConfirm(changeNameTextFieldValue)
+                }
+            ) {
+                Text(text = "Apply")
+            }
+        }
+    )
 }

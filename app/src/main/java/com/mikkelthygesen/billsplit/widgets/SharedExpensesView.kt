@@ -12,6 +12,7 @@ fun SharedExpensesView(
         person = shared,
         onChangeListener = onChangeListener,
         onRemoveClicked = null,
-        owed = "${shared.owed}"
+        owed = "${shared.owed}",
+        enableNameChange = false
     )
 }
