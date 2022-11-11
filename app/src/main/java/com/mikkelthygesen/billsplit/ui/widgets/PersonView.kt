@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.widgets
+package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.mikkelthygesen.billsplit.Person
@@ -28,9 +28,9 @@ import com.mikkelthygesen.billsplit.tryParseToFloat
 fun PersonView(
     person: Person,
     onChangeListener: (Float) -> Unit,
-    onRemoveClicked: (() -> Unit)?,
+    onRemoveClicked: ((Person) -> Unit)?,
     owed: String,
-    enableNameChange: Boolean = true
+    enableNameChange: Boolean,
 ) {
     var textFieldValue by remember {
         val state = if (person.owed == 0F) "" else "${person.owed}"
@@ -83,7 +83,9 @@ fun PersonView(
             )
             Row {
                 if (onRemoveClicked != null)
-                    Button(onClick = onRemoveClicked) {
+                    Button(onClick = {
+                        onRemoveClicked(person)
+                    }) {
                         Text(text = "Remove")
                     }
                 Text(text = "Owes $$owed")
@@ -134,5 +136,17 @@ private fun ChangeNameDialog(
                 Text(text = "Apply")
             }
         }
+    )
+}
+
+@Preview
+@Composable
+fun PreviewPersonView() {
+    PersonView(
+        person = Person("Person 1", 100F),
+        onChangeListener = {},
+        onRemoveClicked = {},
+        owed = "100",
+        enableNameChange = true
     )
 }

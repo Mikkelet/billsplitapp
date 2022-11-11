@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.widgets
+package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.runtime.Composable
 import com.mikkelthygesen.billsplit.Person
