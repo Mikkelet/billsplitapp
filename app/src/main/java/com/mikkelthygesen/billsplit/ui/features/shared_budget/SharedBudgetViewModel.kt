@@ -27,7 +27,7 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
     private val mutableParticipantsFlow =
         MutableStateFlow<List<Person>>(
             listOf(
-                Person("shared", 0F),
+                getNewSharedExpenses(),
                 Person("Person 1", 0F),
                 Person("Person 2", 0F),
                 Person("Person 3", 0F),
@@ -82,11 +82,11 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
 
     private fun getResetParticipants(): List<Person> {
         return peopleState.value.map {
-            Person(it.name, 0F)
+            Person(it.name, 0F, it.isParticipant)
         }
     }
 
-    private fun getNewSharedExpenses(): Person = Person("Shared", 0F)
+    private fun getNewSharedExpenses(): Person = Person("Shared", 0F, false)
 
     fun editSharedExpense(sharedExpense: SharedExpense) {
         mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)

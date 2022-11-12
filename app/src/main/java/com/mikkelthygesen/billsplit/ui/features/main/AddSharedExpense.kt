@@ -5,7 +5,6 @@ import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedExpense
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
-import java.util.UUID
 
 
 interface AddSharedExpenseCallback {
@@ -16,8 +15,7 @@ interface AddSharedExpenseCallback {
 
 @Composable
 fun AddSharedExpense(
-    participants: List<Person>,
-    sharedExpenses: Person,
+    sharedExpense: SharedExpense,
     addSharedExpenseCallback: AddSharedExpenseCallback
 ) {
     val expenseViewCallback = object : ExpenseViewCallback {
@@ -34,19 +32,13 @@ fun AddSharedExpense(
         }
 
         override fun onFabClick() {
-            val sharedExpense = SharedExpense(
-                UUID.randomUUID().toString(),
-                "",
-                sharedExpense = sharedExpenses,
-                people = participants
-            )
             addSharedExpenseCallback.onAddSharedExpense(sharedExpense)
         }
     }
 
     ExpenseView(
-        participants = participants,
-        sharedExpenses = sharedExpenses,
+        people = sharedExpense.people,
+        sharedExpenses = sharedExpense.sharedExpense,
         expenseViewCallback = expenseViewCallback,
         showFab = true
     )

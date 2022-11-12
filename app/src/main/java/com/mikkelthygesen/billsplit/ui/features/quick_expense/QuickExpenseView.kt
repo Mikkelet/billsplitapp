@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
-import kotlinx.coroutines.flow.StateFlow
 
 interface QuickExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
@@ -39,7 +38,7 @@ fun QuickExpenseView(
 
     ExpenseView(
         expenseViewCallback = expenseViewCallback,
-        participants = peopleState,
+        people = peopleState,
         sharedExpenses = sharedExpenses,
         canEditName = true
     )
