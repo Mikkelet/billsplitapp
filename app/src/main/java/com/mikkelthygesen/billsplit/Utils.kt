@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mikkelthygesen.billsplit.models.ExpenseHolder
 
 fun <T> tryCatchDefault(defaultValue: T, callback: () -> T) = try {
     callback()
@@ -12,8 +13,8 @@ fun <T> tryCatchDefault(defaultValue: T, callback: () -> T) = try {
     defaultValue
 }
 
-fun tryParseToFloat(person: Person, value: String) = try {
-    person.owed = value.toFloat()
+fun tryParseToFloat(expenseHolder: ExpenseHolder, value: String) = try {
+    expenseHolder.expense = value.toFloat()
     false
 } catch (e: Exception) {
     true

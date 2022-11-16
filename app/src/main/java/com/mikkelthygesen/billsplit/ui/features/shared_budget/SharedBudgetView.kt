@@ -1,25 +1,28 @@
 package com.mikkelthygesen.billsplit.ui.features.shared_budget
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.paddingOnlyBottom
+import com.mikkelthygesen.billsplit.sampleSharedExpenses
 
 @Composable
 fun SharedBudgetView(
-    sharedExpenses: List<SharedExpense>,
-    onSharedExpenseClicked: (SharedExpense) -> Unit,
+    sharedExpenses: List<GroupExpense>,
+    onSharedExpenseClicked: (GroupExpense) -> Unit,
     onFabClicked: () -> Unit
 ) {
     Column(
@@ -36,9 +39,8 @@ fun SharedBudgetView(
     }
 }
 
-
 @Composable
-fun SharedExpenseListItem(sharedExpense: SharedExpense, onClick: () -> Unit) {
+fun SharedExpenseListItem(sharedExpense: GroupExpense, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,7 +52,7 @@ fun SharedExpenseListItem(sharedExpense: SharedExpense, onClick: () -> Unit) {
             modifier = Modifier.padding(16.dp, 8.dp)
         ) {
             Text(text = sharedExpense.description)
-            Text(text = "Shared=$${sharedExpense.sharedExpense.owed}")
+            Text(text = "Shared=$${sharedExpense.sharedExpense.expense}")
             Text(text = "Total=$${sharedExpense.getTotal()}")
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(
@@ -66,27 +68,8 @@ fun SharedExpenseListItem(sharedExpense: SharedExpense, onClick: () -> Unit) {
 @Preview
 @Composable
 fun PreviewSharedExpenseListItem() {
-    SharedBudgetView(sharedExpenses = listOf(
-        SharedExpense(
-            "ID 0", "Hello", Person("Shared", 0F, false), listOf(
-                Person("id..", 10F, true),
-                Person("id..", 10F, true),
-                Person("id..", 10F, true),
-            )
-        ),
-        SharedExpense(
-            "ID 1", "Hello", Person("Shared", 0F, false), listOf(
-                Person("id..", 10F, true),
-                Person("id..", 10F, true),
-                Person("id..", 10F, true),
-            )
-        ),
-        SharedExpense(
-            "ID 2", "Hello", Person("Shared", 0F, false), listOf(
-                Person("id..", 10F, true),
-                Person("id..", 10F, true),
-                Person("id..", 10F, true),
-            )
-        ),
-    ), onSharedExpenseClicked = {}, onFabClicked = {})
+    SharedBudgetView(
+        sharedExpenses = sampleSharedExpenses(),
+        onSharedExpenseClicked = {},
+        onFabClicked = {})
 }

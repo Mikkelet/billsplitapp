@@ -2,7 +2,8 @@ package com.mikkelthygesen.billsplit.ui.features.main
 
 import androidx.compose.runtime.Composable
 import com.mikkelthygesen.billsplit.Person
-import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedExpense
+import com.mikkelthygesen.billsplit.models.ExpenseHolder
+import com.mikkelthygesen.billsplit.ui.features.shared_budget.GroupExpense
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
 
@@ -10,12 +11,12 @@ import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
 interface AddSharedExpenseCallback {
     fun onSharedExpenseUpdate(value: Float)
     fun onParticipantExpenseUpdate(person: Person, value: Float)
-    fun onAddSharedExpense(sharedExpense: SharedExpense)
+    fun onAddSharedExpense(sharedExpense: GroupExpense)
 }
 
 @Composable
 fun AddSharedExpense(
-    sharedExpense: SharedExpense,
+    sharedExpense: GroupExpense,
     addSharedExpenseCallback: AddSharedExpenseCallback
 ) {
     val expenseViewCallback = object : ExpenseViewCallback {
@@ -27,7 +28,7 @@ fun AddSharedExpense(
             addSharedExpenseCallback.onParticipantExpenseUpdate(person, owed)
         }
 
-        override fun onRemovePerson(person: Person) {
+        override fun onRemovePerson(person: ExpenseHolder.IndividualExpenseHolder) {
             // no op
         }
 
@@ -37,7 +38,7 @@ fun AddSharedExpense(
     }
 
     ExpenseView(
-        people = sharedExpense.people,
+        expenseHolders = sharedExpense.individualExpenses,
         sharedExpenses = sharedExpense.sharedExpense,
         expenseViewCallback = expenseViewCallback,
         showFab = true

@@ -11,19 +11,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.models.ExpenseHolder
 
 interface ExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
     fun onParticipantExpenseUpdate(person: Person, owed: Float)
-    fun onRemovePerson(person: Person)
+    fun onRemovePerson(person: ExpenseHolder.IndividualExpenseHolder)
     fun onFabClick()
 }
 
 @Composable
 fun ExpenseView(
     expenseViewCallback: ExpenseViewCallback,
-    people: List<Person>,
-    sharedExpenses: Person,
+    expenseHolders: List<ExpenseHolder.IndividualExpenseHolder>,
+    sharedExpenses: ExpenseHolder.SharedExpenseHolder,
     showFab: Boolean = false,
     canEditName: Boolean = false
 ) {
@@ -33,20 +34,20 @@ fun ExpenseView(
     ) {
         LazyColumn {
             items(
-                count = people.size,
-                key = { people[it].name }
+                count = expenseHolders.size,
+                key = { expenseHolders[it].name }
             ) { index ->
-                val person = people[index]
-                val numOfParticipants = people.count { it.isParticipant }
+                val individualExpenseHolder = expenseHolders[index]
+                val numOfParticipants = expenseHolders.count { it.isParticipant }
                 if (index == 0) // Shared is also first participant
                     SharedExpensesView(
-                        shared = person,
-                        onChangeListener = { sharedExpenses.owed = it }
+                        shared = sharedExpenses,
+                        onChangeListener = { sharedExpenses.expense = it }
                     )
                 else ParticipantView(
-                    person = person,
-                    sharedOwed = sharedExpenses.owed / numOfParticipants,
-                    onChangeListener = { person.owed = it },
+                    person = individualExpenseHolder,
+                    sharedOwed = sharedExpenses.expense / numOfParticipants,
+                    onChangeListener = { individualExpenseHolder.expense = it },
                     onRemoveClicked = expenseViewCallback::onRemovePerson,
                 )
             }
@@ -62,13 +63,17 @@ fun PreviewExpenseView() {
 
         override fun onParticipantExpenseUpdate(person: Person, owed: Float) = Unit
 
-        override fun onRemovePerson(person: Person) = Unit
+        override fun onRemovePerson(person: ExpenseHolder.IndividualExpenseHolder) = Unit
 
         override fun onFabClick() = Unit
     }
 
-    val shared = Person("Shared", 100F, isParticipant = false)
-    val participants = (0..1).map { Person("Person $it", 1 * 100F) }
-    ExpenseView(expenseViewCallback = callback, people = participants, sharedExpenses = shared)
+    val shared = ExpenseHolder.SharedExpenseHolder(100F)
+    val participants = (0..1).map { ExpenseHolder.IndividualExpenseHolder("Person $it", 1 * 100F) }
+    ExpenseView(
+        expenseViewCallback = callback,
+        expenseHolders = participants,
+        sharedExpenses = shared
+    )
 
 }

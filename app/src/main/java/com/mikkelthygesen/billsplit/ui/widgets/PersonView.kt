@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.tryParseToFloat
 
@@ -42,14 +43,14 @@ data class PersonViewFlags(
 
 @Composable
 fun PersonView(
-    person: Person,
+    expenseHolder: ExpenseHolder,
     onChangeListener: (Float) -> Unit,
-    onRemoveClicked: (Person) -> Unit,
+    onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
     owed: String,
     flags: PersonViewFlags
 ) {
     var textFieldValue by remember {
-        val state = if (person.owed == 0F) "" else "${person.owed}"
+        val state = if (expenseHolder.expense == 0F) "" else "${expenseHolder.expense}"
         mutableStateOf(state)
     }
     var showDialog by remember {
@@ -67,38 +68,38 @@ fun PersonView(
         Column(modifier = Modifier.fillMaxWidth()) {
             if (showDialog)
                 ChangeNameDialog(
-                    textFieldValue = person.name,
+                    textFieldValue = expenseHolder.name,
                     onConfirm = {
-                        person.name = it
+                        expenseHolder.name = it
                         showDialog = false
                     },
                     onDismiss = { showDialog = false })
             Row {
                 ClickableText(
-                    text = AnnotatedString(person.name),
+                    text = AnnotatedString(expenseHolder.name),
                     onClick = {
                         if (flags.enableEditName)
                             showDialog = true
                     },
                     style = TextStyle(fontSize = 7f.em)
                 )
-                if (flags.enableParticipationToggle)
-                    Checkbox(checked = person.isParticipant, onCheckedChange = {
-                        person.isParticipant = it
+                if (flags.enableParticipationToggle && expenseHolder is ExpenseHolder.IndividualExpenseHolder)
+                    Checkbox(checked = expenseHolder.isParticipant, onCheckedChange = {
+                        expenseHolder.isParticipant = it
                     })
             }
             TextField(
                 value = textFieldValue,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                isError = tryParseToFloat(person, textFieldValue),
+                isError = tryParseToFloat(expenseHolder, textFieldValue),
                 onValueChange = {
                     textFieldValue = it
                     val changeValue = when {
                         it.isNotBlank() -> tryCatchDefault(0F) {
                             textFieldValue.toFloat()
                         }
-                        person.isParticipant -> 0F
+                        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipant -> 0F
                         else -> 0F
                     }
                     onChangeListener(changeValue)
@@ -108,9 +109,9 @@ fun PersonView(
                 }
             )
             Row(modifier = Modifier.fillMaxWidth()) {
-                if (flags.enableRemoval)
+                if (flags.enableRemoval && expenseHolder is ExpenseHolder.IndividualExpenseHolder)
                     Button(onClick = {
-                        onRemoveClicked(person)
+                        onRemoveClicked(expenseHolder)
                     }) {
                         Text(text = "Remove")
                     }
@@ -177,7 +178,7 @@ fun PreviewPersonView() {
         enableRemoval = true
     )
     PersonView(
-        person = Person("Person 1", 100F),
+        expenseHolder = ExpenseHolder.IndividualExpenseHolder("Person 1", 100F),
         onChangeListener = {},
         onRemoveClicked = {},
         owed = "100",

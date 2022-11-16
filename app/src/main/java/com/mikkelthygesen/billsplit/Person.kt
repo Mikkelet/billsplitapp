@@ -12,4 +12,8 @@ class Person(
     var name by mutableStateOf(name)
     var owed by mutableStateOf(owed)
     var isParticipant by mutableStateOf(isParticipant)
+
+    override fun toString(): String {
+        return "Person(name=$name, owed=$owed, isParticipant=$isParticipant)"
+    }
 }

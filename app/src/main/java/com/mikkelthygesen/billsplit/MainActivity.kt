@@ -8,12 +8,10 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateRectAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.material.FabPosition
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -36,9 +34,19 @@ class MainActivity : ComponentActivity() {
                 val state = uiState.value
                 Scaffold(
                     topBar = {
-                        TopAppBar {
-                            Text(text = "BudgetView")
-                        }
+                        TopAppBar(
+                            title = {
+                                Text(text = "BudgetView")
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = {  }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_check),
+                                        contentDescription = ""
+                                    )
+                                }
+                            }
+                        )
                     },
                     floatingActionButtonPosition = FabPosition.End,
                     floatingActionButton = {

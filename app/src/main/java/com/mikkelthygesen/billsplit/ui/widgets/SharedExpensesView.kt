@@ -5,18 +5,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.models.ExpenseHolder
+import com.mikkelthygesen.billsplit.ui.features.shared_budget.GroupExpense
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetView
 
 @Composable
 fun SharedExpensesView(
-    shared: Person,
+    shared: ExpenseHolder.SharedExpenseHolder,
     onChangeListener: (Float) -> Unit
 ) {
     PersonView(
-        person = shared,
+        expenseHolder = shared,
         onChangeListener = onChangeListener,
         onRemoveClicked = {},
-        owed = "${shared.owed}",
+        owed = "${shared.expense}",
         flags = PersonViewFlags.allDisabled()
     )
 }
@@ -24,6 +26,6 @@ fun SharedExpensesView(
 @Preview(showBackground = true)
 @Composable
 fun PreviewSharedExpenseView() {
-    val shared = Person("Shared", 100F)
+    val shared = ExpenseHolder.SharedExpenseHolder(100F)
     SharedExpensesView(shared = shared, onChangeListener = {})
 }
