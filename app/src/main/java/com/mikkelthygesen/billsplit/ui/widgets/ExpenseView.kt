@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
+import com.mikkelthygesen.billsplit.models.GroupExpense
 
 interface ExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
@@ -19,22 +20,24 @@ interface ExpenseViewCallback {
     )
 
     fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder)
+    fun onPayeeSelected(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder)
     fun onFabClick()
 }
 
 @Composable
 fun ExpenseView(
     expenseViewCallback: ExpenseViewCallback,
-    expenseHolders: List<ExpenseHolder.IndividualExpenseHolder>,
-    sharedExpenses: ExpenseHolder.SharedExpenseHolder,
+    groupExpense: GroupExpense
 ) {
+    val sharedExpenses = groupExpense.sharedExpense
+    val expenseHolders = groupExpense.individualExpenses
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background,
     ) {
         Column {
             SharedExpensesView(
-                shared = sharedExpenses,
+                groupExpense = groupExpense,
                 onChangeListener = { sharedExpenses.expense = it }
             )
             LazyColumn {
@@ -45,7 +48,8 @@ fun ExpenseView(
                     val individualExpenseHolder = expenseHolders[index]
                     val numOfParticipants = expenseHolders.count { it.isParticipant }
                     ParticipantView(
-                        person = individualExpenseHolder,
+                        expenseHolder = individualExpenseHolder,
+                        groupExpense = groupExpense,
                         sharedOwed = sharedExpenses.expense / numOfParticipants,
                         onChangeListener = { individualExpenseHolder.expense = it },
                         onRemoveClicked = expenseViewCallback::onRemovePerson,
@@ -70,6 +74,9 @@ fun PreviewExpenseView() {
         override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
             Unit
 
+        override fun onPayeeSelected(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
+            Unit
+
         override fun onFabClick() = Unit
     }
 
@@ -81,9 +88,15 @@ fun PreviewExpenseView() {
                 1 * 100F
             )
         }
+    val groupExpense = GroupExpense(
+        id = "000",
+        "",
+        payee = participants[1],
+        sharedExpense = shared,
+        individualExpenses = participants
+    )
     ExpenseView(
         expenseViewCallback = callback,
-        expenseHolders = participants,
-        sharedExpenses = shared
+        groupExpense = groupExpense
     )
 }

@@ -6,18 +6,22 @@ import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.reduceOrZero
+import com.mikkelthygesen.billsplit.tryCatchDefault
 
 class GroupExpense(
     val id: String,
     description: String,
-    val payee: IndividualExpenseHolder,
+    payee: IndividualExpenseHolder,
     val sharedExpense: SharedExpenseHolder,
     val individualExpenses: List<IndividualExpenseHolder>
 ) {
     var description by mutableStateOf(description)
+    var payee by mutableStateOf(payee)
 
     private val sharedExpensePerParticipant
-        get() = sharedExpense.expense / participants
+        get() = tryCatchDefault(0F) {
+            sharedExpense.expense / participants
+        }
     private val participants: Int
         get() = individualExpenses.count { it.isParticipant }
 

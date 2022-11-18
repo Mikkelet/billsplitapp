@@ -2,6 +2,7 @@ package com.mikkelthygesen.billsplit.ui.features.quick_expense
 
 import androidx.compose.runtime.Composable
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
+import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
 
@@ -14,8 +15,7 @@ interface QuickExpenseViewCallback {
 
 @Composable
 fun QuickExpenseView(
-    peopleState: List<ExpenseHolder.IndividualExpenseHolder>,
-    sharedExpenses: ExpenseHolder.SharedExpenseHolder,
+    groupExpense: GroupExpense,
     callback: QuickExpenseViewCallback
 ) {
     val expenseViewCallback = object : ExpenseViewCallback {
@@ -31,6 +31,10 @@ fun QuickExpenseView(
             callback.onRemovePerson(individualExpenseHolder)
         }
 
+        override fun onPayeeSelected(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) {
+
+        }
+
         override fun onFabClick() {
             callback.onFabClick()
         }
@@ -38,8 +42,7 @@ fun QuickExpenseView(
 
     ExpenseView(
         expenseViewCallback = expenseViewCallback,
-        expenseHolders = peopleState,
-        sharedExpenses = sharedExpenses
+        groupExpense = groupExpense
     )
 }
 

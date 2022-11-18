@@ -32,7 +32,7 @@ fun SharedBudgetView(
         LazyColumn {
             items(count = sharedExpenses.size, key = { sharedExpenses[it].id }) { index ->
                 val sharedExpense = sharedExpenses[index]
-                SharedExpenseListItem(sharedExpense = sharedExpense) {
+                SharedExpenseListItem(groupExpense = sharedExpense) {
                     onSharedExpenseClicked(sharedExpense)
                 }
             }
@@ -41,7 +41,7 @@ fun SharedBudgetView(
 }
 
 @Composable
-fun SharedExpenseListItem(sharedExpense: GroupExpense, onClick: () -> Unit) {
+fun SharedExpenseListItem(groupExpense: GroupExpense, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,9 +52,9 @@ fun SharedExpenseListItem(sharedExpense: GroupExpense, onClick: () -> Unit) {
         Column(
             modifier = Modifier.padding(16.dp, 8.dp)
         ) {
-            Text(text = sharedExpense.description)
-            Text(text = "Shared=$${sharedExpense.sharedExpense.expense}")
-            Text(text = "Total=$${sharedExpense.getTotal()}")
+            Text(text = groupExpense.description)
+            Text(text = "Shared=$${groupExpense.sharedExpense.expense}")
+            Text(text = "Total=$${groupExpense.getTotal()}")
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(
                     onClick = onClick, Modifier.align(Alignment.BottomEnd),

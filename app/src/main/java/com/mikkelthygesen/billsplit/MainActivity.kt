@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                             }
                             is SharedBudgetViewModel.UiState.ShowAddExpense -> {
                                 AddSharedExpense(
-                                    sharedExpense = it.sharedExpense,
+                                    groupExpense = it.sharedExpense,
                                     addSharedExpenseCallback = viewModel
                                 )
                             }

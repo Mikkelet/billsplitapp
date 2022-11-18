@@ -9,13 +9,21 @@ import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
 
 interface AddSharedExpenseCallback {
     fun onSharedExpenseUpdate(value: Float)
-    fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, value: Float)
+    fun onParticipantExpenseUpdate(
+        individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
+        value: Float
+    )
+
     fun onAddSharedExpense(sharedExpense: GroupExpense)
+    fun onPayeeSelected(
+        groupExpense: GroupExpense,
+        individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder
+    )
 }
 
 @Composable
 fun AddSharedExpense(
-    sharedExpense: GroupExpense,
+    groupExpense: GroupExpense,
     addSharedExpenseCallback: AddSharedExpenseCallback
 ) {
     val expenseViewCallback = object : ExpenseViewCallback {
@@ -23,22 +31,25 @@ fun AddSharedExpense(
             addSharedExpenseCallback.onSharedExpenseUpdate(owed)
         }
 
-        override fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, owed: Float) {
+        override fun onParticipantExpenseUpdate(
+            individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
+            owed: Float
+        ) {
             addSharedExpenseCallback.onParticipantExpenseUpdate(individualExpenseHolder, owed)
         }
 
-        override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) {
-            // no op
-        }
+        override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
+            Unit
 
-        override fun onFabClick() {
-            addSharedExpenseCallback.onAddSharedExpense(sharedExpense)
-        }
+        override fun onPayeeSelected(
+            individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder
+        ) = addSharedExpenseCallback.onPayeeSelected(groupExpense, individualExpenseHolder)
+
+        override fun onFabClick() = addSharedExpenseCallback.onAddSharedExpense(groupExpense)
     }
 
     ExpenseView(
-        expenseHolders = sharedExpense.individualExpenses,
-        sharedExpenses = sharedExpense.sharedExpense,
+        groupExpense = groupExpense,
         expenseViewCallback = expenseViewCallback
     )
 }

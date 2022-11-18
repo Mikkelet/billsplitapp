@@ -4,33 +4,44 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
+import com.mikkelthygesen.billsplit.models.GroupExpense
 
 @Composable
 fun ParticipantView(
-    person: ExpenseHolder.IndividualExpenseHolder,
+    expenseHolder: ExpenseHolder.IndividualExpenseHolder,
+    groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
     onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
     sharedOwed: Float
 ) {
-    val totalOwed = if (person.isParticipant)
-        person.expense + sharedOwed else person.expense
     PersonView(
-        expenseHolder = person,
+        expenseHolder = expenseHolder,
+        groupExpense = groupExpense,
         onChangeListener = onChangeListener,
         onRemoveClicked = onRemoveClicked,
-        owed = "$totalOwed",
-        flags = PersonViewFlags.participant()
+        sharedExpense = sharedOwed,
+        flags = PersonViewFlags.participant(),
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewParticipantView() {
-    val person = ExpenseHolder.IndividualExpenseHolder(Person("id1","Person 1"), 1000F)
+    val person = Person("id1", "Person 1")
+    val individualExpenseHolder = ExpenseHolder.IndividualExpenseHolder(person, 1000f, true)
+    val sharedExpenseHolder = ExpenseHolder.SharedExpenseHolder(1000f)
+    val groupExpense = GroupExpense(
+        "000",
+        "",
+        individualExpenseHolder,
+        sharedExpenseHolder,
+        listOf(individualExpenseHolder)
+    )
     ParticipantView(
-        person = person,
+        expenseHolder = individualExpenseHolder,
+        groupExpense = groupExpense,
         onChangeListener = {},
         onRemoveClicked = {},
-        sharedOwed = 100F
+        sharedOwed = 100F,
     )
 }

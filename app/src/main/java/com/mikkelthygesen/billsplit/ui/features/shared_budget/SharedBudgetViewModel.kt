@@ -102,5 +102,9 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
         mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
     }
 
+    override fun onPayeeSelected(groupExpense: GroupExpense, expenseHolder: IndividualExpenseHolder){
+        groupExpense.payee = expenseHolder
+    }
+
     fun getLoggedIn(): Person = people[1]
 }
