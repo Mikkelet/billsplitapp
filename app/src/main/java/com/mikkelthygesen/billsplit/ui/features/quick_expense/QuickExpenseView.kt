@@ -1,14 +1,13 @@
 package com.mikkelthygesen.billsplit.ui.features.quick_expense
 
 import androidx.compose.runtime.Composable
-import com.mikkelthygesen.billsplit.Person
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
 
 interface QuickExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
-    fun onParticipantExpenseUpdate(person: Person, owed: Float)
+    fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, owed: Float)
     fun onRemovePerson(person: ExpenseHolder.IndividualExpenseHolder)
     fun onFabClick()
 }
@@ -24,12 +23,12 @@ fun QuickExpenseView(
             callback.onSharedExpenseUpdate(owed)
         }
 
-        override fun onParticipantExpenseUpdate(person: Person, owed: Float) {
-            callback.onParticipantExpenseUpdate(person, owed)
+        override fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, owed: Float) {
+            callback.onParticipantExpenseUpdate(individualExpenseHolder, owed)
         }
 
-        override fun onRemovePerson(person: ExpenseHolder.IndividualExpenseHolder) {
-            callback.onRemovePerson(person)
+        override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) {
+            callback.onRemovePerson(individualExpenseHolder)
         }
 
         override fun onFabClick() {
@@ -40,8 +39,7 @@ fun QuickExpenseView(
     ExpenseView(
         expenseViewCallback = expenseViewCallback,
         expenseHolders = peopleState,
-        sharedExpenses = sharedExpenses,
-        canEditName = true
+        sharedExpenses = sharedExpenses
     )
 }
 

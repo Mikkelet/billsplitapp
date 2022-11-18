@@ -15,7 +15,6 @@ class BudgetActivity : ComponentActivity() {
             val sharedExpenseState = sharedBudgetViewModel.sharedExpensesState.collectAsState()
             SharedBudgetView(
                 sharedExpenses = sharedExpenseState.value,
-                onFabClicked = sharedBudgetViewModel::addExpense,
                 onSharedExpenseClicked = {
                     sharedBudgetViewModel.editSharedExpense(it)
                 }

@@ -21,4 +21,7 @@ fun tryParseToFloat(expenseHolder: ExpenseHolder, value: String) = try {
 }
 
 
-fun Modifier.paddingOnlyBottom(padding: Dp) = this.padding(0.dp, 0.dp, 0.dp, padding)
+fun Modifier.paddingBottom(padding: Dp) = this.padding(0.dp, 0.dp, 0.dp, padding)
+fun Modifier.paddingEnd(padding: Dp) = this.padding(0.dp, 0.dp, padding, 0.dp)
+
+fun List<Float>.reduceOrZero() = if (isEmpty()) 0F else reduce { acc, fl -> acc + fl }

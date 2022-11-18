@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,14 +17,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mikkelthygesen.billsplit.paddingOnlyBottom
+import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.paddingBottom
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 
 @Composable
 fun SharedBudgetView(
     sharedExpenses: List<GroupExpense>,
-    onSharedExpenseClicked: (GroupExpense) -> Unit,
-    onFabClicked: () -> Unit
+    onSharedExpenseClicked: (GroupExpense) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(16.dp, 16.dp)
@@ -44,9 +45,9 @@ fun SharedExpenseListItem(sharedExpense: GroupExpense, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .paddingOnlyBottom(12.dp)
+            .paddingBottom(12.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(Color.Gray)
+            .background(Color(0xFFBEEBAF))
     ) {
         Column(
             modifier = Modifier.padding(16.dp, 8.dp)
@@ -56,7 +57,10 @@ fun SharedExpenseListItem(sharedExpense: GroupExpense, onClick: () -> Unit) {
             Text(text = "Total=$${sharedExpense.getTotal()}")
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(
-                    onClick = onClick, Modifier.align(Alignment.BottomEnd)
+                    onClick = onClick, Modifier.align(Alignment.BottomEnd),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xFF92D497)
+                    )
                 ) {
                     Text(text = "Open")
                 }
@@ -71,5 +75,5 @@ fun PreviewSharedExpenseListItem() {
     SharedBudgetView(
         sharedExpenses = sampleSharedExpenses(),
         onSharedExpenseClicked = {},
-        onFabClicked = {})
+    )
 }

@@ -4,22 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateRectAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.ui.features.main.AddSharedExpense
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetView
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
+import com.mikkelthygesen.billsplit.ui.features.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.FabView
+import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
 class MainActivity : ComponentActivity() {
 
@@ -36,14 +33,28 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         TopAppBar(
                             title = {
-                                Text(text = "BudgetView")
+                                val text = when (state) {
+                                    is SharedBudgetViewModel.UiState.ShowBudget -> "Expenses"
+                                    is SharedBudgetViewModel.UiState.ViewExpense -> "Expenses for ${viewModel.getLoggedIn().name}"
+                                    is SharedBudgetViewModel.UiState.ShowAddExpense -> "Add new expense"
+                                }
+                                Text(text)
+                            },
+                            actions = {
+                                when (state) {
+                                    is SharedBudgetViewModel.UiState.ShowBudget ->
+                                        IconButton(R.drawable.ic_money, viewModel::showExpenses)
+                                    is SharedBudgetViewModel.UiState.ShowAddExpense ->
+                                        if (state.sharedExpense.getTotal() > 0)
+                                            IconButton(R.drawable.ic_check) {
+                                                viewModel.onAddSharedExpense(state.sharedExpense)
+                                            }
+                                    else -> {}
+                                }
                             },
                             navigationIcon = {
-                                IconButton(onClick = {  }) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_check),
-                                        contentDescription = ""
-                                    )
+                                if (state !is SharedBudgetViewModel.UiState.ShowBudget) {
+                                    IconButton(R.drawable.ic_back, this::onBackPressed)
                                 }
                             }
                         )
@@ -53,12 +64,7 @@ class MainActivity : ComponentActivity() {
                         Crossfade(targetState = state) {
                             when (it) {
                                 is SharedBudgetViewModel.UiState.ShowBudget -> FabView(onClick = viewModel::addExpense)
-                                is SharedBudgetViewModel.UiState.ShowAddExpense -> {
-                                    if (it.sharedExpense.getTotal() > 0)
-                                        FabView(onClick = {
-                                            viewModel.onAddSharedExpense(it.sharedExpense)
-                                        }, R.drawable.ic_check)
-                                }
+                                else -> {}
                             }
                         }
                     }
@@ -68,16 +74,20 @@ class MainActivity : ComponentActivity() {
                             is SharedBudgetViewModel.UiState.ShowBudget -> {
                                 SharedBudgetView(
                                     sharedExpenses = sharedExpenses.value,
-                                    onFabClicked = viewModel::addExpense,
-                                    onSharedExpenseClicked = {
-                                        viewModel.editSharedExpense(it)
-                                    }
+                                    onSharedExpenseClicked = viewModel::editSharedExpense
                                 )
                             }
                             is SharedBudgetViewModel.UiState.ShowAddExpense -> {
                                 AddSharedExpense(
                                     sharedExpense = it.sharedExpense,
                                     addSharedExpenseCallback = viewModel
+                                )
+                            }
+                            is SharedBudgetViewModel.UiState.ViewExpense -> {
+                                ViewExpenses(
+                                    person = viewModel.getLoggedIn(),
+                                    people = viewModel.people,
+                                    expenses = sharedExpenses.value
                                 )
                             }
                         }
@@ -100,11 +110,8 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onBackPressed() {
-        when (viewModel.uiStateFlow.value) {
-            is SharedBudgetViewModel.UiState.ShowBudget -> {}
-            is SharedBudgetViewModel.UiState.ShowAddExpense -> {
-                viewModel.showBudget()
-            }
+        if (viewModel.uiStateFlow.value !is SharedBudgetViewModel.UiState.ShowBudget) {
+            viewModel.showBudget()
         }
     }
 }

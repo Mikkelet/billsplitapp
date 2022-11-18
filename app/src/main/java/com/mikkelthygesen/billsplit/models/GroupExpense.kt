@@ -1,10 +1,11 @@
-package com.mikkelthygesen.billsplit.ui.features.shared_budget
+package com.mikkelthygesen.billsplit.models
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
+import com.mikkelthygesen.billsplit.reduceOrZero
 
 class GroupExpense(
     val id: String,
@@ -15,28 +16,22 @@ class GroupExpense(
 ) {
     var description by mutableStateOf(description)
 
-    var participants by mutableStateOf(individualExpenses.count { it.isParticipant })
+    private val sharedExpensePerParticipant
+        get() = sharedExpense.expense / participants
+    private val participants: Int
+        get() = individualExpenses.count { it.isParticipant }
 
     fun getTotal(): Float {
         val expenseHolders = individualExpenses.plus(sharedExpense)
         return expenseHolders
             .map { it.expense }
-            .reduce { acc, fl -> acc + fl }
+            .reduceOrZero()
     }
 
-    fun getSharedDivided() = sharedExpense.expense / participants
-
-    fun filterPayee() = GroupExpense(
-        id,
-        description,
-        payee,
-        sharedExpense,
-        individualExpenses.filter { it != payee }
-    )
-
-    fun getIndividualExpensesWithShared() = individualExpenses.map {
-        it.copy().apply {
-            expense += getSharedDivided()
+    fun getIndividualExpensesWithShared() = individualExpenses.map { ie ->
+        ie.copy().apply {
+            if (isParticipant)
+                expense += sharedExpensePerParticipant
         }
     }
 

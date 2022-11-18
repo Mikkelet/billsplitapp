@@ -2,7 +2,7 @@ package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
-import com.mikkelthygesen.billsplit.Person
+import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
 
 @Composable
@@ -13,7 +13,7 @@ fun ParticipantView(
     sharedOwed: Float
 ) {
     val totalOwed = if (person.isParticipant)
-        person.expense + sharedOwed else 0F
+        person.expense + sharedOwed else person.expense
     PersonView(
         expenseHolder = person,
         onChangeListener = onChangeListener,
@@ -26,7 +26,7 @@ fun ParticipantView(
 @Preview(showBackground = true)
 @Composable
 fun PreviewParticipantView() {
-    val person = ExpenseHolder.IndividualExpenseHolder("Person 1", 1000F)
+    val person = ExpenseHolder.IndividualExpenseHolder(Person("id1","Person 1"), 1000F)
     ParticipantView(
         person = person,
         onChangeListener = {},
