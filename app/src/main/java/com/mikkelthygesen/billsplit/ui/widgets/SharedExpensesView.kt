@@ -17,7 +17,6 @@ fun SharedExpensesView(
         onChangeListener = onChangeListener,
         onRemoveClicked = {},
         flags = PersonViewFlags.allDisabled(),
-        onProfilePictureClicked = {}
     )
 }
 

@@ -12,8 +12,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
@@ -34,7 +36,7 @@ fun ExpenseTextField(
         val expense = if (hasDecimals) expenseHolder.expense else expenseHolder.expense.toInt()
         val state =
             if (expenseHolder.expense == 0F) "" else "$expense"
-        mutableStateOf(state)
+        mutableStateOf(TextFieldValue(text = state, selection = TextRange(state.length)))
     }
     var inFocus by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -63,16 +65,16 @@ fun ExpenseTextField(
             Icon(
                 painter = painterResource(id = R.drawable.ic_money),
                 contentDescription = "",
-                tint = if (textFieldError(expenseHolder, textFieldValue))
+                tint = if (textFieldError(expenseHolder, textFieldValue.text))
                     MaterialTheme.colors.error else MaterialTheme.colors.primary
             )
         },
-        isError = textFieldError(expenseHolder, textFieldValue),
+        isError = textFieldError(expenseHolder, textFieldValue.text),
         onValueChange = {
             textFieldValue = it
             val changeValue = when {
-                it.isNotBlank() -> tryCatchDefault(0F) {
-                    textFieldValue.toFloat()
+                it.text.isNotBlank() -> tryCatchDefault(0F) {
+                    textFieldValue.text.toFloat()
                 }
                 isParticipant -> 0F
                 else -> 0F
@@ -81,7 +83,7 @@ fun ExpenseTextField(
         },
         placeholder = { Text(text = "$0") },
         keyboardActions = KeyboardActions {
-            if (!textFieldError(expenseHolder, textFieldValue))
+            if (!textFieldError(expenseHolder, textFieldValue.text))
                 onConfirm()
         },
     )
