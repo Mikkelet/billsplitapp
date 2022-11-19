@@ -6,8 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.ui.features.main.AddSharedExpense
@@ -27,6 +29,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiState = viewModel.uiStateFlow.collectAsState()
             val sharedExpenses = viewModel.sharedExpensesState.collectAsState()
+            var showAddPersonDialog by remember {
+                mutableStateOf(false)
+            }
             BillSplitTheme {
                 val state = uiState.value
                 Scaffold(
@@ -42,8 +47,12 @@ class MainActivity : ComponentActivity() {
                             },
                             actions = {
                                 when (state) {
-                                    is SharedBudgetViewModel.UiState.ShowBudget ->
+                                    is SharedBudgetViewModel.UiState.ShowBudget -> {
                                         IconButton(R.drawable.ic_money, viewModel::showExpenses)
+                                        IconButton(R.drawable.ic_add_plus) {
+                                            showAddPersonDialog = true
+                                        }
+                                    }
                                     is SharedBudgetViewModel.UiState.ShowAddExpense ->
                                         if (state.sharedExpense.getTotal() > 0)
                                             IconButton(R.drawable.ic_check) {
@@ -69,26 +78,34 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) {
-                    Crossfade(targetState = state) {
-                        when (it) {
-                            is SharedBudgetViewModel.UiState.ShowBudget -> {
-                                SharedBudgetView(
-                                    sharedExpenses = sharedExpenses.value,
-                                    onSharedExpenseClicked = viewModel::editSharedExpense
-                                )
-                            }
-                            is SharedBudgetViewModel.UiState.ShowAddExpense -> {
-                                AddSharedExpense(
-                                    groupExpense = it.sharedExpense,
-                                    addSharedExpenseCallback = viewModel
-                                )
-                            }
-                            is SharedBudgetViewModel.UiState.ViewExpense -> {
-                                ViewExpenses(
-                                    person = viewModel.getLoggedIn(),
-                                    people = viewModel.people,
-                                    expenses = sharedExpenses.value
-                                )
+                    Column {
+                        if (showAddPersonDialog) AddPersonDialog(
+                            onConfirm = {
+                                viewModel.addPerson(it)
+                                showAddPersonDialog = false
+                            },
+                            onDismiss = { showAddPersonDialog = false })
+                        Crossfade(targetState = state) {
+                            when (it) {
+                                is SharedBudgetViewModel.UiState.ShowBudget -> {
+                                    SharedBudgetView(
+                                        sharedExpenses = sharedExpenses.value,
+                                        onSharedExpenseClicked = viewModel::editSharedExpense
+                                    )
+                                }
+                                is SharedBudgetViewModel.UiState.ShowAddExpense -> {
+                                    AddSharedExpense(
+                                        groupExpense = it.sharedExpense,
+                                        addSharedExpenseCallback = viewModel
+                                    )
+                                }
+                                is SharedBudgetViewModel.UiState.ViewExpense -> {
+                                    ViewExpenses(
+                                        person = viewModel.getLoggedIn(),
+                                        people = it.people.map { ie -> ie.person },
+                                        expenses = sharedExpenses.value
+                                    )
+                                }
                             }
                         }
                     }
@@ -114,5 +131,40 @@ class MainActivity : ComponentActivity() {
             viewModel.showBudget()
         }
     }
+}
+
+@Composable
+private fun AddPersonDialog(
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var changeNameTextFieldValue by remember {
+        mutableStateOf("")
+    }
+    AlertDialog(onDismissRequest = onDismiss,
+        title = { Text(text = "Change participant's name") },
+        text = {
+            TextField(value = changeNameTextFieldValue,
+                onValueChange = { changeNameTextFieldValue = it },
+                isError = changeNameTextFieldValue.isBlank(),
+                placeholder = {
+                    Text(text = "Enter a name")
+                },
+                trailingIcon = {
+                    IconButton(onClick = { changeNameTextFieldValue = "" }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_outline_cancel_24),
+                            contentDescription = "Clear text"
+                        )
+                    }
+                })
+        },
+        confirmButton = {
+            Button(onClick = {
+                if (changeNameTextFieldValue.isNotBlank()) onConfirm(changeNameTextFieldValue)
+            }) {
+                Text(text = "Apply")
+            }
+        })
 }
 

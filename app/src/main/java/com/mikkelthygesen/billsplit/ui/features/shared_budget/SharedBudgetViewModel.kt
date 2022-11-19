@@ -15,25 +15,22 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
     sealed class UiState {
         object ShowBudget : UiState()
         class ShowAddExpense(val sharedExpense: GroupExpense) : UiState()
-        object ViewExpense : UiState()
+        class ViewExpense(val people: List<IndividualExpenseHolder>) : UiState()
     }
 
-    private var peopleAdded = 0
     private val sharedExpenses: SharedExpenseHolder = SharedExpenseHolder(0F)
 
     private val mutableUiStateFlow = MutableStateFlow<UiState>(UiState.ShowBudget)
     val uiStateFlow: StateFlow<UiState> = mutableUiStateFlow
     private val mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(emptyList())
-    val people = (1..3).map { Person("id-$it", "Person $it") }
+    private val people = (1..3).map { Person("id-$it", "Person $it") }
+    private var peopleAdded = people.size
     val sharedExpensesState: StateFlow<List<GroupExpense>> = mutableSharedExpensesStateFlow
     private val mutableParticipantsFlow =
         MutableStateFlow<List<IndividualExpenseHolder>>(people.map {
-            IndividualExpenseHolder(
-                it,
-                0F
-            )
+            IndividualExpenseHolder(it, 0F)
         })
-    private val peopleState: StateFlow<List<IndividualExpenseHolder>> = mutableParticipantsFlow
+    val peopleState: StateFlow<List<IndividualExpenseHolder>> = mutableParticipantsFlow
 
     fun addExpense() {
         val resetParticipants = getResetParticipants()
@@ -52,14 +49,22 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
     }
 
     fun showExpenses() {
-        mutableUiStateFlow.value = UiState.ViewExpense
+        mutableUiStateFlow.value = UiState.ViewExpense(peopleState.value)
     }
 
     fun addPerson() {
         peopleAdded++
         val person = IndividualExpenseHolder(Person("id$peopleAdded", "Person $peopleAdded"), 0F)
-        val updateList: List<IndividualExpenseHolder> = peopleState.value + listOf(person)
+        val updateList: List<IndividualExpenseHolder> = peopleState.value.plus(person)
         mutableParticipantsFlow.value = updateList
+    }
+
+    fun addPerson(name: String) {
+        peopleAdded++
+        val person = IndividualExpenseHolder(Person("id$peopleAdded", name), 0F)
+        val updateList: List<IndividualExpenseHolder> = peopleState.value.plus(person)
+        mutableParticipantsFlow.value = updateList
+
     }
 
     override fun onSharedExpenseUpdate(value: Float) {
@@ -100,10 +105,6 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
 
     fun editSharedExpense(sharedExpense: GroupExpense) {
         mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
-    }
-
-    override fun onPayeeSelected(groupExpense: GroupExpense, expenseHolder: IndividualExpenseHolder){
-        groupExpense.payee = expenseHolder
     }
 
     fun getLoggedIn(): Person = people[1]

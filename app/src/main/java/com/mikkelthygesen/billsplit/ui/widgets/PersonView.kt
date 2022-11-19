@@ -64,8 +64,6 @@ fun PersonView(
     val totalExpense =
         if (isParticipant)
             expenseHolder.expense + sharedExpense else expenseHolder.expense
-    val isPayee =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payee == expenseHolder
 
     Row(
         modifier = Modifier
@@ -80,35 +78,7 @@ fun PersonView(
             Arrangement.Top,
             Alignment.CenterHorizontally
         ) {
-            Box {
-                Image(
-                    modifier = Modifier
-                        .width(64.dp)
-                        .height(64.dp)
-                        .clip(CircleShape)
-                        .blur(30.dp)
-                        .clickable {
-                            if (expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payee != expenseHolder)
-                                groupExpense.payee = expenseHolder
-                        },
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
-                    contentDescription = "Person profile picture, click to mark as payee",
-                    contentScale = ContentScale.Crop
-                )
-                if (isPayee)
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_check),
-                        tint = Color.White,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colors.primary,
-                                shape = CircleShape
-                            )
-                            .align(Center),
-                        contentDescription = "",
-                    )
-            }
-
+            ProfilePicture(groupExpense = groupExpense, expenseHolder = expenseHolder)
             if (flags.enableRemoval && expenseHolder is ExpenseHolder.IndividualExpenseHolder)
                 IconButton(
                     onClick = {
@@ -178,6 +148,51 @@ fun PersonView(
 }
 
 @Composable
+private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHolder) {
+    val isPayee =
+        expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payee == expenseHolder
+    Box {
+        if (expenseHolder is ExpenseHolder.IndividualExpenseHolder)
+            Image(
+                modifier = Modifier
+                    .width(64.dp)
+                    .height(64.dp)
+                    .clip(CircleShape)
+                    .blur(30.dp)
+                    .clickable {
+                        groupExpense.payee = expenseHolder
+                    },
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = "Person profile picture, click to mark as payee",
+                contentScale = ContentScale.Crop
+            )
+        else
+            Image(
+                modifier = Modifier
+                    .width(64.dp)
+                    .height(64.dp)
+                    .background(Color.Cyan, CircleShape)
+                    .clip(CircleShape),
+                painter = painterResource(id = R.drawable.ic_baseline_groups_24),
+                contentDescription = "",
+                contentScale = ContentScale.Crop
+            )
+        if (isPayee)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_check),
+                tint = Color.White,
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colors.primary,
+                        shape = CircleShape
+                    )
+                    .align(Center),
+                contentDescription = "",
+            )
+    }
+}
+
+@Composable
 private fun ExpenseDisplay(
     expenseHolder: ExpenseHolder,
     sharedExpense: Float,
@@ -203,7 +218,6 @@ private fun ExpenseDisplay(
                 append(" + $$sharedExpenseString")
             }
     }
-
     ClickableText(
         modifier = Modifier.fillMaxWidth(),
         text = annotatedString,

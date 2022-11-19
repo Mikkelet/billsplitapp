@@ -20,8 +20,6 @@ interface ExpenseViewCallback {
     )
 
     fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder)
-    fun onPayeeSelected(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder)
-    fun onFabClick()
 }
 
 @Composable
@@ -73,11 +71,6 @@ fun PreviewExpenseView() {
 
         override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
             Unit
-
-        override fun onPayeeSelected(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
-            Unit
-
-        override fun onFabClick() = Unit
     }
 
     val shared = ExpenseHolder.SharedExpenseHolder(100F)

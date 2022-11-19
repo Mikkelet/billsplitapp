@@ -10,7 +10,6 @@ interface QuickExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
     fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, owed: Float)
     fun onRemovePerson(person: ExpenseHolder.IndividualExpenseHolder)
-    fun onFabClick()
 }
 
 @Composable
@@ -29,14 +28,6 @@ fun QuickExpenseView(
 
         override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) {
             callback.onRemovePerson(individualExpenseHolder)
-        }
-
-        override fun onPayeeSelected(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) {
-
-        }
-
-        override fun onFabClick() {
-            callback.onFabClick()
         }
     }
 

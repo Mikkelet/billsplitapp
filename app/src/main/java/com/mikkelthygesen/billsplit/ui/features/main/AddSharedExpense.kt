@@ -13,12 +13,7 @@ interface AddSharedExpenseCallback {
         individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
         value: Float
     )
-
     fun onAddSharedExpense(sharedExpense: GroupExpense)
-    fun onPayeeSelected(
-        groupExpense: GroupExpense,
-        individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder
-    )
 }
 
 @Composable
@@ -30,22 +25,14 @@ fun AddSharedExpense(
         override fun onSharedExpenseUpdate(owed: Float) {
             addSharedExpenseCallback.onSharedExpenseUpdate(owed)
         }
-
         override fun onParticipantExpenseUpdate(
             individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
             owed: Float
         ) {
             addSharedExpenseCallback.onParticipantExpenseUpdate(individualExpenseHolder, owed)
         }
-
         override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
             Unit
-
-        override fun onPayeeSelected(
-            individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder
-        ) = addSharedExpenseCallback.onPayeeSelected(groupExpense, individualExpenseHolder)
-
-        override fun onFabClick() = addSharedExpenseCallback.onAddSharedExpense(groupExpense)
     }
 
     ExpenseView(
