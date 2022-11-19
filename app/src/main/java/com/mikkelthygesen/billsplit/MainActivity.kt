@@ -6,9 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -17,6 +19,7 @@ import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetView
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
 import com.mikkelthygesen.billsplit.ui.features.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
+import com.mikkelthygesen.billsplit.ui.widgets.DescriptionTextField
 import com.mikkelthygesen.billsplit.ui.widgets.FabView
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
@@ -29,9 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiState = viewModel.uiStateFlow.collectAsState()
             val sharedExpenses = viewModel.sharedExpensesState.collectAsState()
-            var showAddPersonDialog by remember {
-                mutableStateOf(false)
-            }
+            var showAddPersonDialog by remember { mutableStateOf(false) }
             BillSplitTheme {
                 val state = uiState.value
                 Scaffold(
@@ -72,8 +73,17 @@ class MainActivity : ComponentActivity() {
                     floatingActionButton = {
                         Crossfade(targetState = state) {
                             when (it) {
-                                is SharedBudgetViewModel.UiState.ShowBudget -> FabView(onClick = viewModel::addExpense)
+                                is SharedBudgetViewModel.UiState.ShowBudget ->
+                                    FabView(onClick = viewModel::addExpense)
                                 else -> {}
+                            }
+                        }
+                    },
+                    bottomBar = {
+                        if (state is SharedBudgetViewModel.UiState.ShowAddExpense) {
+                            val groupExpense = state.sharedExpense
+                            DescriptionTextField(initialValue = groupExpense.description) {
+                                groupExpense.description = it
                             }
                         }
                     }
@@ -138,20 +148,20 @@ private fun AddPersonDialog(
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var changeNameTextFieldValue by remember {
+    var nameTextFieldValue by remember {
         mutableStateOf("")
     }
     AlertDialog(onDismissRequest = onDismiss,
-        title = { Text(text = "Change participant's name") },
+        title = { Text(text = "Enter new name") },
         text = {
-            TextField(value = changeNameTextFieldValue,
-                onValueChange = { changeNameTextFieldValue = it },
-                isError = changeNameTextFieldValue.isBlank(),
+            TextField(value = nameTextFieldValue,
+                onValueChange = { nameTextFieldValue = it },
+                isError = nameTextFieldValue.isBlank(),
                 placeholder = {
                     Text(text = "Enter a name")
                 },
                 trailingIcon = {
-                    IconButton(onClick = { changeNameTextFieldValue = "" }) {
+                    IconButton(onClick = { nameTextFieldValue = "" }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_outline_cancel_24),
                             contentDescription = "Clear text"
@@ -161,9 +171,9 @@ private fun AddPersonDialog(
         },
         confirmButton = {
             Button(onClick = {
-                if (changeNameTextFieldValue.isNotBlank()) onConfirm(changeNameTextFieldValue)
+                if (nameTextFieldValue.isNotBlank()) onConfirm(nameTextFieldValue)
             }) {
-                Text(text = "Apply")
+                Text(text = "Add")
             }
         })
 }

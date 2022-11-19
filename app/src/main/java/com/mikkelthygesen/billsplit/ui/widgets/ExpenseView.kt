@@ -1,13 +1,22 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
@@ -33,29 +42,70 @@ fun ExpenseView(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background,
     ) {
-        Column {
-            SharedExpensesView(
-                groupExpense = groupExpense,
-                onChangeListener = { sharedExpenses.expense = it }
-            )
-            LazyColumn {
-                items(
-                    count = expenseHolders.size,
-                    key = { expenseHolders[it].name }
-                ) { index ->
-                    val individualExpenseHolder = expenseHolders[index]
-                    val numOfParticipants = expenseHolders.count { it.isParticipant }
-                    ParticipantView(
-                        expenseHolder = individualExpenseHolder,
-                        groupExpense = groupExpense,
-                        sharedOwed = sharedExpenses.expense / numOfParticipants,
-                        onChangeListener = { individualExpenseHolder.expense = it },
-                        onRemoveClicked = expenseViewCallback::onRemovePerson,
-                    )
-                }
+
+        LazyColumn {
+            item {
+                SharedExpensesView(
+                    groupExpense = groupExpense,
+                    onChangeListener = { sharedExpenses.expense = it }
+                )
+            }
+            items(
+                count = expenseHolders.size,
+                key = { expenseHolders[it].name }
+            ) { index ->
+                val individualExpenseHolder = expenseHolders[index]
+                val numOfParticipants = expenseHolders.count { it.isParticipant }
+                ParticipantView(
+                    expenseHolder = individualExpenseHolder,
+                    groupExpense = groupExpense,
+                    sharedOwed = sharedExpenses.expense / numOfParticipants,
+                    onChangeListener = { individualExpenseHolder.expense = it },
+                    onRemoveClicked = expenseViewCallback::onRemovePerson,
+                )
+            }
+            item { 
+                Box(modifier = Modifier.height(100.dp))
             }
         }
     }
+}
+
+@Composable
+fun DescriptionTextField(
+    initialValue: String,
+    onChange: (String) -> Unit
+) {
+    var textFieldValue by remember {
+        mutableStateOf(TextFieldValue(text = initialValue))
+    }
+    val focusRequester = LocalFocusManager.current
+    OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth(),
+
+        value = textFieldValue,
+        leadingIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_baseline_edit_24),
+                contentDescription = ""
+            )
+        },
+        onValueChange = {
+            textFieldValue = it
+            onChange(it.text)
+        },
+        singleLine = true,
+        placeholder = { Text(text = "Enter a description") },
+        colors = TextFieldDefaults.textFieldColors(
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            backgroundColor = Color.White
+        ),
+        keyboardActions = KeyboardActions {
+            focusRequester.clearFocus()
+        },
+    )
 }
 
 @Preview
