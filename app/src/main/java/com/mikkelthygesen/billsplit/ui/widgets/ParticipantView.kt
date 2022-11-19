@@ -12,6 +12,7 @@ fun ParticipantView(
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
     onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
+    onScrollToPosition: suspend (Float) -> Unit,
     sharedOwed: Float
 ) {
     PersonView(
@@ -21,6 +22,7 @@ fun ParticipantView(
         onRemoveClicked = onRemoveClicked,
         sharedExpense = sharedOwed,
         flags = PersonViewFlags.participant(),
+        onScrollToPosition = onScrollToPosition
     )
 }
 
@@ -42,6 +44,7 @@ fun PreviewParticipantView() {
         groupExpense = groupExpense,
         onChangeListener = {},
         onRemoveClicked = {},
+        onScrollToPosition = {},
         sharedOwed = 100F,
     )
 }

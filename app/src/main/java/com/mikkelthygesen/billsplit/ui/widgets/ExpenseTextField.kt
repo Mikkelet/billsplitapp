@@ -9,6 +9,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -29,7 +31,8 @@ import kotlinx.coroutines.launch
 fun ExpenseTextField(
     expenseHolder: ExpenseHolder,
     onChangeListener: (Float) -> Unit,
-    onConfirm: () -> Unit
+    onScrollPosition: suspend (Float) -> Unit,
+    onConfirm: () -> Unit,
 ) {
     var textFieldValue by remember {
         val hasDecimals = expenseHolder.expense.rem(1) != 0.0f
@@ -43,16 +46,22 @@ fun ExpenseTextField(
     val coroutineScope = rememberCoroutineScope()
     val isParticipant =
         expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipant
-
+    var globalYPosition by remember {
+        mutableStateOf(0f)
+    }
     TextField(
         modifier = Modifier
             .focusRequester(focusRequester)
+            .onGloballyPositioned {
+                globalYPosition = it.positionInRoot().y
+            }
             .onFocusChanged { state ->
                 inFocus = state.isFocused
                 coroutineScope.launch {
                     delay(50)
-                    if (!inFocus)
-                        onConfirm()
+                    if (inFocus)
+                        onScrollPosition(globalYPosition)
+                    else onConfirm()
                 }
             },
         colors = TextFieldDefaults.textFieldColors(
@@ -113,5 +122,7 @@ fun PreviewTextField() {
         isParticipant = true
     ),
         onChangeListener = {},
-        onConfirm = {})
+        onConfirm = {},
+        onScrollPosition = {}
+    )
 }

@@ -50,6 +50,7 @@ fun PersonView(
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
     onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
+    onScrollToPosition: suspend (Float) -> Unit,
     flags: PersonViewFlags,
     sharedExpense: Float = 0F,
 ) {
@@ -110,7 +111,7 @@ fun PersonView(
                     onClick = {
                         if (flags.enableEditName) showDialog = true
                     },
-                    style = TextStyle(fontSize = 30.sp),
+                    style = TextStyle(fontSize = 30.sp, color = MaterialTheme.colors.onBackground),
                 )
                 if (flags.enableParticipationToggle &&
                     expenseHolder is ExpenseHolder.IndividualExpenseHolder
@@ -129,7 +130,8 @@ fun PersonView(
                 ) {
                     if (it) ExpenseTextField(
                         expenseHolder = expenseHolder,
-                        onChangeListener = onChangeListener
+                        onChangeListener = onChangeListener,
+                        onScrollPosition = onScrollToPosition
                     ) {
                         isEditing = false
                     }
@@ -210,7 +212,7 @@ private fun ExpenseDisplay(
     else sharedExpense.toInt()
 
     val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontSize = 20.sp)) {
+        withStyle(style = SpanStyle(fontSize = 20.sp, color = MaterialTheme.colors.onBackground)) {
             append(text = "$$expenseString")
         }
         if (isParticipant && sharedExpense > 0f)
@@ -288,6 +290,7 @@ fun PreviewPersonView() {
         onChangeListener = {},
         onRemoveClicked = {},
         flags = flags,
-        sharedExpense = 100F
+        sharedExpense = 100F,
+        onScrollToPosition = {}
     )
 }

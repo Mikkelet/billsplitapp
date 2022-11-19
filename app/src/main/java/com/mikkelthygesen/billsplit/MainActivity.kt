@@ -7,7 +7,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
             BillSplitTheme {
                 val state = uiState.value
                 Scaffold(
+                    Modifier.background(MaterialTheme.colors.background),
                     topBar = {
                         TopAppBar(
                             title = {

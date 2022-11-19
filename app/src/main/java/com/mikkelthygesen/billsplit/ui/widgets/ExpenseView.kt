@@ -1,25 +1,25 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.Person
+import kotlin.math.roundToInt
 
 interface ExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
@@ -38,35 +38,44 @@ fun ExpenseView(
 ) {
     val sharedExpenses = groupExpense.sharedExpense
     val expenseHolders = groupExpense.individualExpenses
+
+    val scrollState = rememberScrollState()
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background,
     ) {
-
-        LazyColumn {
-            item {
-                SharedExpensesView(
-                    groupExpense = groupExpense,
-                    onChangeListener = { sharedExpenses.expense = it }
-                )
-            }
-            items(
-                count = expenseHolders.size,
-                key = { expenseHolders[it].name }
-            ) { index ->
-                val individualExpenseHolder = expenseHolders[index]
+        Column(
+            Modifier.verticalScroll(scrollState),
+        ) {
+            SharedExpensesView(
+                groupExpense = groupExpense,
+                onChangeListener = { sharedExpenses.expense = it }
+            )
+            groupExpense.individualExpenses.map { individualExpenseHolder ->
                 val numOfParticipants = expenseHolders.count { it.isParticipant }
-                ParticipantView(
-                    expenseHolder = individualExpenseHolder,
-                    groupExpense = groupExpense,
-                    sharedOwed = sharedExpenses.expense / numOfParticipants,
-                    onChangeListener = { individualExpenseHolder.expense = it },
-                    onRemoveClicked = expenseViewCallback::onRemovePerson,
-                )
+                var positionInRoot by remember {
+                    mutableStateOf(0f)
+                }
+                Box(modifier = Modifier
+                    .onGloballyPositioned {
+                        positionInRoot = it.positionInParent().y
+                    }
+                ) {
+                    ParticipantView(
+                        expenseHolder = individualExpenseHolder,
+                        groupExpense = groupExpense,
+                        sharedOwed = sharedExpenses.expense / numOfParticipants,
+                        onChangeListener = { individualExpenseHolder.expense = it },
+                        onRemoveClicked = expenseViewCallback::onRemovePerson,
+                        onScrollToPosition = {
+                            println("qqq Scroll to position=$positionInRoot")
+                            scrollState.animateScrollTo(positionInRoot.roundToInt())
+                        }
+                    )
+                }
             }
-            item { 
-                Box(modifier = Modifier.height(100.dp))
-            }
+            Box(modifier = Modifier.height(100.dp))
         }
     }
 }
@@ -83,7 +92,6 @@ fun DescriptionTextField(
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth(),
-
         value = textFieldValue,
         leadingIcon = {
             Icon(
@@ -100,7 +108,8 @@ fun DescriptionTextField(
         colors = TextFieldDefaults.textFieldColors(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
-            backgroundColor = Color.White
+            backgroundColor = MaterialTheme.colors.surface,
+            textColor = MaterialTheme.colors.onSurface
         ),
         keyboardActions = KeyboardActions {
             focusRequester.clearFocus()
