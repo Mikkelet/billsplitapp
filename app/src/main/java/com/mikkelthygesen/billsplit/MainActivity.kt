@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.mikkelthygesen.billsplit.ui.features.main.AddSharedExpense
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetView
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
@@ -243,6 +244,7 @@ private fun ConfirmChangesDialog(
         text = {
             Text(text = "Keep editing or revert changes?")
         },
+        shape = MaterialTheme.shapes.medium,
         dismissButton = {
             Button(onClick = {
                 onDismiss()
