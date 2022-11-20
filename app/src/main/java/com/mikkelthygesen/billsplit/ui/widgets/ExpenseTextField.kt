@@ -57,6 +57,8 @@ fun ExpenseTextField(
                     delay(50)
                     if (!inFocus)
                         onConfirm()
+                    delay(50)
+                    onScrollPosition()
                 }
             },
         colors = TextFieldDefaults.textFieldColors(
