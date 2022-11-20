@@ -4,11 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-class Person(
+data class Person(
     val pId: String,
-    name: String
+    private var name: String
 ) {
-    var name by mutableStateOf(name)
+    var nameState by mutableStateOf(name)
 
     override fun equals(other: Any?): Boolean {
         return if (other is Person)
@@ -19,4 +19,5 @@ class Person(
     override fun hashCode(): Int {
         return pId.hashCode()
     }
+
 }

@@ -1,11 +1,13 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -19,7 +21,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
-import kotlin.math.roundToInt
+import com.mikkelthygesen.billsplit.paddingBottom
 
 interface ExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
@@ -48,12 +50,13 @@ fun ExpenseView(
         Column(
             Modifier.verticalScroll(scrollState),
         ) {
+            Header(groupExpense)
             SharedExpensesView(
                 groupExpense = groupExpense,
-                onChangeListener = { sharedExpenses.expense = it }
+                onChangeListener = { sharedExpenses.expenseState = it }
             )
             groupExpense.individualExpenses.map { individualExpenseHolder ->
-                val numOfParticipants = expenseHolders.count { it.isParticipant }
+                val numOfParticipants = expenseHolders.count { it.isParticipantState }
                 var positionInRoot by remember {
                     mutableStateOf(0f)
                 }
@@ -65,12 +68,12 @@ fun ExpenseView(
                     ParticipantView(
                         expenseHolder = individualExpenseHolder,
                         groupExpense = groupExpense,
-                        sharedOwed = sharedExpenses.expense / numOfParticipants,
-                        onChangeListener = { individualExpenseHolder.expense = it },
+                        sharedOwed = sharedExpenses.expenseState / numOfParticipants,
+                        onChangeListener = { individualExpenseHolder.expenseState = it },
                         onRemoveClicked = expenseViewCallback::onRemovePerson,
                         onScrollToPosition = {
-                            println("qqq Scroll to position=$positionInRoot")
-                            scrollState.animateScrollTo(positionInRoot.roundToInt())
+                            // TODO make less janky
+                            //scrollState.animateScrollTo(positionInRoot.roundToInt())
                         }
                     )
                 }
@@ -82,6 +85,7 @@ fun ExpenseView(
 
 @Composable
 fun DescriptionTextField(
+    modifier: Modifier,
     initialValue: String,
     onChange: (String) -> Unit
 ) {
@@ -89,8 +93,8 @@ fun DescriptionTextField(
         mutableStateOf(TextFieldValue(text = initialValue))
     }
     val focusRequester = LocalFocusManager.current
-    OutlinedTextField(
-        modifier = Modifier
+    TextField(
+        modifier = modifier
             .fillMaxWidth(),
         value = textFieldValue,
         leadingIcon = {
@@ -99,22 +103,39 @@ fun DescriptionTextField(
                 contentDescription = ""
             )
         },
+        singleLine = true,
         onValueChange = {
             textFieldValue = it
             onChange(it.text)
         },
-        singleLine = true,
         placeholder = { Text(text = "Enter a description") },
         colors = TextFieldDefaults.textFieldColors(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
-            backgroundColor = MaterialTheme.colors.surface,
-            textColor = MaterialTheme.colors.onSurface
+            backgroundColor = Color(0xAA000000),
+            textColor = Color.White
         ),
         keyboardActions = KeyboardActions {
             focusRequester.clearFocus()
         },
     )
+}
+
+@Composable
+private fun Header(
+    groupExpense: GroupExpense
+) {
+    Box(Modifier.paddingBottom(32.dp)) {
+        Image(
+            painter = painterResource(id = R.drawable.best_restraunts),
+            contentDescription = "",
+        )
+       DescriptionTextField(
+           Modifier.align(Alignment.BottomStart),
+           initialValue = groupExpense.descriptionState){
+           groupExpense.descriptionState = it
+       }
+    }
 }
 
 @Preview

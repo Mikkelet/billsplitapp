@@ -22,7 +22,7 @@ fun ViewExpenses(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Expenses overview for ${person.name}")
+        Text(text = "Expenses overview for ${person.nameState}")
         val calculator = DebtCalculator(people, expenses)
         val debtForPerson = calculator.calculateEffectiveDebtOfPerson(person)
         calculator.logDebt(person)
@@ -30,12 +30,12 @@ fun ViewExpenses(
             Column {
                 if (it.second > 0)
                     Text(
-                        text = "You owe $${it.second} to ${it.first.name}",
+                        text = "You owe $${it.second} to ${it.first.nameState}",
                         style = TextStyle(color = Color.Red, fontSize = 30.sp)
                     )
                 else if (it.second < 0)
                     Text(
-                        text = "${it.first.name} owes you $${it.second.absoluteValue}",
+                        text = "${it.first.nameState} owes you $${it.second.absoluteValue}",
                         style = TextStyle(color = Color.Green, fontSize = 30.sp)
                     )
             }

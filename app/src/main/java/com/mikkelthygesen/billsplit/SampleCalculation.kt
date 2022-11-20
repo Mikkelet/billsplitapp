@@ -60,21 +60,21 @@ fun calculateDebts(
 ): List<Pair<Person, List<Pair<Person, Float>>>> {
     return people.map { person ->
         // get expenses payed for by payee
-        val payedForGroupExpenses = groupExpenses.filter { ge -> ge.payee.person == person }
+        val payedForGroupExpenses = groupExpenses.filter { ge -> ge.payeeState.person == person }
         // Payee cannot have debt to themselves
         val payedForExpensesWithoutPayee =
-            payedForGroupExpenses.filter { it.payee.person == person }
+            payedForGroupExpenses.filter { it.payeeState.person == person }
         // Update individual expenses to include the shared expense
         val payedForIndividualExpenses =
             payedForExpensesWithoutPayee.flatMap { it.getIndividualExpensesWithShared() }
         // get list of distinct indebted
-        val distinctByName = payedForIndividualExpenses.distinctBy { it.person.name }
+        val distinctByName = payedForIndividualExpenses.distinctBy { it.person.nameState }
         val accExpensesByIe = distinctByName.map { indebted ->
             // for each distinct indebted, filter a list of their individual debts
             val debtsByIndebted =
-                payedForIndividualExpenses.filter { it.person.name == indebted.person.name }
+                payedForIndividualExpenses.filter { it.person.nameState == indebted.person.nameState }
             // accumulate all their debts
-            val totalDebt = debtsByIndebted.map { it.expense }.reduceOrZero()
+            val totalDebt = debtsByIndebted.map { it.expenseState }.reduceOrZero()
             Pair(indebted.person, totalDebt)
         }
         Pair(person, accExpensesByIe)
@@ -90,12 +90,12 @@ fun calculateDebtTo(
         val payee = debtsByPayee.first
         val owedByPayee = allDebtsByPayee
             // filter expenses not paid by payee
-            .filter { it.first.name != payee.name }
+            .filter { it.first.nameState != payee.nameState }
             // map expenses to list of indebted and their debt
             .map { debts ->
                 val debtee = debts.first
                 val debtToPayee = debts.second
-                    .filter { it.first.name == payee.name }
+                    .filter { it.first.nameState == payee.nameState }
                     .map { it.second }
                     .reduceOrZero()
                 Pair(debtee, debtToPayee)
@@ -143,31 +143,31 @@ fun main() {
     calculateDebts(people, groupExpenses).forEach { pair ->
         val payee = pair.first
         val debts = pair.second
-        println("${payee.name} is owed: ")
+        println("${payee.nameState} is owed: ")
         debts.forEach {
             val ie = it.first
             val debt = it.second
-            println("\t$$debt by ${ie.name}")
+            println("\t$$debt by ${ie.nameState}")
         }
     }
     println("\n=== IND DEBT ===")
     calculateDebtTo(people, groupExpenses).forEach { pair ->
         val payee = pair.first
         val payeeDebts = pair.second
-        println("${payee.name} owes")
+        println("${payee.nameState} owes")
         payeeDebts.forEach {
             val ie = it.first
             val debt = it.second
-            println("\t$$debt to ${ie.name}")
+            println("\t$$debt to ${ie.nameState}")
         }
     }
     println("\n=== Effect Debt ===")
     sampleIndividualExpenses().forEach { ie ->
-        println("${ie.name} owes:")
+        println("${ie.nameState} owes:")
         val person = ie.person
         val debt = calculateEffectiveDebt(person, people, sampleSharedExpenses())
         debt.forEach {
-            println("\tto ${it.first.name}: $${it.second}")
+            println("\tto ${it.first.nameState}: $${it.second}")
         }
     }
 }

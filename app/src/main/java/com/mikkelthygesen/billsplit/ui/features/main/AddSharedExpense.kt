@@ -13,7 +13,7 @@ interface AddSharedExpenseCallback {
         individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
         value: Float
     )
-    fun onAddSharedExpense(sharedExpense: GroupExpense)
+    fun saveGroupExpense(sharedExpense: GroupExpense)
 }
 
 @Composable

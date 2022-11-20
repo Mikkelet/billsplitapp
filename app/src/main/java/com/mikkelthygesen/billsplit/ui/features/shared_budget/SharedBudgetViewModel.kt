@@ -68,18 +68,19 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
     }
 
     override fun onSharedExpenseUpdate(value: Float) {
-        sharedExpenses.expense = value
+        sharedExpenses.expenseState = value
     }
 
     override fun onParticipantExpenseUpdate(
         individualExpenseHolder: IndividualExpenseHolder,
         value: Float
     ) {
-        individualExpenseHolder.expense = value
+        individualExpenseHolder.expenseState = value
     }
 
-    override fun onAddSharedExpense(sharedExpense: GroupExpense) {
+    override fun saveGroupExpense(sharedExpense: GroupExpense) {
         // if expense exists, consider it an edit, else add new expense
+        sharedExpense.saveChanges()
         if (!sharedExpensesState.value.contains(sharedExpense)) {
             val updateList = sharedExpensesState.value.plus(sharedExpense)
             mutableSharedExpensesStateFlow.value = updateList
@@ -96,7 +97,7 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
 
     private fun getResetParticipants(): List<IndividualExpenseHolder> {
         return peopleState.value.map {
-            IndividualExpenseHolder(it.person, 0F, it.isParticipant)
+            IndividualExpenseHolder(it.person, 0F, it.isParticipantState)
         }
     }
 

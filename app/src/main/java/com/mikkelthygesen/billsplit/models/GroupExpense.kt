@@ -8,38 +8,62 @@ import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
 
-class GroupExpense(
+data class GroupExpense(
     val id: String,
-    description: String,
-    payee: IndividualExpenseHolder,
+    private var description: String,
+    private var payee: IndividualExpenseHolder,
     val sharedExpense: SharedExpenseHolder,
     val individualExpenses: List<IndividualExpenseHolder>
 ) {
-    var description by mutableStateOf(description)
-    var payee by mutableStateOf(payee)
+    var descriptionState by mutableStateOf(description)
+    var payeeState by mutableStateOf(payee)
 
     private val sharedExpensePerParticipant
         get() = tryCatchDefault(0F) {
-            sharedExpense.expense / participants
+            sharedExpense.expenseState / participants
         }
     private val participants: Int
-        get() = individualExpenses.count { it.isParticipant }
+        get() = individualExpenses.count { it.isParticipantState }
 
     fun getTotal(): Float {
         val expenseHolders = individualExpenses.plus(sharedExpense)
         return expenseHolders
-            .map { it.expense }
+            .map { it.expenseState }
             .reduceOrZero()
     }
 
     fun getIndividualExpensesWithShared() = individualExpenses.map { ie ->
         ie.copy().apply {
-            if (isParticipant)
-                expense += sharedExpensePerParticipant
+            if (isParticipantState)
+                expenseState += sharedExpensePerParticipant
         }
     }
 
     override fun toString(): String {
-        return "GroupExpense(id=$id, description=$description, payee=$payee, sharedExpense=$sharedExpense, expense=$individualExpenses)"
+        return "GroupExpense(id=$id, description=$descriptionState, payee=$payeeState, sharedExpense=$sharedExpense, expense=$individualExpenses)"
+    }
+
+    fun isChanged(): Boolean {
+        return sharedExpense.isChanged()
+                || individualExpenses.any { it.isChanged() }
+                || descriptionState != description
+                || payeeState != payee
+    }
+
+    fun revertChanges() {
+        descriptionState = description
+        payeeState = payee
+        sharedExpense.revertChanges()
+        individualExpenses
+            .plus(sharedExpense)
+            .forEach { it.revertChanges() }
+    }
+
+    fun saveChanges() {
+        description = descriptionState
+        payee = payeeState
+        individualExpenses
+            .plus(sharedExpense)
+            .forEach { it.saveChanges() }
     }
 }

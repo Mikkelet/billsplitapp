@@ -52,8 +52,8 @@ fun SharedExpenseListItem(groupExpense: GroupExpense, onClick: () -> Unit) {
         Column(
             modifier = Modifier.padding(16.dp, 8.dp)
         ) {
-            Text(text = groupExpense.description)
-            Text(text = "Shared=$${groupExpense.sharedExpense.expense}")
+            Text(text = groupExpense.descriptionState)
+            Text(text = "Shared=$${groupExpense.sharedExpense.expenseState}")
             Text(text = "Total=$${groupExpense.getTotal()}")
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(

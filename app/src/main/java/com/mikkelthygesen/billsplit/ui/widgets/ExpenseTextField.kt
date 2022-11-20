@@ -35,17 +35,17 @@ fun ExpenseTextField(
     onConfirm: () -> Unit,
 ) {
     var textFieldValue by remember {
-        val hasDecimals = expenseHolder.expense.rem(1) != 0.0f
-        val expense = if (hasDecimals) expenseHolder.expense else expenseHolder.expense.toInt()
+        val hasDecimals = expenseHolder.expenseState.rem(1) != 0.0f
+        val expense = if (hasDecimals) expenseHolder.expenseState else expenseHolder.expenseState.toInt()
         val state =
-            if (expenseHolder.expense == 0F) "" else "$expense"
+            if (expenseHolder.expenseState == 0F) "" else "$expense"
         mutableStateOf(TextFieldValue(text = state, selection = TextRange(state.length)))
     }
     var inFocus by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
     val isParticipant =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipant
+        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
     var globalYPosition by remember {
         mutableStateOf(0f)
     }

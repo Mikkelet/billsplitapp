@@ -61,10 +61,10 @@ fun PersonView(
         mutableStateOf(false)
     }
     val isParticipant =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipant
+        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
     val totalExpense =
         if (isParticipant)
-            expenseHolder.expense + sharedExpense else expenseHolder.expense
+            expenseHolder.expenseState + sharedExpense else expenseHolder.expenseState
 
     Row(
         modifier = Modifier
@@ -97,8 +97,8 @@ fun PersonView(
                 .weight(4f)
                 .fillMaxWidth()
         ) {
-            if (showDialog) ChangeNameDialog(textFieldValue = expenseHolder.name, onConfirm = {
-                expenseHolder.name = it
+            if (showDialog) ChangeNameDialog(textFieldValue = expenseHolder.nameState, onConfirm = {
+                expenseHolder.nameState = it
                 showDialog = false
             }, onDismiss = { showDialog = false })
             Row(
@@ -107,7 +107,7 @@ fun PersonView(
                 verticalAlignment = CenterVertically
             ) {
                 ClickableText(
-                    text = AnnotatedString(expenseHolder.name),
+                    text = AnnotatedString(expenseHolder.nameState),
                     onClick = {
                         if (flags.enableEditName) showDialog = true
                     },
@@ -116,9 +116,9 @@ fun PersonView(
                 if (flags.enableParticipationToggle &&
                     expenseHolder is ExpenseHolder.IndividualExpenseHolder
                 ) Checkbox(
-                    checked = expenseHolder.isParticipant,
+                    checked = expenseHolder.isParticipantState,
                     onCheckedChange = {
-                        expenseHolder.isParticipant = it
+                        expenseHolder.isParticipantState = it
                     })
             }
             Row(
@@ -152,7 +152,7 @@ fun PersonView(
 @Composable
 private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHolder) {
     val isPayee =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payee == expenseHolder
+        expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payeeState == expenseHolder
     Box {
         if (expenseHolder is ExpenseHolder.IndividualExpenseHolder)
             Image(
@@ -162,7 +162,7 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHol
                     .clip(CircleShape)
                     .blur(30.dp)
                     .clickable {
-                        groupExpense.payee = expenseHolder
+                        groupExpense.payeeState = expenseHolder
                     },
                 painter = painterResource(id = R.drawable.ic_launcher_background),
                 contentDescription = "Person profile picture, click to mark as payee",
@@ -201,11 +201,11 @@ private fun ExpenseDisplay(
     onClick: () -> Unit,
 ) {
     val isParticipant =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipant
+        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
 
-    val isExpenseFloat = expenseHolder.expense.rem(1) != 0.0f
-    val expenseString = if (isExpenseFloat) String.format("%,.2f", expenseHolder.expense)
-    else expenseHolder.expense.toInt()
+    val isExpenseFloat = expenseHolder.expenseState.rem(1) != 0.0f
+    val expenseString = if (isExpenseFloat) String.format("%,.2f", expenseHolder.expenseState)
+    else expenseHolder.expenseState.toInt()
 
     val isSharedExpenseFloat = sharedExpense.rem(1) != 0.0f
     val sharedExpenseString = if (isSharedExpenseFloat) String.format("%,.2f", sharedExpense)

@@ -22,29 +22,29 @@ class DebtCalculator(
         calculateDebtsByPayee().forEach { pair ->
             val payee = pair.first
             val debts = pair.second
-            println("${payee.name} is owed: ")
+            println("${payee.nameState} is owed: ")
             debts.forEach {
                 val ie = it.first
                 val debt = it.second
-                println("\t$$debt by ${ie.name}")
+                println("\t$$debt by ${ie.nameState}")
             }
         }
         println("\n=== IND DEBT ===")
         calculatesDebtByIndebted().forEach { pair ->
             val payee = pair.first
             val payeeDebts = pair.second
-            println("${payee.name} owes")
+            println("${payee.nameState} owes")
             payeeDebts.forEach {
                 val ie = it.first
                 val debt = it.second
-                println("\t$$debt to ${ie.name}")
+                println("\t$$debt to ${ie.nameState}")
             }
         }
         println("\n=== Effect Debt ===")
-        println("${person.name} owes:")
+        println("${person.nameState} owes:")
         val debt = calculateEffectiveDebtOfPerson(person)
         debt.forEach {
-            println("\tto ${it.first.name}: $${it.second}")
+            println("\tto ${it.first.nameState}: $${it.second}")
         }
     }
 }

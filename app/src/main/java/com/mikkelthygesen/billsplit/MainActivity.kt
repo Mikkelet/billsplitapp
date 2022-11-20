@@ -7,10 +7,11 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -19,7 +20,6 @@ import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetView
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
 import com.mikkelthygesen.billsplit.ui.features.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
-import com.mikkelthygesen.billsplit.ui.widgets.DescriptionTextField
 import com.mikkelthygesen.billsplit.ui.widgets.FabView
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
             val uiState = viewModel.uiStateFlow.collectAsState()
             val sharedExpenses = viewModel.sharedExpensesState.collectAsState()
             var showAddPersonDialog by remember { mutableStateOf(false) }
+            var showConfirmChangesDialog by remember { mutableStateOf(false) }
             BillSplitTheme {
                 val state = uiState.value
                 Scaffold(
@@ -42,11 +43,12 @@ class MainActivity : ComponentActivity() {
                             title = {
                                 val text = when (state) {
                                     is SharedBudgetViewModel.UiState.ShowBudget -> "Expenses"
-                                    is SharedBudgetViewModel.UiState.ViewExpense -> "Expenses for ${viewModel.getLoggedIn().name}"
+                                    is SharedBudgetViewModel.UiState.ViewExpense -> "Expenses for ${viewModel.getLoggedIn().nameState}"
                                     is SharedBudgetViewModel.UiState.ShowAddExpense -> "Add new expense"
                                 }
                                 Text(text)
                             },
+                            backgroundColor = Color.Blue,
                             actions = {
                                 when (state) {
                                     is SharedBudgetViewModel.UiState.ShowBudget -> {
@@ -58,14 +60,26 @@ class MainActivity : ComponentActivity() {
                                     is SharedBudgetViewModel.UiState.ShowAddExpense ->
                                         if (state.sharedExpense.getTotal() > 0)
                                             IconButton(R.drawable.ic_check) {
-                                                viewModel.onAddSharedExpense(state.sharedExpense)
+                                                viewModel.saveGroupExpense(state.sharedExpense)
                                             }
                                     else -> {}
                                 }
                             },
                             navigationIcon = {
                                 if (state !is SharedBudgetViewModel.UiState.ShowBudget) {
-                                    IconButton(R.drawable.ic_back, this::onBackPressed)
+                                    IconButton(R.drawable.ic_back) {
+                                        when (state) {
+                                            is SharedBudgetViewModel.UiState.ShowAddExpense -> {
+                                                val groupExpense = state.sharedExpense
+                                                if (!groupExpense.isChanged())
+                                                    this.onBackPressed()
+                                                else {
+                                                    showConfirmChangesDialog = true
+                                                }
+                                            }
+                                            else -> this.onBackPressed()
+                                        }
+                                    }
                                 }
                             }
                         )
@@ -83,19 +97,41 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         if (state is SharedBudgetViewModel.UiState.ShowAddExpense) {
                             val groupExpense = state.sharedExpense
-                            DescriptionTextField(initialValue = groupExpense.description) {
-                                groupExpense.description = it
+                            Row(
+                                Modifier
+                                    .background(Color(0xFF000000))
+                                    .padding(8.dp),
+                                Arrangement.Center
+                            ) {
+                                Text(text = "Total")
+                                Box(Modifier.weight(1f))
+                                Text(text = "$${groupExpense.getTotal()}")
                             }
                         }
                     }
                 ) {
                     Column {
-                        if (showAddPersonDialog) AddPersonDialog(
-                            onConfirm = {
-                                viewModel.addPerson(it)
-                                showAddPersonDialog = false
-                            },
-                            onDismiss = { showAddPersonDialog = false })
+                        when {
+                            showAddPersonDialog -> AddPersonDialog(
+                                onConfirm = {
+                                    viewModel.addPerson(it)
+                                    showAddPersonDialog = false
+                                },
+                                onDismiss = { showAddPersonDialog = false })
+                            state is SharedBudgetViewModel.UiState.ShowAddExpense && showConfirmChangesDialog -> {
+                                val groupExpense = state.sharedExpense
+                                ConfirmChangesDialog(
+                                    onConfirm = {
+                                        groupExpense.revertChanges()
+                                        showConfirmChangesDialog = false
+                                        onBackPressed()
+                                    },
+                                    onDismiss = {
+                                        showConfirmChangesDialog = false
+                                    })
+                            }
+                        }
+
                         Crossfade(targetState = state) {
                             when (it) {
                                 is SharedBudgetViewModel.UiState.ShowBudget -> {
@@ -179,3 +215,30 @@ private fun AddPersonDialog(
         })
 }
 
+@Composable
+private fun ConfirmChangesDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "You made changes to the expense") },
+        text = {
+            Text(text = "Keep editing or revert changes?")
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+            }) {
+                Text(text = "Keep editing")
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                onConfirm()
+            }) {
+                Text(text = "Revert changes and cancel")
+            }
+        }
+    )
+}
