@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
             BillSplitTheme {
                 val state = uiState.value
                 Scaffold(
-                    Modifier.background(MaterialTheme.colors.background),
+                    backgroundColor = MaterialTheme.colors.background,
                     topBar = {
                         TopAppBar(
                             title = {

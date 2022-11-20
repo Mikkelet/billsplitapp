@@ -6,6 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -31,12 +32,13 @@ import kotlinx.coroutines.launch
 fun ExpenseTextField(
     expenseHolder: ExpenseHolder,
     onChangeListener: (Float) -> Unit,
-    onScrollPosition: suspend (Float) -> Unit,
+    onScrollPosition: suspend () -> Unit,
     onConfirm: () -> Unit,
 ) {
     var textFieldValue by remember {
         val hasDecimals = expenseHolder.expenseState.rem(1) != 0.0f
-        val expense = if (hasDecimals) expenseHolder.expenseState else expenseHolder.expenseState.toInt()
+        val expense =
+            if (hasDecimals) expenseHolder.expenseState else expenseHolder.expenseState.toInt()
         val state =
             if (expenseHolder.expenseState == 0F) "" else "$expense"
         mutableStateOf(TextFieldValue(text = state, selection = TextRange(state.length)))
@@ -46,22 +48,15 @@ fun ExpenseTextField(
     val coroutineScope = rememberCoroutineScope()
     val isParticipant =
         expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
-    var globalYPosition by remember {
-        mutableStateOf(0f)
-    }
     TextField(
         modifier = Modifier
             .focusRequester(focusRequester)
-            .onGloballyPositioned {
-                globalYPosition = it.positionInRoot().y
-            }
             .onFocusChanged { state ->
-                inFocus = state.isFocused
+                inFocus = state.hasFocus
                 coroutineScope.launch {
                     delay(50)
-                    if (inFocus)
-                        onScrollPosition(globalYPosition)
-                    else onConfirm()
+                    if (!inFocus)
+                        onConfirm()
                 }
             },
         colors = TextFieldDefaults.textFieldColors(

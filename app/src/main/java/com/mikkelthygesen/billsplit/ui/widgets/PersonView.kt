@@ -50,7 +50,7 @@ fun PersonView(
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
     onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
-    onScrollToPosition: suspend (Float) -> Unit,
+    onScrollToPosition: suspend () -> Unit,
     flags: PersonViewFlags,
     sharedExpense: Float = 0F,
 ) {

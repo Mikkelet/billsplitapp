@@ -12,7 +12,7 @@ fun ParticipantView(
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
     onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
-    onScrollToPosition: suspend (Float) -> Unit,
+    onScrollToPosition: suspend () -> Unit,
     sharedOwed: Float
 ) {
     PersonView(

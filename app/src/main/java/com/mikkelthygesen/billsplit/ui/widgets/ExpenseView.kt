@@ -1,14 +1,18 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -22,6 +26,8 @@ import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.paddingBottom
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 interface ExpenseViewCallback {
     fun onSharedExpenseUpdate(owed: Float)
@@ -41,44 +47,46 @@ fun ExpenseView(
     val sharedExpenses = groupExpense.sharedExpense
     val expenseHolders = groupExpense.individualExpenses
 
-    val scrollState = rememberScrollState()
+    val scrollState = rememberLazyListState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background,
     ) {
-        Column(
-            Modifier.verticalScroll(scrollState),
-        ) {
-            Header(groupExpense)
-            SharedExpensesView(
-                groupExpense = groupExpense,
-                onChangeListener = { sharedExpenses.expenseState = it }
-            )
-            groupExpense.individualExpenses.map { individualExpenseHolder ->
-                val numOfParticipants = expenseHolders.count { it.isParticipantState }
-                var positionInRoot by remember {
-                    mutableStateOf(0f)
-                }
-                Box(modifier = Modifier
-                    .onGloballyPositioned {
-                        positionInRoot = it.positionInParent().y
-                    }
-                ) {
-                    ParticipantView(
-                        expenseHolder = individualExpenseHolder,
-                        groupExpense = groupExpense,
-                        sharedOwed = sharedExpenses.expenseState / numOfParticipants,
-                        onChangeListener = { individualExpenseHolder.expenseState = it },
-                        onRemoveClicked = expenseViewCallback::onRemovePerson,
-                        onScrollToPosition = {
-                            // TODO make less janky
-                            //scrollState.animateScrollTo(positionInRoot.roundToInt())
-                        }
-                    )
-                }
+        LazyColumn(state = scrollState) {
+            item {
+                Header(groupExpense)
             }
-            Box(modifier = Modifier.height(100.dp))
+            item {
+
+                SharedExpensesView(
+                    groupExpense = groupExpense,
+                    onChangeListener = { sharedExpenses.expenseState = it }
+                )
+            }
+            items(
+                count = expenseHolders.size,
+                key = { expenseHolders[it].person.pId }
+            ) { index ->
+                val individualExpenseHolder = expenseHolders[index]
+                val numOfParticipants = expenseHolders.count { it.isParticipantState }
+
+                ParticipantView(
+                    expenseHolder = individualExpenseHolder,
+                    groupExpense = groupExpense,
+                    sharedOwed = sharedExpenses.expenseState / numOfParticipants,
+                    onChangeListener = { individualExpenseHolder.expenseState = it },
+                    onRemoveClicked = expenseViewCallback::onRemovePerson,
+                    onScrollToPosition = {
+                        //scrollState.animateScrollTo(positionInRoot.roundToInt())
+                        scrollState.animateScrollToItem(index)
+                    }
+                )
+            }
+
+            item {
+                Box(modifier = Modifier.height(100.dp))
+            }
         }
     }
 }
@@ -130,11 +138,12 @@ private fun Header(
             painter = painterResource(id = R.drawable.best_restraunts),
             contentDescription = "",
         )
-       DescriptionTextField(
-           Modifier.align(Alignment.BottomStart),
-           initialValue = groupExpense.descriptionState){
-           groupExpense.descriptionState = it
-       }
+        DescriptionTextField(
+            Modifier.align(Alignment.BottomStart),
+            initialValue = groupExpense.descriptionState
+        ) {
+            groupExpense.descriptionState = it
+        }
     }
 }
 
