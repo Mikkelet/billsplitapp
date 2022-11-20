@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.ui.features.main.AddSharedExpense
@@ -48,7 +49,8 @@ class MainActivity : ComponentActivity() {
                                 }
                                 Text(text)
                             },
-                            backgroundColor = Color.Blue,
+                            backgroundColor = MaterialTheme.colors.primary,
+                            contentColor = MaterialTheme.colors.onPrimary,
                             actions = {
                                 when (state) {
                                     is SharedBudgetViewModel.UiState.ShowBudget -> {
@@ -99,13 +101,19 @@ class MainActivity : ComponentActivity() {
                             val groupExpense = state.sharedExpense
                             Row(
                                 Modifier
-                                    .background(Color(0xFF000000))
+                                    .background(MaterialTheme.colors.background)
                                     .padding(8.dp),
                                 Arrangement.Center
                             ) {
-                                Text(text = "Total")
+                                Text(
+                                    text = "Total",
+                                    style = TextStyle(color = MaterialTheme.colors.onBackground)
+                                )
                                 Box(Modifier.weight(1f))
-                                Text(text = "$${groupExpense.getTotal()}")
+                                Text(
+                                    text = "$${groupExpense.getTotal()}",
+                                    style = TextStyle(color = MaterialTheme.colors.onBackground)
+                                )
                             }
                         }
                     }
@@ -132,7 +140,10 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        Crossfade(targetState = state) {
+                        Crossfade(
+                            modifier = Modifier.padding(it),
+                            targetState = state
+                        ) {
                             when (it) {
                                 is SharedBudgetViewModel.UiState.ShowBudget -> {
                                     SharedBudgetView(
