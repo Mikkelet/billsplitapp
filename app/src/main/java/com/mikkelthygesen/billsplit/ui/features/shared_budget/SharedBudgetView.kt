@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.paddingBottom
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
@@ -24,7 +25,7 @@ import com.mikkelthygesen.billsplit.sampleSharedExpenses
 @Composable
 fun SharedBudgetView(
     sharedExpenses: List<GroupExpense>,
-    onSharedExpenseClicked: (GroupExpense) -> Unit
+    viewModel: SharedBudgetViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier.padding(16.dp, 16.dp)
@@ -33,7 +34,7 @@ fun SharedBudgetView(
             items(count = sharedExpenses.size, key = { sharedExpenses[it].id }) { index ->
                 val sharedExpense = sharedExpenses[index]
                 SharedExpenseListItem(groupExpense = sharedExpense) {
-                    onSharedExpenseClicked(sharedExpense)
+                    viewModel.editSharedExpense(sharedExpense)
                 }
             }
         }
@@ -74,6 +75,5 @@ fun SharedExpenseListItem(groupExpense: GroupExpense, onClick: () -> Unit) {
 fun PreviewSharedExpenseListItem() {
     SharedBudgetView(
         sharedExpenses = sampleSharedExpenses(),
-        onSharedExpenseClicked = {},
     )
 }

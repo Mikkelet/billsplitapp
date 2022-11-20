@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.widgets
+package com.mikkelthygesen.billsplit.ui.features.add_expense
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -18,26 +18,40 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.paddingBottom
+import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
+import com.mikkelthygesen.billsplit.ui.widgets.ParticipantView
+import com.mikkelthygesen.billsplit.ui.widgets.SharedExpensesView
 import kotlin.math.roundToInt
 
-interface ExpenseViewCallback {
-    fun onSharedExpenseUpdate(expense: Float)
-    fun onParticipantExpenseUpdate(
-        individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
-        expense: Float
-    )
 
-    fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder)
+private val SCROLL_OFFSET = 200.dp.value
+
+
+@Composable
+fun QuickExpenseView(
+    groupExpense: GroupExpense
+) {
+    ExpenseView(groupExpense = groupExpense)
 }
 
 @Composable
+fun AddSharedExpense(
+    groupExpense: GroupExpense
+) {
+    ExpenseView(groupExpense = groupExpense)
+}
+
+
+
+@Composable
 fun ExpenseView(
-    expenseViewCallback: ExpenseViewCallback,
+    viewModel: SharedBudgetViewModel = viewModel(),
     groupExpense: GroupExpense
 ) {
     val sharedExpenses = groupExpense.sharedExpense
@@ -56,7 +70,7 @@ fun ExpenseView(
             Header(groupExpense)
             SharedExpensesView(
                 modifier = Modifier.onGloballyPositioned {
-                    sharedExpensePositionY = it.positionInParent().y
+                    sharedExpensePositionY = it.positionInParent().y - SCROLL_OFFSET
                 },
                 onScrollToPosition = {
                     scrollState.animateScrollTo(sharedExpensePositionY.roundToInt())
@@ -69,13 +83,13 @@ fun ExpenseView(
                 var positionY = 0f
                 ParticipantView(
                     modifier = Modifier.onGloballyPositioned {
-                        positionY = it.positionInParent().y
+                        positionY = it.positionInParent().y - SCROLL_OFFSET
                     },
                     expenseHolder = individualExpenseHolder,
                     groupExpense = groupExpense,
                     sharedExpense = sharedExpenses.expenseState / numOfParticipants,
                     onChangeListener = { individualExpenseHolder.expenseState = it },
-                    onRemoveClicked = expenseViewCallback::onRemovePerson,
+                    onRemoveClicked = viewModel::onRemoveExpenseHolder,
                     onScrollToPosition = {
                         scrollState.animateScrollTo(positionY.roundToInt())
                     }
@@ -149,17 +163,6 @@ private fun Header(
 @Preview
 @Composable
 fun PreviewExpenseView() {
-    val callback = object : ExpenseViewCallback {
-        override fun onSharedExpenseUpdate(expense: Float) = Unit
-
-        override fun onParticipantExpenseUpdate(
-            individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
-            expense: Float
-        ) = Unit
-
-        override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
-            Unit
-    }
 
     val shared = ExpenseHolder.SharedExpenseHolder(100F)
     val participants =
@@ -176,8 +179,5 @@ fun PreviewExpenseView() {
         sharedExpense = shared,
         individualExpenses = participants
     )
-    ExpenseView(
-        expenseViewCallback = callback,
-        groupExpense = groupExpense
-    )
+    ExpenseView(groupExpense = groupExpense)
 }

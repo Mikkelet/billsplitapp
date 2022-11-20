@@ -10,14 +10,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun FabView(
-    onClick: () -> Unit,
+    viewModel: SharedBudgetViewModel = viewModel(),
     @DrawableRes iconResId: Int = R.drawable.ic_add_plus
 ) {
     FloatingActionButton(
-        onClick = onClick,
+        onClick = viewModel::addExpense,
         modifier = Modifier.padding(16.dp, 32.dp)
     ) {
         Icon(
@@ -29,5 +31,5 @@ fun FabView(
 @Preview
 @Composable
 fun PreviewFabView(){
-    FabView(onClick = {})
+    FabView()
 }

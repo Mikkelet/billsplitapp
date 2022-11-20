@@ -9,8 +9,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.DebtCalculator
-import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.Person
 import kotlin.math.absoluteValue
 
 @Composable

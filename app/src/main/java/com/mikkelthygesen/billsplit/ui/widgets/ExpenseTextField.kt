@@ -27,6 +27,7 @@ import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.tryParseToFloat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ExpenseTextField(
@@ -48,17 +49,18 @@ fun ExpenseTextField(
     val coroutineScope = rememberCoroutineScope()
     val isParticipant =
         expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
+
     TextField(
         modifier = Modifier
             .focusRequester(focusRequester)
             .onFocusChanged { state ->
                 inFocus = state.hasFocus
                 coroutineScope.launch {
-                    delay(50)
+                    delay(50) // short delay to guarantee the correct focus state
                     if (!inFocus)
                         onConfirm()
-                    delay(50)
-                    onScrollPosition()
+                    if (inFocus)
+                        onScrollPosition()
                 }
             },
         colors = TextFieldDefaults.textFieldColors(

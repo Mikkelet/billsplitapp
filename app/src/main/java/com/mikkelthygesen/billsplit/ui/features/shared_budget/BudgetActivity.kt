@@ -13,10 +13,7 @@ class BudgetActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val sharedExpenseState = sharedBudgetViewModel.sharedExpensesState.collectAsState()
-            SharedBudgetView(
-                sharedExpenses = sharedExpenseState.value,
-                onSharedExpenseClicked = sharedBudgetViewModel::editSharedExpense
-            )
+            SharedBudgetView(sharedExpenses = sharedExpenseState.value)
         }
     }
 }

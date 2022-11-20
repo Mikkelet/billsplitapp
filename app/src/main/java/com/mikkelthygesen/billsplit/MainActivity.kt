@@ -1,11 +1,10 @@
 package com.mikkelthygesen.billsplit
 
 import android.os.Bundle
-import android.window.OnBackInvokedCallback
-import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -14,13 +13,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
-import com.mikkelthygesen.billsplit.ui.features.main.AddSharedExpense
+import com.mikkelthygesen.billsplit.ui.features.add_expense.AddSharedExpense
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetView
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
 import com.mikkelthygesen.billsplit.ui.features.view_expenses.ViewExpenses
@@ -30,7 +27,7 @@ import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel = SharedBudgetViewModel()
+    private val viewModel:SharedBudgetViewModel by viewModels()
 
     init {
         onBackPressedDispatcher.addCallback(this){
@@ -103,7 +100,7 @@ class MainActivity : ComponentActivity() {
                         Crossfade(targetState = state) {
                             when (it) {
                                 is SharedBudgetViewModel.UiState.ShowBudget ->
-                                    FabView(onClick = viewModel::addExpense)
+                                    FabView()
                                 else -> {}
                             }
                         }
@@ -158,16 +155,10 @@ class MainActivity : ComponentActivity() {
                         ) {
                             when (it) {
                                 is SharedBudgetViewModel.UiState.ShowBudget -> {
-                                    SharedBudgetView(
-                                        sharedExpenses = sharedExpenses.value,
-                                        onSharedExpenseClicked = viewModel::editSharedExpense
-                                    )
+                                    SharedBudgetView(sharedExpenses = sharedExpenses.value)
                                 }
                                 is SharedBudgetViewModel.UiState.ShowAddExpense -> {
-                                    AddSharedExpense(
-                                        groupExpense = it.sharedExpense,
-                                        addSharedExpenseCallback = viewModel
-                                    )
+                                    AddSharedExpense(groupExpense = it.sharedExpense)
                                 }
                                 is SharedBudgetViewModel.UiState.ViewExpense -> {
                                     ViewExpenses(
@@ -195,7 +186,6 @@ class MainActivity : ComponentActivity() {
             -50.dp.roundToPx()
         }
     }
-
 }
 
 @Composable

@@ -4,13 +4,12 @@ import androidx.lifecycle.ViewModel
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.ui.features.main.AddSharedExpenseCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.*
 import com.mikkelthygesen.billsplit.models.Person
 
-class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
+class SharedBudgetViewModel : ViewModel() {
 
     sealed class UiState {
         object ShowBudget : UiState()
@@ -67,18 +66,18 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
 
     }
 
-    override fun onSharedExpenseUpdate(value: Float) {
+    fun onSharedExpenseUpdate(value: Float) {
         sharedExpenses.expenseState = value
     }
 
-    override fun onParticipantExpenseUpdate(
+    fun onParticipantExpenseUpdate(
         individualExpenseHolder: IndividualExpenseHolder,
         value: Float
     ) {
         individualExpenseHolder.expenseState = value
     }
 
-    override fun saveGroupExpense(sharedExpense: GroupExpense) {
+    fun saveGroupExpense(sharedExpense: GroupExpense) {
         // if expense exists, consider it an edit, else add new expense
         sharedExpense.saveChanges()
         if (!sharedExpensesState.value.contains(sharedExpense)) {
