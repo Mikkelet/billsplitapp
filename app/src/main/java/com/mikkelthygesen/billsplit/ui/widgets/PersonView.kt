@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +47,7 @@ data class PersonViewFlags(
 
 @Composable
 fun PersonView(
+    modifier: Modifier,
     expenseHolder: ExpenseHolder,
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
@@ -67,9 +69,10 @@ fun PersonView(
             expenseHolder.expenseState + sharedExpense else expenseHolder.expenseState
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(8.dp), Arrangement.Center
+
     ) {
         Column(
             modifier = Modifier
@@ -279,6 +282,7 @@ fun PreviewPersonView() {
         listOf(individualExpenseHolder)
     )
     PersonView(
+        modifier = Modifier,
         expenseHolder = ExpenseHolder.IndividualExpenseHolder(Person("id1", "Person 1"), 100F),
         groupExpense = GroupExpense(
             "",

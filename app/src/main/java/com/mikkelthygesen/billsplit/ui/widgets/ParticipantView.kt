@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
@@ -8,19 +9,21 @@ import com.mikkelthygesen.billsplit.models.GroupExpense
 
 @Composable
 fun ParticipantView(
+    modifier: Modifier,
     expenseHolder: ExpenseHolder.IndividualExpenseHolder,
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
     onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
     onScrollToPosition: suspend () -> Unit,
-    sharedOwed: Float
+    sharedExpense: Float
 ) {
     PersonView(
+        modifier = modifier,
         expenseHolder = expenseHolder,
         groupExpense = groupExpense,
         onChangeListener = onChangeListener,
         onRemoveClicked = onRemoveClicked,
-        sharedExpense = sharedOwed,
+        sharedExpense = sharedExpense,
         flags = PersonViewFlags.participant(),
         onScrollToPosition = onScrollToPosition
     )
@@ -40,11 +43,12 @@ fun PreviewParticipantView() {
         listOf(individualExpenseHolder)
     )
     ParticipantView(
+        modifier = Modifier,
         expenseHolder = individualExpenseHolder,
         groupExpense = groupExpense,
         onChangeListener = {},
         onRemoveClicked = {},
         onScrollToPosition = {},
-        sharedOwed = 100F,
+        sharedExpense = 100F,
     )
 }

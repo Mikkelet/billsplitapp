@@ -22,14 +22,14 @@ fun AddSharedExpense(
     addSharedExpenseCallback: AddSharedExpenseCallback
 ) {
     val expenseViewCallback = object : ExpenseViewCallback {
-        override fun onSharedExpenseUpdate(owed: Float) {
-            addSharedExpenseCallback.onSharedExpenseUpdate(owed)
+        override fun onSharedExpenseUpdate(expense: Float) {
+            addSharedExpenseCallback.onSharedExpenseUpdate(expense)
         }
         override fun onParticipantExpenseUpdate(
             individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
-            owed: Float
+            expense: Float
         ) {
-            addSharedExpenseCallback.onParticipantExpenseUpdate(individualExpenseHolder, owed)
+            addSharedExpenseCallback.onParticipantExpenseUpdate(individualExpenseHolder, expense)
         }
         override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =
             Unit

@@ -1,7 +1,10 @@
 package com.mikkelthygesen.billsplit
 
 import android.os.Bundle
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
@@ -27,6 +30,14 @@ import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 class MainActivity : ComponentActivity() {
 
     private val viewModel = SharedBudgetViewModel()
+
+    init {
+        onBackPressedDispatcher.addCallback(this){
+            if (viewModel.uiStateFlow.value !is SharedBudgetViewModel.UiState.ShowBudget) {
+                viewModel.showBudget()
+            } else handleOnBackPressed()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +90,7 @@ class MainActivity : ComponentActivity() {
                                                     showConfirmChangesDialog = true
                                                 }
                                             }
-                                            else -> this.onBackPressed()
+                                            else -> onBackPressedDispatcher.onBackPressed()
                                         }
                                     }
                                 }
@@ -132,7 +143,7 @@ class MainActivity : ComponentActivity() {
                                     onConfirm = {
                                         groupExpense.revertChanges()
                                         showConfirmChangesDialog = false
-                                        onBackPressed()
+                                        onBackPressedDispatcher.onBackPressed()
                                     },
                                     onDismiss = {
                                         showConfirmChangesDialog = false
@@ -184,11 +195,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (viewModel.uiStateFlow.value !is SharedBudgetViewModel.UiState.ShowBudget) {
-            viewModel.showBudget()
-        }
-    }
 }
 
 @Composable

@@ -1,23 +1,20 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,14 +23,13 @@ import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.paddingBottom
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 interface ExpenseViewCallback {
-    fun onSharedExpenseUpdate(owed: Float)
+    fun onSharedExpenseUpdate(expense: Float)
     fun onParticipantExpenseUpdate(
         individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
-        owed: Float
+        expense: Float
     )
 
     fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder)
@@ -47,47 +43,46 @@ fun ExpenseView(
     val sharedExpenses = groupExpense.sharedExpense
     val expenseHolders = groupExpense.individualExpenses
 
-    val scrollState = rememberLazyListState()
+    val scrollState = rememberScrollState()
+    var sharedExpensePositionY by remember {
+        mutableStateOf(0F)
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background,
     ) {
-        LazyColumn(state = scrollState) {
-            item {
-                Header(groupExpense)
-            }
-            item {
-
-                SharedExpensesView(
-                    groupExpense = groupExpense,
-                    onChangeListener = { sharedExpenses.expenseState = it }
-                )
-            }
-            items(
-                count = expenseHolders.size,
-                key = { expenseHolders[it].person.pId }
-            ) { index ->
-                val individualExpenseHolder = expenseHolders[index]
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
+            Header(groupExpense)
+            SharedExpensesView(
+                modifier = Modifier.onGloballyPositioned {
+                    sharedExpensePositionY = it.positionInParent().y
+                },
+                onScrollToPosition = {
+                    scrollState.animateScrollTo(sharedExpensePositionY.roundToInt())
+                },
+                groupExpense = groupExpense,
+                onChangeListener = { sharedExpenses.expenseState = it }
+            )
+            expenseHolders.map { individualExpenseHolder ->
                 val numOfParticipants = expenseHolders.count { it.isParticipantState }
-
+                var positionY = 0f
                 ParticipantView(
+                    modifier = Modifier.onGloballyPositioned {
+                        positionY = it.positionInParent().y
+                    },
                     expenseHolder = individualExpenseHolder,
                     groupExpense = groupExpense,
-                    sharedOwed = sharedExpenses.expenseState / numOfParticipants,
+                    sharedExpense = sharedExpenses.expenseState / numOfParticipants,
                     onChangeListener = { individualExpenseHolder.expenseState = it },
                     onRemoveClicked = expenseViewCallback::onRemovePerson,
                     onScrollToPosition = {
-                        //scrollState.animateScrollTo(positionInRoot.roundToInt())
-                        scrollState.animateScrollToItem(index)
+                        scrollState.animateScrollTo(positionY.roundToInt())
                     }
                 )
             }
-
-            item {
-                Box(modifier = Modifier.height(100.dp))
-            }
         }
+        Box(modifier = Modifier.height(100.dp))
     }
 }
 
@@ -108,9 +103,13 @@ fun DescriptionTextField(
         leadingIcon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_baseline_edit_24),
-                contentDescription = ""
+                contentDescription = "",
+                tint = MaterialTheme.colors.onBackground
             )
         },
+        textStyle = TextStyle(
+            color = MaterialTheme.colors.onBackground
+        ),
         singleLine = true,
         onValueChange = {
             textFieldValue = it
@@ -120,7 +119,7 @@ fun DescriptionTextField(
         colors = TextFieldDefaults.textFieldColors(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
-            backgroundColor = Color(0xAA000000),
+            backgroundColor = MaterialTheme.colors.background.copy(alpha = .7f),
             textColor = Color.White
         ),
         keyboardActions = KeyboardActions {
@@ -151,11 +150,11 @@ private fun Header(
 @Composable
 fun PreviewExpenseView() {
     val callback = object : ExpenseViewCallback {
-        override fun onSharedExpenseUpdate(owed: Float) = Unit
+        override fun onSharedExpenseUpdate(expense: Float) = Unit
 
         override fun onParticipantExpenseUpdate(
             individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder,
-            owed: Float
+            expense: Float
         ) = Unit
 
         override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) =

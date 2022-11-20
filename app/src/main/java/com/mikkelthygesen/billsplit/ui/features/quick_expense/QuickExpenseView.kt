@@ -7,7 +7,7 @@ import com.mikkelthygesen.billsplit.ui.widgets.ExpenseView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseViewCallback
 
 interface QuickExpenseViewCallback {
-    fun onSharedExpenseUpdate(owed: Float)
+    fun onSharedExpenseUpdate(expense: Float)
     fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, owed: Float)
     fun onRemovePerson(person: ExpenseHolder.IndividualExpenseHolder)
 }
@@ -18,12 +18,12 @@ fun QuickExpenseView(
     callback: QuickExpenseViewCallback
 ) {
     val expenseViewCallback = object : ExpenseViewCallback {
-        override fun onSharedExpenseUpdate(owed: Float) {
-            callback.onSharedExpenseUpdate(owed)
+        override fun onSharedExpenseUpdate(expense: Float) {
+            callback.onSharedExpenseUpdate(expense)
         }
 
-        override fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, owed: Float) {
-            callback.onParticipantExpenseUpdate(individualExpenseHolder, owed)
+        override fun onParticipantExpenseUpdate(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder, expense: Float) {
+            callback.onParticipantExpenseUpdate(individualExpenseHolder, expense)
         }
 
         override fun onRemovePerson(individualExpenseHolder: ExpenseHolder.IndividualExpenseHolder) {

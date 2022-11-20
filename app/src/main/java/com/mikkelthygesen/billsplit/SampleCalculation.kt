@@ -89,16 +89,17 @@ fun calculateDebtTo(
     return allDebtsByPayee.map { debtsByPayee ->
         val payee = debtsByPayee.first
         val owedByPayee = allDebtsByPayee
-            // filter expenses not paid by payee
-            .filter { it.first.nameState != payee.nameState }
-            // map expenses to list of indebted and their debt
+            // filter expenses not paid by payee, as payee cannot have debt to themselves
+            .filter { it.first != payee }
+            // Sort expenses into list of Pair(Person in debt, their debt)
             .map { debts ->
-                val debtee = debts.first
+                val indebted = debts.first
+                // Go through all expenses, filter those owed by indebted
                 val debtToPayee = debts.second
-                    .filter { it.first.nameState == payee.nameState }
+                    .filter { it.first == payee }
                     .map { it.second }
                     .reduceOrZero()
-                Pair(debtee, debtToPayee)
+                Pair(indebted, debtToPayee)
             }
         Pair(payee, owedByPayee)
     }

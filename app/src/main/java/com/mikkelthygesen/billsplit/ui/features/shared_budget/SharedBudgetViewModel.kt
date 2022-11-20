@@ -23,7 +23,7 @@ class SharedBudgetViewModel : ViewModel(), AddSharedExpenseCallback {
     private val mutableUiStateFlow = MutableStateFlow<UiState>(UiState.ShowBudget)
     val uiStateFlow: StateFlow<UiState> = mutableUiStateFlow
     private val mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(emptyList())
-    private val people = (1..3).map { Person("id-$it", "Person $it") }
+    private val people = (1..10).map { Person("id-$it", "Person $it") }
     private var peopleAdded = people.size
     val sharedExpensesState: StateFlow<List<GroupExpense>> = mutableSharedExpensesStateFlow
     private val mutableParticipantsFlow =
