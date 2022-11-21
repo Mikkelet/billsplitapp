@@ -47,6 +47,12 @@ sealed class ExpenseHolder(val person: Person, private var expense: Float) {
             isParticipantState
         )
 
+        fun reset() = IndividualExpenseHolder(
+            person,
+            0F,
+            true
+        )
+
         override fun saveChanges() {
             super.saveChanges()
             isParticipant = isParticipantState
