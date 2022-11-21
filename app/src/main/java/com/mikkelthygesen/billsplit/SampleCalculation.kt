@@ -3,56 +3,73 @@ package com.mikkelthygesen.billsplit
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
+import kotlin.math.absoluteValue
 
-fun sampleIndividualExpenses() =
-    (1..3).map {
-        IndividualExpenseHolder(Person("id$it", "Person $it"), it * 100F, true)
+val samplePeople = (1..3).map { Person("id$it", "Person $it") }
+
+val sampleIndividualExpenses = samplePeople.mapIndexed { i, p ->
+    IndividualExpenseHolder(p, i * 100F, true)
+}
+
+val sampleSharedExpense = SharedExpenseHolder(sampleIndividualExpenses.size * 200F)
+
+val sampleSharedExpenses: List<GroupExpense>
+    get() {
+        val people = sampleIndividualExpenses
+        val shared = sampleSharedExpense
+        return listOf(
+            GroupExpense(
+                "0",
+                "",
+                people[0],
+                shared,
+                people
+            ),
+            GroupExpense(
+                "1",
+                "",
+                people[1],
+                shared,
+                people
+            ),
+            GroupExpense(
+                "2",
+                "",
+                people[2],
+                shared,
+                people
+            ),
+            GroupExpense(
+                "3",
+                "",
+                people[2],
+                shared,
+                people
+            ),
+            GroupExpense(
+                "4",
+                "",
+                people[2],
+                shared,
+                people
+            ),
+        )
     }
 
-fun sampleSharedExpense() = SharedExpenseHolder(sampleIndividualExpenses().size * 200F)
+val samplePayments: List<Payment>
+    get() {
+        val person1 = samplePeople[0]
+        val person2 = samplePeople[1]
+        val person3 = samplePeople[2]
 
-fun sampleSharedExpenses(): List<GroupExpense> {
-    val people = sampleIndividualExpenses()
-    val shared = sampleSharedExpense()
-    return listOf(
-        GroupExpense(
-            "0",
-            "",
-            people[0],
-            shared,
-            people
-        ),
-        GroupExpense(
-            "1",
-            "",
-            people[1],
-            shared,
-            people
-        ),
-        GroupExpense(
-            "2",
-            "",
-            people[2],
-            shared,
-            people
-        ),
-        GroupExpense(
-            "3",
-            "",
-            people[2],
-            shared,
-            people
-        ),
-        GroupExpense(
-            "4",
-            "",
-            people[2],
-            shared,
-            people
-        ),
-    )
-}
+        return listOf(
+            Payment(person2, person3, 500F),
+            Payment(person1, person3, 200F),
+            Payment(person2, person1, 100F),
+        )
+    }
 
 fun calculateDebts(
     people: List<Person>,
@@ -129,8 +146,38 @@ fun calculateEffectiveDebt(
     }
 }
 
+fun calculateDebtsAfterPayments(
+    person: Person,
+    people: List<Person>,
+    groupExpenses: List<GroupExpense>,
+    payments: List<Payment>
+): List<Pair<Person, Float>> {
+    // get debts owed by person
+    val effectiveDebt = calculateEffectiveDebt(person, people, groupExpenses)
+    // for each debts, calculate the payment to negate potential debt
+    return effectiveDebt.map { debt ->
+        val debtee = debt.first
+        val debtAmount = debt.second
+        if (debtAmount > 0F) {
+            // if debt exists, find payments paid by person to debtee
+            val paymentsByPerson =
+                payments.filter { it.payee == person && it.paidTo == debtee }
+            val accPayments = paymentsByPerson.map { it.amount }.reduceOrZero()
+            println("- ${person.nameState} owes $$debtAmount to ${debtee.nameState}, and have paid $accPayments ")
+            Pair(debtee, debtAmount - accPayments)
+        } else if (debtAmount < 0F) {
+            // if debt is owed TO person (negative debt), find payments made by debtee to person
+            val paymentsToPerson =
+                payments.filter { it.paidTo == person && it.payee == debtee }
+            val accPayments = paymentsToPerson.map { it.amount }.reduceOrZero()
+            println("- ${debtee.nameState} owes $${debtAmount.absoluteValue} to ${person.nameState}, and have paid $accPayments ")
+            Pair(debtee, debtAmount + accPayments)
+        } else Pair(debtee, debtAmount) // Else just return the debts (should be 0F)
+    }
+}
+
 fun calculateTotalDebt() {
-    val total = sampleSharedExpenses()
+    val total = sampleSharedExpenses
         .map { it.getTotal() }
         .reduceOrZero()
     println("Total=$total")
@@ -139,8 +186,8 @@ fun calculateTotalDebt() {
 fun main() {
     calculateTotalDebt()
     println("==== DEBT ====")
-    val people = sampleIndividualExpenses().map { it.person }
-    val groupExpenses = sampleSharedExpenses()
+    val people = sampleIndividualExpenses.map { it.person }
+    val groupExpenses = sampleSharedExpenses
     calculateDebts(people, groupExpenses).forEach { pair ->
         val payee = pair.first
         val debts = pair.second
@@ -163,12 +210,35 @@ fun main() {
         }
     }
     println("\n=== Effect Debt ===")
-    sampleIndividualExpenses().forEach { ie ->
+    sampleIndividualExpenses.forEach { ie ->
         println("${ie.nameState} owes:")
         val person = ie.person
-        val debt = calculateEffectiveDebt(person, people, sampleSharedExpenses())
+        val debt = calculateEffectiveDebt(person, people, sampleSharedExpenses)
         debt.forEach {
             println("\tto ${it.first.nameState}: $${it.second}")
         }
+    }
+    println("\n=== After Payments ===")
+    println("")
+    samplePayments.forEach {
+        println("${it.payee.nameState} paid $${it.amount} to ${it.paidTo.nameState}")
+    }
+    println("")
+    samplePeople.forEach { person ->
+        println("Debts for ${person.nameState}")
+        calculateDebtsAfterPayments(
+            person,
+            people = samplePeople,
+            groupExpenses = sampleSharedExpenses,
+            payments = samplePayments,
+        ).forEach {
+            val otherPerson = it.first
+            val debt = it.second
+            if (debt > 0F)
+                println("\t${otherPerson.nameState} owes $$debt to ${person.nameState}")
+            else if (debt < 0F)
+                println("\t${person.nameState} owes $$debt to ${otherPerson.nameState}")
+        }
+
     }
 }

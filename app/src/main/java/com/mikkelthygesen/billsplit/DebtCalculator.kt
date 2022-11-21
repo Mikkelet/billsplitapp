@@ -2,10 +2,12 @@ package com.mikkelthygesen.billsplit
 
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.Payment
 
 class DebtCalculator(
     private val people: List<Person>,
-    private val expenses: List<GroupExpense>
+    private val expenses: List<GroupExpense>,
+    private val payments: List<Payment>
 ) {
 
     fun calculateDebtsByPayee(): List<Pair<Person, List<Pair<Person, Float>>>> =
@@ -16,6 +18,9 @@ class DebtCalculator(
 
     fun calculateEffectiveDebtOfPerson(person: Person): List<Pair<Person, Float>> =
         calculateEffectiveDebt(person, people, expenses)
+
+    fun calculateDebtsForPersonAfterPayments(person: Person): List<Pair<Person, Float>> =
+        calculateDebtsAfterPayments(person, people, expenses, payments)
 
     fun logDebt(person: Person) {
         println("==== DEBT ====")

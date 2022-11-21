@@ -12,22 +12,22 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mikkelthygesen.billsplit.*
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.paddingEnd
 
 data class PersonViewFlags(
     val enableEditName: Boolean,
@@ -45,6 +45,7 @@ data class PersonViewFlags(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PersonView(
     modifier: Modifier,
@@ -70,14 +71,16 @@ fun PersonView(
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp), Arrangement.Center
-
+            .padding(12.dp)
+            .wrapContentHeight()
+            .fillMaxWidth(),
+        verticalAlignment = Top,
+        horizontalArrangement = Arrangement.Center
     ) {
         Column(
             modifier = Modifier
+                .paddingTop(12.dp)
                 .weight(1f)
-                .paddingEnd(8.dp)
                 .fillMaxWidth(),
             Arrangement.Top,
             Alignment.CenterHorizontally
@@ -95,6 +98,7 @@ fun PersonView(
                     )
                 }
         }
+
         Column(
             modifier = Modifier
                 .weight(4f)
@@ -105,26 +109,35 @@ fun PersonView(
                 showDialog = false
             }, onDismiss = { showDialog = false })
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .paddingTop(12.dp)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 ClickableText(
                     text = AnnotatedString(expenseHolder.nameState),
                     onClick = {
                         if (flags.enableEditName) showDialog = true
                     },
-                    style = TextStyle(fontSize = 30.sp, color = MaterialTheme.colors.onBackground),
+                    style = TextStyle(fontSize = 15.sp, color = MaterialTheme.colors.onBackground),
                 )
                 if (flags.enableParticipationToggle &&
                     expenseHolder is ExpenseHolder.IndividualExpenseHolder
-                ) Checkbox(
-                    checked = expenseHolder.isParticipantState,
-                    onCheckedChange = {
-                        expenseHolder.isParticipantState = it
-                    })
+                )
+                    CompositionLocalProvider(LocalMinimumTouchTargetEnforcement.provides(false)) {
+                        Checkbox(
+                            modifier = Modifier
+                                .defaultMinSize(1.dp)
+                                .padding(0.dp),
+                            checked = expenseHolder.isParticipantState,
+                            onCheckedChange = {
+                                expenseHolder.isParticipantState = it
+                            })
+                    }
             }
             Row(
+                modifier = Modifier.padding(0.dp, 8.dp, 0.dp, 8.dp),
                 verticalAlignment = CenterVertically
             ) {
                 Crossfade(
@@ -184,7 +197,7 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHol
             )
         if (isPayee)
             Icon(
-                painter = painterResource(id = R.drawable.ic_check),
+                painter = painterResource(id = R.drawable.ic_money),
                 tint = Color.White,
                 modifier = Modifier
                     .background(
@@ -215,7 +228,7 @@ private fun ExpenseDisplay(
     else sharedExpense.toInt()
 
     val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontSize = 20.sp, color = MaterialTheme.colors.onBackground)) {
+        withStyle(style = SpanStyle(fontSize = 23.sp, color = MaterialTheme.colors.onBackground)) {
             append(text = "$$expenseString")
         }
         if (isParticipant && sharedExpense > 0f)
@@ -223,6 +236,7 @@ private fun ExpenseDisplay(
                 append(" + $$sharedExpenseString")
             }
     }
+
     ClickableText(
         modifier = Modifier.fillMaxWidth(),
         text = annotatedString,
@@ -258,7 +272,8 @@ private fun ChangeNameDialog(
         },
         confirmButton = {
             Button(onClick = {
-                if (changeNameTextFieldValue.isNotBlank()) onConfirm(changeNameTextFieldValue)
+                if (changeNameTextFieldValue.isNotBlank())
+                    onConfirm(changeNameTextFieldValue)
             }) {
                 Text(text = "Apply")
             }
@@ -267,7 +282,7 @@ private fun ChangeNameDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewPersonView() {
+private fun PreviewPersonViewWithRemove() {
     val flags = PersonViewFlags(
         enableEditName = true, enableParticipationToggle = true, enableRemoval = true
     )
@@ -298,3 +313,38 @@ fun PreviewPersonView() {
         onScrollToPosition = {}
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewPersonViewWithoutToggle() {
+    val flags = PersonViewFlags(
+        enableEditName = true, enableParticipationToggle = false, enableRemoval = false
+    )
+    val person = Person("0", "Mikkel")
+    val individualExpenseHolder = ExpenseHolder.IndividualExpenseHolder(person, 1000f, true)
+    val sharedExpenseHolder = ExpenseHolder.SharedExpenseHolder(1000f)
+    val groupExpense = GroupExpense(
+        "000",
+        "",
+        individualExpenseHolder,
+        sharedExpenseHolder,
+        listOf(individualExpenseHolder)
+    )
+    PersonView(
+        modifier = Modifier,
+        expenseHolder = ExpenseHolder.IndividualExpenseHolder(Person("id1", "Person 1"), 100F),
+        groupExpense = GroupExpense(
+            "",
+            "",
+            individualExpenseHolder,
+            sharedExpenseHolder,
+            groupExpense.individualExpenses
+        ),
+        onChangeListener = {},
+        onRemoveClicked = {},
+        flags = flags,
+        sharedExpense = 100F,
+        onScrollToPosition = {}
+    )
+}
+

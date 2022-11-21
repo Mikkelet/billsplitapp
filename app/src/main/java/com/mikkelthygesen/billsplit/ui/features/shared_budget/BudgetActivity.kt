@@ -7,13 +7,11 @@ import androidx.compose.runtime.collectAsState
 
 class BudgetActivity : ComponentActivity() {
 
-    private val sharedBudgetViewModel = SharedBudgetViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val sharedExpenseState = sharedBudgetViewModel.sharedExpensesState.collectAsState()
-            SharedBudgetView(sharedExpenses = sharedExpenseState.value)
+            SharedBudgetView()
         }
     }
 }

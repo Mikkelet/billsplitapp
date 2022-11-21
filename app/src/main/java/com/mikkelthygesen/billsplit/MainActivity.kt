@@ -31,9 +31,15 @@ class MainActivity : ComponentActivity() {
 
     init {
         onBackPressedDispatcher.addCallback(this) {
-            if (viewModel.uiStateFlow.value !is SharedBudgetViewModel.UiState.ShowBudget) {
-                viewModel.showBudget()
-            } else handleOnBackPressed()
+            when (val state = viewModel.uiStateFlow.value) {
+                is SharedBudgetViewModel.UiState.ShowBudget -> handleOnBackPressed()
+                is SharedBudgetViewModel.UiState.ShowAddExpense -> {
+                    if (state.sharedExpense.isChanged())
+                        viewModel.showConfirmChangesDialog(state.sharedExpense)
+                    else viewModel.showBudget()
+                }
+                else -> viewModel.showBudget()
+            }
         }
     }
 
@@ -41,7 +47,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val uiStateFlow = viewModel.uiStateFlow.collectAsState()
-            val groupExpensesFlow = viewModel.sharedExpensesState.collectAsState()
             val dialogStateFlow = viewModel.dialogState.collectAsState()
 
             BillSplitTheme {
@@ -88,17 +93,13 @@ class MainActivity : ComponentActivity() {
                     ) { uiState ->
                         when (uiState) {
                             is SharedBudgetViewModel.UiState.ShowBudget -> {
-                                SharedBudgetView(sharedExpenses = groupExpensesFlow.value)
+                                SharedBudgetView()
                             }
                             is SharedBudgetViewModel.UiState.ShowAddExpense -> {
                                 AddSharedExpense(groupExpense = uiState.sharedExpense)
                             }
                             is SharedBudgetViewModel.UiState.ViewExpense -> {
-                                ViewExpenses(
-                                    person = viewModel.getLoggedIn(),
-                                    people = uiState.people.map { ie -> ie.person },
-                                    expenses = groupExpensesFlow.value
-                                )
+                                ViewExpenses()
                             }
                         }
                     }

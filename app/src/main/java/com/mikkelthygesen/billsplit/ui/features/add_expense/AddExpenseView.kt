@@ -48,10 +48,8 @@ fun AddSharedExpense(
 }
 
 
-
 @Composable
 fun ExpenseView(
-    viewModel: SharedBudgetViewModel = viewModel(),
     groupExpense: GroupExpense
 ) {
     val sharedExpenses = groupExpense.sharedExpense
@@ -89,14 +87,14 @@ fun ExpenseView(
                     groupExpense = groupExpense,
                     sharedExpense = sharedExpenses.expenseState / numOfParticipants,
                     onChangeListener = { individualExpenseHolder.expenseState = it },
-                    onRemoveClicked = viewModel::onRemoveExpenseHolder,
+                    onRemoveClicked = {},
                     onScrollToPosition = {
                         scrollState.animateScrollTo(positionY.roundToInt())
                     }
                 )
             }
+            Box(modifier = Modifier.height(100.dp))
         }
-        Box(modifier = Modifier.height(100.dp))
     }
 }
 

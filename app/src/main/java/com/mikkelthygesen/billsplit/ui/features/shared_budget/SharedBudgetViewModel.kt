@@ -1,24 +1,28 @@
 package com.mikkelthygesen.billsplit.ui.features.shared_budget
 
+import android.text.format.DateUtils
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.mikkelthygesen.billsplit.models.Payment
 import java.util.*
 import com.mikkelthygesen.billsplit.models.Person
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import com.mikkelthygesen.billsplit.models.interfaces.IShareable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
+import java.time.Instant
 
 class SharedBudgetViewModel : ViewModel() {
 
     sealed class UiState {
         object ShowBudget : UiState()
         class ShowAddExpense(val sharedExpense: GroupExpense) : UiState()
-        class ViewExpense(val people: List<IndividualExpenseHolder>) : UiState()
+        object ViewExpense : UiState()
     }
 
     sealed class DialogState {
@@ -31,26 +35,33 @@ class SharedBudgetViewModel : ViewModel() {
         object OnBackPressed : UiEvent()
     }
 
-    private val people = (1..10).map { Person("id-$it", "Person $it") }
-    private var peopleAdded = people.size
+    private val _payments = MutableStateFlow<List<Payment>>(emptyList())
+    val paymentsFlow: StateFlow<List<Payment>> = _payments
 
-    private val mutableUiStateFlow = MutableStateFlow<UiState>(UiState.ShowBudget)
-    val uiStateFlow: StateFlow<UiState> = mutableUiStateFlow
+    private val _mutableUiStateFlow = MutableStateFlow<UiState>(UiState.ShowBudget)
+    val uiStateFlow: StateFlow<UiState> = _mutableUiStateFlow
 
-    private val mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(emptyList())
-    val sharedExpensesState: StateFlow<List<GroupExpense>> = mutableSharedExpensesStateFlow
+    private val _mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(emptyList())
+    val sharedExpensesState: StateFlow<List<GroupExpense>> = _mutableSharedExpensesStateFlow
 
-    private val mutableDialogStateFlow = MutableStateFlow<DialogState>(DialogState.DismissDialogs)
-    val dialogState: StateFlow<DialogState> = mutableDialogStateFlow
+    private val _mutableDialogStateFlow = MutableStateFlow<DialogState>(DialogState.DismissDialogs)
+    val dialogState: StateFlow<DialogState> = _mutableDialogStateFlow
 
-    private val mutableUiEventsStateFlow = MutableSharedFlow<UiEvent>()
-    val uiEventsState: SharedFlow<UiEvent> = mutableUiEventsStateFlow
+    private val _mutableUiEventsStateFlow = MutableSharedFlow<UiEvent>()
+    val uiEventsState: SharedFlow<UiEvent> = _mutableUiEventsStateFlow
 
-    private val mutableParticipantsFlow =
-        MutableStateFlow<List<IndividualExpenseHolder>>(people.map {
-            IndividualExpenseHolder(it, 0F)
-        })
-    val peopleState: StateFlow<List<IndividualExpenseHolder>> = mutableParticipantsFlow
+    private val _people = mutableListOf<Person>()
+    val people: List<Person> = _people
+
+    fun shareableStateFlow(): SharedFlow<List<IShareable>> =
+        sharedExpensesState.combine(paymentsFlow as StateFlow<List<IShareable>>) { x, y ->
+            x + y
+        }.shareIn(viewModelScope, SharingStarted.WhileSubscribed())
+
+
+    init {
+        _people.addAll((1..3).map { Person("id-$it", "Person $it") })
+    }
 
     fun addExpense() {
         val resetParticipants = getResetParticipants()
@@ -59,78 +70,70 @@ class SharedBudgetViewModel : ViewModel() {
             description = "",
             payee = resetParticipants[0],
             sharedExpense = getNewSharedExpenses(),
-            individualExpenses = resetParticipants
+            individualExpenses = resetParticipants,
         )
-        mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
+        _mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
     }
 
-    fun addPerson() {
-        peopleAdded++
-        val person = IndividualExpenseHolder(Person("id$peopleAdded", "Person $peopleAdded"), 0F)
-        val updateList: List<IndividualExpenseHolder> = peopleState.value.plus(person)
-        mutableParticipantsFlow.value = updateList
+    fun addPayment(payment: Payment) {
+        _payments.value = paymentsFlow.value.plus(payment)
     }
 
     fun addPerson(name: String) {
-        peopleAdded++
-        val person = IndividualExpenseHolder(Person("id$peopleAdded", name), 0F)
-        val updateList: List<IndividualExpenseHolder> = peopleState.value.plus(person)
-        mutableParticipantsFlow.value = updateList
-
+        val pId = (people.size + 1) + 1
+        val person = Person("id$pId", name)
+        _people.add(person)
     }
 
     fun saveGroupExpense(sharedExpense: GroupExpense) {
         // if expense exists, consider it an edit, else add new expense
         sharedExpense.saveChanges()
         if (!sharedExpensesState.value.contains(sharedExpense)) {
-            val updateList = sharedExpensesState.value.plus(sharedExpense)
-            mutableSharedExpensesStateFlow.value = updateList
+            _mutableSharedExpensesStateFlow.value = sharedExpensesState.value.plus(sharedExpense)
         }
-        mutableUiStateFlow.value = UiState.ShowBudget
+        _mutableUiStateFlow.value = UiState.ShowBudget
     }
 
-    fun onRemoveExpenseHolder(individualExpenseHolder: IndividualExpenseHolder) {
-        val indexOf = peopleState.value.indexOf(individualExpenseHolder)
-        val updateList = peopleState.value.toMutableList()
-        updateList.removeAt(indexOf)
-        mutableParticipantsFlow.value = updateList
+    fun onRemoveHolder(person: Person) {
+        val indexOf = people.indexOf(person)
+        _people.removeAt(indexOf)
     }
 
     private fun getResetParticipants(): List<IndividualExpenseHolder> {
-        return peopleState.value.map { it.reset() }
+        return people.map { IndividualExpenseHolder(it, 0F, true) }
     }
 
     private fun getNewSharedExpenses(): SharedExpenseHolder =
         SharedExpenseHolder(0F)
 
     fun showBudget() {
-        mutableUiStateFlow.value = UiState.ShowBudget
+        _mutableUiStateFlow.value = UiState.ShowBudget
     }
 
     fun showExpenses() {
-        mutableUiStateFlow.value = UiState.ViewExpense(peopleState.value)
+        _mutableUiStateFlow.value = UiState.ViewExpense
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {
-        mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
+        _mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
     }
 
     fun dismissDialogs() {
-        mutableDialogStateFlow.value = DialogState.DismissDialogs
+        _mutableDialogStateFlow.value = DialogState.DismissDialogs
     }
 
     fun onBackButtonPressed() {
         viewModelScope.launch {
-            mutableUiEventsStateFlow.emit(UiEvent.OnBackPressed)
+            _mutableUiEventsStateFlow.emit(UiEvent.OnBackPressed)
         }
     }
 
     fun showConfirmChangesDialog(groupExpense: GroupExpense) {
-        mutableDialogStateFlow.value = DialogState.ShowConfirmEditDialog(groupExpense)
+        _mutableDialogStateFlow.value = DialogState.ShowConfirmEditDialog(groupExpense)
     }
 
     fun showAddPersonDialog() {
-        mutableDialogStateFlow.value = DialogState.ShowAddPersonDialog
+        _mutableDialogStateFlow.value = DialogState.ShowAddPersonDialog
     }
 
     fun getLoggedIn(): Person = people[1]
