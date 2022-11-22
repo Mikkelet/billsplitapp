@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.*
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.models.ExpenseHolder
+import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
 
@@ -49,10 +49,10 @@ data class PersonViewFlags(
 @Composable
 fun PersonView(
     modifier: Modifier,
-    expenseHolder: ExpenseHolder,
+    expenseHolder: IndividualExpense,
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
-    onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
+    onRemoveClicked: (IndividualExpense) -> Unit,
     onScrollToPosition: suspend () -> Unit,
     flags: PersonViewFlags,
     sharedExpense: Float = 0F,
@@ -63,8 +63,7 @@ fun PersonView(
     var isEditing by remember {
         mutableStateOf(false)
     }
-    val isParticipant =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
+    val isParticipant = expenseHolder.isParticipantState
     val totalExpense =
         if (isParticipant)
             expenseHolder.expenseState + sharedExpense else expenseHolder.expenseState
@@ -79,14 +78,14 @@ fun PersonView(
     ) {
         Column(
             modifier = Modifier
-                .paddingTop(12.dp)
+                .padding(top = 12.dp)
                 .weight(1f)
                 .fillMaxWidth(),
             Arrangement.Top,
             Alignment.CenterHorizontally
         ) {
             ProfilePicture(groupExpense = groupExpense, expenseHolder = expenseHolder)
-            if (flags.enableRemoval && expenseHolder is ExpenseHolder.IndividualExpenseHolder)
+            if (flags.enableRemoval && expenseHolder is IndividualExpense)
                 IconButton(
                     onClick = {
                         onRemoveClicked(expenseHolder)
@@ -105,19 +104,22 @@ fun PersonView(
                 .weight(4f)
                 .fillMaxWidth()
         ) {
-            if (showDialog) ChangeNameDialog(textFieldValue = expenseHolder.nameState, onConfirm = {
-                expenseHolder.nameState = it
-                showDialog = false
-            }, onDismiss = { showDialog = false })
+            if (showDialog) ChangeNameDialog(
+                textFieldValue = expenseHolder.person.nameState,
+                onConfirm = {
+                    expenseHolder.person.nameState = it
+                    showDialog = false
+                },
+                onDismiss = { showDialog = false })
             Row(
                 modifier = Modifier
-                    .paddingTop(12.dp)
+                    .padding(top = 12.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Top
             ) {
                 val nameText = if (groupExpense.payeeState == expenseHolder.person) "" +
-                        "${expenseHolder.nameState} is paying" else expenseHolder.nameState
+                        "${expenseHolder.person.nameState} is paying" else expenseHolder.person.nameState
                 ClickableText(
                     text = AnnotatedString(nameText),
                     onClick = {
@@ -125,9 +127,7 @@ fun PersonView(
                     },
                     style = TextStyle(fontSize = 15.sp, color = MaterialTheme.colors.onBackground),
                 )
-                if (flags.enableParticipationToggle &&
-                    expenseHolder is ExpenseHolder.IndividualExpenseHolder
-                )
+                if (flags.enableParticipationToggle)
                     CompositionLocalProvider(LocalMinimumTouchTargetEnforcement.provides(false)) {
                         Checkbox(
                             modifier = Modifier
@@ -168,11 +168,10 @@ fun PersonView(
 }
 
 @Composable
-private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHolder) {
-    val isPayee =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payeeState == expenseHolder.person
+private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: IndividualExpense) {
+    val isPayee = groupExpense.payeeState == expenseHolder.person
     Box {
-        if (expenseHolder is ExpenseHolder.IndividualExpenseHolder)
+        if (!expenseHolder.isShared())
             Image(
                 modifier = Modifier
                     .width(64.dp)
@@ -214,13 +213,11 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHol
 
 @Composable
 private fun ExpenseDisplay(
-    expenseHolder: ExpenseHolder,
+    expenseHolder: IndividualExpense,
     sharedExpense: Float,
     onClick: () -> Unit,
 ) {
-    val isParticipant =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
-
+    val isParticipant = expenseHolder.isParticipantState
     val isExpenseFloat = expenseHolder.expenseState.rem(1) != 0.0f
     val expenseString = if (isExpenseFloat) String.format("%,.2f", expenseHolder.expenseState)
     else expenseHolder.expenseState.toInt()
@@ -289,20 +286,22 @@ private fun PreviewPersonViewWithRemove() {
         enableEditName = true, enableParticipationToggle = true, enableRemoval = true
     )
     val person = Person("0", "Mikkel")
-    val individualExpenseHolder = ExpenseHolder.IndividualExpenseHolder(person, 1000f, true)
-    val sharedExpenseHolder = ExpenseHolder.SharedExpenseHolder(1000f)
+    val individualExpense = IndividualExpense(person, 1000f, true)
+    val sharedExpenseHolder = 1000f
     val groupExpense = GroupExpense(
         "000",
+        person,
         "",
         person,
         sharedExpenseHolder,
-        listOf(individualExpenseHolder)
+        listOf(individualExpense)
     )
     PersonView(
         modifier = Modifier,
-        expenseHolder = ExpenseHolder.IndividualExpenseHolder(Person("id1", "Person 1"), 100F),
+        expenseHolder = IndividualExpense(Person("id1", "Person 1"), 100F),
         groupExpense = GroupExpense(
             "",
+            person,
             "",
             person,
             sharedExpenseHolder,
@@ -323,20 +322,22 @@ private fun PreviewPersonViewWithoutToggle() {
         enableEditName = true, enableParticipationToggle = false, enableRemoval = false
     )
     val person = Person("0", "Mikkel")
-    val individualExpenseHolder = ExpenseHolder.IndividualExpenseHolder(person, 1000f, true)
-    val sharedExpenseHolder = ExpenseHolder.SharedExpenseHolder(1000f)
+    val individualExpense = IndividualExpense(person, 1000f, true)
+    val sharedExpenseHolder = 1000f
     val groupExpense = GroupExpense(
         "000",
+        person,
         "",
         person,
         sharedExpenseHolder,
-        listOf(individualExpenseHolder)
+        listOf(individualExpense)
     )
     PersonView(
         modifier = Modifier,
-        expenseHolder = ExpenseHolder.IndividualExpenseHolder(Person("id1", "Person 1"), 100F),
+        expenseHolder = IndividualExpense(Person("id1", "Person 1"), 100F),
         groupExpense = GroupExpense(
             "",
+            person,
             "",
             person,
             sharedExpenseHolder,

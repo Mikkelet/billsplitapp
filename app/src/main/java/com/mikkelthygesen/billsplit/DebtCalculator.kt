@@ -1,9 +1,6 @@
 package com.mikkelthygesen.billsplit
 
-import com.mikkelthygesen.billsplit.models.ExpenseHolder
-import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.Payment
+import com.mikkelthygesen.billsplit.models.*
 import java.util.*
 
 class DebtCalculator(
@@ -14,11 +11,12 @@ class DebtCalculator(
     private val groupExpenses = expenses.plus(payments.map {
         GroupExpense(
             id = UUID.randomUUID().toString(),
+            people.first(),
             description = "",
             it.payee,
-            ExpenseHolder.SharedExpenseHolder(0F),
+            0F,
             listOf(
-                ExpenseHolder.IndividualExpenseHolder(it.paidTo, it.amount, true)
+                IndividualExpense(it.paidTo, it.amount, true)
             )
         )
     })

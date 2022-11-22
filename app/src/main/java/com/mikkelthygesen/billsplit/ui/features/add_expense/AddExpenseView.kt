@@ -18,13 +18,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.paddingBottom
-import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.ParticipantView
 import com.mikkelthygesen.billsplit.ui.widgets.SharedExpensesView
 import kotlin.math.roundToInt
@@ -52,7 +49,7 @@ fun AddSharedExpense(
 fun ExpenseView(
     groupExpense: GroupExpense
 ) {
-    val sharedExpenses = groupExpense.sharedExpense
+    val sharedExpense = groupExpense.sharedExpenseState
     val expenseHolders = groupExpense.individualExpenses
 
     val scrollState = rememberScrollState()
@@ -74,7 +71,7 @@ fun ExpenseView(
                     scrollState.animateScrollTo(sharedExpensePositionY.roundToInt())
                 },
                 groupExpense = groupExpense,
-                onChangeListener = { sharedExpenses.expenseState = it }
+                onChangeListener = { groupExpense.sharedExpenseState = it }
             )
             expenseHolders.map { individualExpenseHolder ->
                 val numOfParticipants = expenseHolders.count { it.isParticipantState }
@@ -85,7 +82,7 @@ fun ExpenseView(
                     },
                     expenseHolder = individualExpenseHolder,
                     groupExpense = groupExpense,
-                    sharedExpense = sharedExpenses.expenseState / numOfParticipants,
+                    sharedExpense = sharedExpense / numOfParticipants,
                     onChangeListener = { individualExpenseHolder.expenseState = it },
                     onRemoveClicked = {},
                     onScrollToPosition = {
@@ -144,7 +141,7 @@ fun DescriptionTextField(
 private fun Header(
     groupExpense: GroupExpense
 ) {
-    Box(Modifier.paddingBottom(32.dp)) {
+    Box(Modifier.padding(bottom = 32.dp)) {
         Image(
             painter = painterResource(id = R.drawable.best_restraunts),
             contentDescription = "",
@@ -161,19 +158,19 @@ private fun Header(
 @Preview
 @Composable
 fun PreviewExpenseView() {
-
-    val shared = ExpenseHolder.SharedExpenseHolder(100F)
+    val shared = 100F
     val participants =
         (0..3).map {
-            ExpenseHolder.IndividualExpenseHolder(
+            IndividualExpense(
                 Person("id$it", "Person $it"),
                 1 * 100F
             )
         }
     val groupExpense = GroupExpense(
         id = "000",
+        participants.first().person,
         "",
-        payee = participants[1].person,
+        payee = participants.first().person,
         sharedExpense = shared,
         individualExpenses = participants
     )

@@ -2,8 +2,7 @@ package com.mikkelthygesen.billsplit.ui.features.shared_budget
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
-import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
+import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
@@ -68,9 +67,10 @@ class SharedBudgetViewModel : ViewModel() {
         val resetParticipants = getResetParticipants()
         val sharedExpense = GroupExpense(
             id = UUID.randomUUID().toString(),
+            createdBy = people.first(),
             description = "",
-            payee = people[0],
-            sharedExpense = getNewSharedExpenses(),
+            payee = people.first(),
+            sharedExpense = 0F,
             individualExpenses = resetParticipants,
         )
         _mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
@@ -88,26 +88,17 @@ class SharedBudgetViewModel : ViewModel() {
 
     fun saveGroupExpense(groupExpense: GroupExpense) {
         // save original in case of edit
-        val original = groupExpense.copy(
-            payee = groupExpense.payeeState.copy(),
-            sharedExpense = groupExpense.sharedExpense.copy(),
-            individualExpenses = groupExpense.individualExpenses.map { it.copy() }
-        )
+        val originalCopy =
+            groupExpense.copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
+        // save expenses
         groupExpense.saveChanges()
-
         // if expense doesn't appear in list, add it, else assume it's an edit and log the change
         if (!sharedExpensesStateFlow.value.contains(groupExpense)) {
             _mutableSharedExpensesStateFlow.value = sharedExpensesStateFlow.value.plus(groupExpense)
-        } else if(groupExpense != original) {
-            val groupExpensesChanged = GroupExpensesChanged(
-                getLoggedIn(),
-                original,
-                groupExpense.copy(
-                    payee = groupExpense.payeeState.copy(),
-                    sharedExpense = groupExpense.sharedExpense.copy(),
-                    individualExpenses = groupExpense.individualExpenses.map { it.copy() }
-                )
-            )
+        } else if (originalCopy != groupExpense) {
+            val updatedCopy =
+                groupExpense.copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
+            val groupExpensesChanged = GroupExpensesChanged(getLoggedIn(), originalCopy, updatedCopy)
             _mutableChangesStateFlow.value =
                 _mutableChangesStateFlow.value.plus(groupExpensesChanged)
         }
@@ -119,12 +110,9 @@ class SharedBudgetViewModel : ViewModel() {
         _people.removeAt(indexOf)
     }
 
-    private fun getResetParticipants(): List<IndividualExpenseHolder> {
-        return people.map { IndividualExpenseHolder(it, 0F, true) }
+    private fun getResetParticipants(): List<IndividualExpense> {
+        return people.map { IndividualExpense(it, 0F, true) }
     }
-
-    private fun getNewSharedExpenses(): SharedExpenseHolder =
-        SharedExpenseHolder(0F)
 
     fun showBudget() {
         _mutableUiStateFlow.value = UiState.ShowBudget

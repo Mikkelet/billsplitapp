@@ -4,58 +4,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-sealed class ExpenseHolder(val person: Person, protected var expense: Float) {
 
+data class IndividualExpense(
+    val person: Person,
+    private var expense: Float,
+    private var isParticipant: Boolean = true
+) {
     var expenseState by mutableStateOf(expense)
-    var nameState by mutableStateOf(person.nameState)
+    var isParticipantState by mutableStateOf(isParticipant)
 
-    open fun isChanged(): Boolean {
-        return expenseState != expense || nameState != person.nameState
-    }
+    fun reset() = IndividualExpense(person, 0F, true)
 
-    open fun revertChanges() {
+    fun isChanged() = isParticipantState != isParticipant || expense != expenseState
+
+    fun revertChanges() {
+        isParticipantState = isParticipant
         expenseState = expense
-        nameState = person.nameState
     }
 
-    open fun saveChanges() {
+    fun saveChanges() {
+        isParticipant = isParticipantState
         expense = expenseState
     }
 
-    abstract fun copy(): ExpenseHolder
-
-    class IndividualExpenseHolder(
-        person: Person,
-        expense: Float,
-        private var isParticipant: Boolean = true
-    ) : ExpenseHolder(person, expense) {
-
-        var isParticipantState by mutableStateOf(isParticipant)
-
-        fun reset() = IndividualExpenseHolder(person, 0F, true)
-
-        override fun isChanged() = super.isChanged() || isParticipantState != isParticipant
-
-        override fun revertChanges() {
-            super.revertChanges()
-            isParticipantState = isParticipant
-        }
-
-        override fun toString(): String {
-            return "IndividualExpenseHolder(name=$nameState, expense=$expenseState, isParticipant=$isParticipantState)"
-        }
-
-        override fun copy() = IndividualExpenseHolder(person, expense, isParticipant)
-
-        override fun saveChanges() {
-            super.saveChanges()
-            isParticipant = isParticipantState
-        }
+    override fun toString(): String {
+        return "ExpenseHolder(name=${person.nameState}, expense=$expenseState, isParticipant=$isParticipantState)"
     }
 
-    class SharedExpenseHolder(expense: Float) :
-        ExpenseHolder(Person("0", "Shared"), expense) {
-        override fun copy() = SharedExpenseHolder(expense)
-        override fun toString() = "SharedExpenseHolder(expense=$expenseState)"
+    fun isShared() = person.pId == getSharedExpenseHolder().person.pId
+
+    companion object {
+        private const val SHARED_ID = "-1"
+        fun getSharedExpenseHolder(expense: Float = 0F) = IndividualExpense(Person(SHARED_ID, "Shared"), expense)
     }
 }

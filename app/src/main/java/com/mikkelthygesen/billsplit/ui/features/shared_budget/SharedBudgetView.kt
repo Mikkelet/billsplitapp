@@ -3,7 +3,9 @@ package com.mikkelthygesen.billsplit.ui.features.shared_budget
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
@@ -19,34 +21,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.paddingBottom
 
 @Composable
 fun SharedBudgetView(
     viewModel: SharedBudgetViewModel = viewModel()
 ) {
     val flow = viewModel.shareableStateFlow().collectAsState(initial = emptyList())
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
+    val shareablesState = flow.value.sortedBy { it.timeStamp }.reversed()
+    LazyColumn(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxHeight()
+            .fillMaxWidth(),
+        reverseLayout = true
     ) {
-        val shareablesState = flow.value.sortedBy { it.timeStamp }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        ) {
-            LazyColumn(
-                Modifier.align(Alignment.BottomStart)
-            ) {
-                items(
-                    count = shareablesState.size,
-                    key = { shareablesState[it].timeStamp }) { index ->
-                    when (val shareable = shareablesState[index]) {
-                        is GroupExpense -> SharedExpenseListItem(groupExpense = shareable)
-                        is Payment -> PaymentListView(payment = shareable)
-                        is GroupExpensesChanged -> ChangesListView(groupExpensesChanged = shareable)
-                    }
-                }
+        items(
+            count = shareablesState.size,
+            key = { shareablesState[it].timeStamp }) { index ->
+            when (val shareable = shareablesState[index]) {
+                is GroupExpense -> SharedExpenseListItem(groupExpense = shareable)
+                is Payment -> PaymentListView(payment = shareable)
+                is GroupExpensesChanged -> ChangesListView(groupExpensesChanged = shareable)
             }
         }
     }
@@ -57,7 +52,7 @@ private fun PaymentListView(payment: Payment) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .paddingBottom(12.dp)
+            .padding(bottom = 12.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.primary)
     ) {
@@ -76,7 +71,7 @@ private fun ChangesListView(groupExpensesChanged: GroupExpensesChanged) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .paddingBottom(12.dp)
+            .padding(bottom = 12.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.primary)
     ) {
@@ -89,8 +84,18 @@ private fun ChangesListView(groupExpensesChanged: GroupExpensesChanged) {
                 Text(text = "Total: $${groupExpensesChanged.groupExpenseOriginal.getTotal()} -> $${groupExpensesChanged.groupExpenseEdited.getTotal()}")
             if (original.payeeState != updated.payeeState)
                 Text(text = "Updated payer: ${original.payeeState.nameState} -> ${updated.payeeState.nameState}")
-            if(original.descriptionState != updated.descriptionState)
+            if (original.descriptionState != updated.descriptionState)
                 Text(text = "Updated description: ${updated.descriptionState}")
+            original.individualExpenses.mapIndexed { index, originalExpense ->
+                val updatedExpense = updated.individualExpenses[index]
+                if (originalExpense.isParticipantState != updatedExpense.isParticipantState) {
+                    if (updatedExpense.isParticipantState)
+                        Text(text = "Updated ${originalExpense.person.nameState} to pay the shared expense")
+                    else Text(text = "Updated ${originalExpense.person.nameState} to not pay the shared expense")
+                }
+                if (originalExpense.expenseState != updatedExpense.expenseState)
+                    Text(text = "Updated expense for ${originalExpense.person.nameState}: $${originalExpense.expenseState} -> $${updatedExpense.expenseState}")
+            }
         }
     }
 }
@@ -103,7 +108,7 @@ private fun SharedExpenseListItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .paddingBottom(12.dp)
+            .padding(bottom = 12.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.primary)
     ) {
@@ -111,7 +116,7 @@ private fun SharedExpenseListItem(
             modifier = Modifier.padding(16.dp, 8.dp)
         ) {
             Text(text = groupExpense.descriptionState)
-            Text(text = "Shared=$${groupExpense.sharedExpense.expenseState}")
+            Text(text = "Shared=$${groupExpense.sharedExpenseState}")
             Text(text = "Total=$${groupExpense.getTotal()}")
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(

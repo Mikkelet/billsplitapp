@@ -4,16 +4,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.models.ExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.IndividualExpense
 
 @Composable
 fun ParticipantView(
     modifier: Modifier,
-    expenseHolder: ExpenseHolder.IndividualExpenseHolder,
+    expenseHolder: IndividualExpense,
     groupExpense: GroupExpense,
     onChangeListener: (Float) -> Unit,
-    onRemoveClicked: (ExpenseHolder.IndividualExpenseHolder) -> Unit,
+    onRemoveClicked: (IndividualExpense) -> Unit,
     onScrollToPosition: suspend () -> Unit,
     sharedExpense: Float
 ) {
@@ -33,18 +33,18 @@ fun ParticipantView(
 @Composable
 fun PreviewParticipantView() {
     val person = Person("id1", "Person 1")
-    val individualExpenseHolder = ExpenseHolder.IndividualExpenseHolder(person, 1000f, true)
-    val sharedExpenseHolder = ExpenseHolder.SharedExpenseHolder(1000f)
+    val individualExpense = IndividualExpense(person, 1000f, true)
+    val sharedExpenseHolder = 1000F
     val groupExpense = GroupExpense(
         "000",
         "",
         person,
         sharedExpenseHolder,
-        listOf(individualExpenseHolder)
+        listOf(individualExpense)
     )
     ParticipantView(
         modifier = Modifier,
-        expenseHolder = individualExpenseHolder,
+        expenseHolder = individualExpense,
         groupExpense = groupExpense,
         onChangeListener = {},
         onRemoveClicked = {},

@@ -3,36 +3,33 @@ package com.mikkelthygesen.billsplit.models
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
-import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
 import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
 
 data class GroupExpense(
     val id: String,
+    val createdBy: Person,
     private var description: String,
     private var payee: Person,
-    val sharedExpense: SharedExpenseHolder,
-    val individualExpenses: List<IndividualExpenseHolder>,
+    private var sharedExpense: Float,
+    val individualExpenses: List<IndividualExpense>,
     override val timeStamp: Long = System.currentTimeMillis()
 ) : IShareable {
 
     var descriptionState by mutableStateOf(description)
     var payeeState by mutableStateOf(payee)
+    var sharedExpenseState by mutableStateOf(sharedExpense)
 
     private val sharedExpensePerParticipant
         get() = tryCatchDefault(0F) {
-            sharedExpense.expenseState / participants
+            sharedExpenseState / participants
         }
     private val participants: Int
         get() = individualExpenses.count { it.isParticipantState }
 
     fun getTotal(): Float {
-        val expenseHolders = individualExpenses.plus(sharedExpense)
-        return expenseHolders
-            .map { it.expenseState }
-            .reduceOrZero()
+        return individualExpenses.map { it.expenseState }.reduceOrZero() + sharedExpenseState
     }
 
     fun getIndividualExpensesWithShared() = individualExpenses.map { ie ->
@@ -47,7 +44,7 @@ data class GroupExpense(
     }
 
     fun isChanged(): Boolean {
-        return sharedExpense.isChanged()
+        return sharedExpense != sharedExpenseState
                 || individualExpenses.any { it.isChanged() }
                 || descriptionState != description
                 || payeeState != payee
@@ -56,17 +53,14 @@ data class GroupExpense(
     fun revertChanges() {
         descriptionState = description
         payeeState = payee
-        sharedExpense.revertChanges()
-        individualExpenses
-            .plus(sharedExpense)
-            .forEach { it.revertChanges() }
+        sharedExpenseState = sharedExpense
+        individualExpenses.forEach { it.revertChanges() }
     }
 
     fun saveChanges() {
         description = descriptionState
         payee = payeeState
-        individualExpenses
-            .plus(sharedExpense)
-            .forEach { it.saveChanges() }
+        sharedExpense = sharedExpenseState
+        individualExpenses.forEach { it.saveChanges() }
     }
 }

@@ -8,12 +8,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -24,17 +21,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.models.ExpenseHolder
+import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.tryParseToFloat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ExpenseTextField(
-    expenseHolder: ExpenseHolder,
+    expenseHolder: IndividualExpense,
     onChangeListener: (Float) -> Unit,
     onScrollPosition: suspend () -> Unit,
     onConfirm: () -> Unit,
@@ -50,8 +46,7 @@ fun ExpenseTextField(
     var inFocus by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
-    val isParticipant =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && expenseHolder.isParticipantState
+    val isParticipant = expenseHolder.isParticipantState
 
     TextField(
         modifier = Modifier
@@ -110,7 +105,7 @@ fun ExpenseTextField(
 }
 
 
-private fun textFieldError(expenseHolder: ExpenseHolder, textFieldValue: String) =
+private fun textFieldError(expenseHolder: IndividualExpense, textFieldValue: String) =
     if (textFieldValue.isBlank()) false
     else if (tryParseToFloat(expenseHolder, textFieldValue)) {
         textFieldValue.toFloat() < 0F
@@ -120,7 +115,7 @@ private fun textFieldError(expenseHolder: ExpenseHolder, textFieldValue: String)
 @Composable
 fun PreviewTextField() {
     Box(modifier = Modifier.padding(16.dp)) {
-        ExpenseTextField(expenseHolder = ExpenseHolder.IndividualExpenseHolder(
+        ExpenseTextField(expenseHolder = IndividualExpense(
             person = Person("ID0", "Mikkel"),
             expense = 1000F,
             isParticipant = true
@@ -136,7 +131,7 @@ fun PreviewTextField() {
 @Composable
 fun PreviewTextFieldError() {
     Box(modifier = Modifier.padding(16.dp)) {
-        ExpenseTextField(expenseHolder = ExpenseHolder.IndividualExpenseHolder(
+        ExpenseTextField(expenseHolder = IndividualExpense(
             person = Person("ID0", "Mikkel"),
             expense = -1000F,
             isParticipant = true

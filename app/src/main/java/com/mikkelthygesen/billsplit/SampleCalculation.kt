@@ -1,20 +1,18 @@
 package com.mikkelthygesen.billsplit
 
-import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
-import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
+import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
-import java.util.UUID
 import kotlin.math.absoluteValue
 
 val samplePeople = (1..3).map { Person("id$it", "Person $it") }
 
 val sampleIndividualExpenses = samplePeople.mapIndexed { i, p ->
-    IndividualExpenseHolder(p, i * 100F, true)
+    IndividualExpense(p, i * 100F, true)
 }
 
-val sampleSharedExpense = SharedExpenseHolder(sampleIndividualExpenses.size * 200F)
+val sampleSharedExpense = sampleIndividualExpenses.size * 200F
 
 val sampleSharedExpenses: List<GroupExpense>
     get() {
@@ -23,6 +21,7 @@ val sampleSharedExpenses: List<GroupExpense>
         return listOf(
             GroupExpense(
                 "0",
+                samplePeople.first(),
                 "",
                 samplePeople[0],
                 shared,
@@ -30,6 +29,7 @@ val sampleSharedExpenses: List<GroupExpense>
             ),
             GroupExpense(
                 "1",
+                samplePeople.first(),
                 "",
                 samplePeople[1],
                 shared,
@@ -37,6 +37,7 @@ val sampleSharedExpenses: List<GroupExpense>
             ),
             GroupExpense(
                 "2",
+                samplePeople.first(),
                 "",
                 samplePeople[2],
                 shared,
@@ -44,6 +45,7 @@ val sampleSharedExpenses: List<GroupExpense>
             ),
             GroupExpense(
                 "3",
+                samplePeople.first(),
                 "",
                 samplePeople[2],
                 shared,
@@ -51,6 +53,7 @@ val sampleSharedExpenses: List<GroupExpense>
             ),
             GroupExpense(
                 "4",
+                samplePeople.first(),
                 "",
                 samplePeople[2],
                 shared,
@@ -212,7 +215,7 @@ fun main() {
     }
     println("\n=== Effect Debt ===")
     sampleIndividualExpenses.forEach { ie ->
-        println("${ie.nameState} owes:")
+        println("${ie.person.nameState} owes:")
         val person = ie.person
         val debt = calculateEffectiveDebt(person, people, sampleSharedExpenses)
         debt.forEach {
