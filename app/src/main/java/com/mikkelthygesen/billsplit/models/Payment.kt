@@ -3,9 +3,8 @@ package com.mikkelthygesen.billsplit.models
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
 
 data class Payment(
-    val payee: Person,
+    override val createdBy: Person,
     val paidTo: Person,
-    val amount: Float
-) : IShareable {
-    override val timeStamp: Long = System.currentTimeMillis()
-}
+    val amount: Float,
+    override val timeStamp: Long = System.currentTimeMillis(),
+) : IShareable

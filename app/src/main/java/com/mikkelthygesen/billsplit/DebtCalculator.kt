@@ -13,7 +13,7 @@ class DebtCalculator(
             id = UUID.randomUUID().toString(),
             people.first(),
             description = "",
-            it.payee,
+            it.createdBy,
             0F,
             listOf(
                 IndividualExpense(it.paidTo, it.amount, true)

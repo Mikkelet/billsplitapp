@@ -26,7 +26,6 @@ import com.mikkelthygesen.billsplit.ui.widgets.GenericDialog
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
 class MainActivity : ComponentActivity() {
-
     private val viewModel: SharedBudgetViewModel by viewModels()
 
     init {

@@ -9,6 +9,7 @@ import com.mikkelthygesen.billsplit.models.Payment
 import java.util.*
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
+import com.mikkelthygesen.billsplit.samplePeople
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -30,13 +31,23 @@ class SharedBudgetViewModel : ViewModel() {
         object OnBackPressed : UiEvent()
     }
 
-    private val _payments = MutableStateFlow<List<Payment>>(emptyList())
+    private val _people = mutableListOf<Person>(*samplePeople.toTypedArray())
+    val people: List<Person> = _people
+
+    private val _payments = MutableStateFlow<List<Payment>>(listOf(Payment(people.first(),people[1],100F)))
     val paymentsStateFlow: StateFlow<List<Payment>> = _payments
 
     private val _mutableUiStateFlow = MutableStateFlow<UiState>(UiState.ShowBudget)
     val uiStateFlow: StateFlow<UiState> = _mutableUiStateFlow
 
-    private val _mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(emptyList())
+    private val _mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(listOf(GroupExpense(
+        id = UUID.randomUUID().toString(),
+        people[2],
+        "We went to a nice restaruant",
+        people.first(),
+        1200F,
+        people.map { IndividualExpense(it,200F) }
+    )))
     val sharedExpensesStateFlow: StateFlow<List<GroupExpense>> = _mutableSharedExpensesStateFlow
 
     private val _mutableChangesStateFlow = MutableStateFlow<List<GroupExpensesChanged>>(emptyList())
@@ -46,9 +57,6 @@ class SharedBudgetViewModel : ViewModel() {
 
     private val _mutableUiEventsStateFlow = MutableSharedFlow<UiEvent>()
     val uiEventsState: SharedFlow<UiEvent> = _mutableUiEventsStateFlow
-
-    private val _people = mutableListOf<Person>()
-    val people: List<Person> = _people
 
     fun shareableStateFlow(): SharedFlow<List<IShareable>> =
         combine(
@@ -67,7 +75,7 @@ class SharedBudgetViewModel : ViewModel() {
         val resetParticipants = getResetParticipants()
         val sharedExpense = GroupExpense(
             id = UUID.randomUUID().toString(),
-            createdBy = people.first(),
+            createdBy = getLoggedIn(),
             description = "",
             payee = people.first(),
             sharedExpense = 0F,

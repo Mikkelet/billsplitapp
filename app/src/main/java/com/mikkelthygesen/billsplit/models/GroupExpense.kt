@@ -9,7 +9,7 @@ import com.mikkelthygesen.billsplit.tryCatchDefault
 
 data class GroupExpense(
     val id: String,
-    val createdBy: Person,
+    override val createdBy: Person,
     private var description: String,
     private var payee: Person,
     private var sharedExpense: Float,

@@ -165,14 +165,14 @@ fun calculateDebtsAfterPayments(
         if (debtAmount > 0F) {
             // if debt exists, find payments paid by person to debtee
             val paymentsByPerson =
-                payments.filter { it.payee == person && it.paidTo == debtee }
+                payments.filter { it.createdBy == person && it.paidTo == debtee }
             val accPayments = paymentsByPerson.map { it.amount }.reduceOrZero()
             println("- ${person.nameState} owes $$debtAmount to ${debtee.nameState}, and have paid $accPayments ")
             Pair(debtee, debtAmount - accPayments)
         } else if (debtAmount < 0F) {
             // if debt is owed TO person (negative debt), find payments made by debtee to person
             val paymentsToPerson =
-                payments.filter { it.paidTo == person && it.payee == debtee }
+                payments.filter { it.paidTo == person && it.createdBy == debtee }
             val accPayments = paymentsToPerson.map { it.amount }.reduceOrZero()
             println("- ${debtee.nameState} owes $${debtAmount.absoluteValue} to ${person.nameState}, and have paid $accPayments ")
             Pair(debtee, debtAmount + accPayments)
@@ -225,7 +225,7 @@ fun main() {
     println("\n=== After Payments ===")
     println("")
     samplePayments.forEach {
-        println("${it.payee.nameState} paid $${it.amount} to ${it.paidTo.nameState}")
+        println("${it.createdBy.nameState} paid $${it.amount} to ${it.paidTo.nameState}")
     }
     println("")
     samplePeople.forEach { person ->
