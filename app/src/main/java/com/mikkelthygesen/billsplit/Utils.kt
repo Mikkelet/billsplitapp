@@ -15,9 +15,9 @@ fun <T> tryCatchDefault(defaultValue: T, callback: () -> T) = try {
 
 fun tryParseToFloat(expenseHolder: ExpenseHolder, value: String) = try {
     expenseHolder.expenseState = value.toFloat()
-    false
-} catch (e: Exception) {
     true
+} catch (e: Exception) {
+    false
 }
 
 

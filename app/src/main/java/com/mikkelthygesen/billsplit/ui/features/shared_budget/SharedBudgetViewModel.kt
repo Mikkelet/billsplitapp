@@ -1,21 +1,17 @@
 package com.mikkelthygesen.billsplit.ui.features.shared_budget
 
-import android.text.format.DateUtils
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.IndividualExpenseHolder
 import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
 import java.util.*
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.sql.Timestamp
-import java.time.Instant
 
 class SharedBudgetViewModel : ViewModel() {
 
@@ -36,13 +32,15 @@ class SharedBudgetViewModel : ViewModel() {
     }
 
     private val _payments = MutableStateFlow<List<Payment>>(emptyList())
-    val paymentsFlow: StateFlow<List<Payment>> = _payments
+    val paymentsStateFlow: StateFlow<List<Payment>> = _payments
 
     private val _mutableUiStateFlow = MutableStateFlow<UiState>(UiState.ShowBudget)
     val uiStateFlow: StateFlow<UiState> = _mutableUiStateFlow
 
     private val _mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(emptyList())
-    val sharedExpensesState: StateFlow<List<GroupExpense>> = _mutableSharedExpensesStateFlow
+    val sharedExpensesStateFlow: StateFlow<List<GroupExpense>> = _mutableSharedExpensesStateFlow
+
+    private val _mutableChangesStateFlow = MutableStateFlow<List<GroupExpensesChanged>>(emptyList())
 
     private val _mutableDialogStateFlow = MutableStateFlow<DialogState>(DialogState.DismissDialogs)
     val dialogState: StateFlow<DialogState> = _mutableDialogStateFlow
@@ -54,10 +52,13 @@ class SharedBudgetViewModel : ViewModel() {
     val people: List<Person> = _people
 
     fun shareableStateFlow(): SharedFlow<List<IShareable>> =
-        sharedExpensesState.combine(paymentsFlow as StateFlow<List<IShareable>>) { x, y ->
-            x + y
+        combine(
+            sharedExpensesStateFlow,
+            paymentsStateFlow,
+            _mutableChangesStateFlow
+        ) { groupExpenses, payments, changes ->
+            groupExpenses + payments + changes
         }.shareIn(viewModelScope, SharingStarted.WhileSubscribed())
-
 
     init {
         _people.addAll((1..3).map { Person("id-$it", "Person $it") })
@@ -68,7 +69,7 @@ class SharedBudgetViewModel : ViewModel() {
         val sharedExpense = GroupExpense(
             id = UUID.randomUUID().toString(),
             description = "",
-            payee = resetParticipants[0],
+            payee = people[0],
             sharedExpense = getNewSharedExpenses(),
             individualExpenses = resetParticipants,
         )
@@ -76,7 +77,7 @@ class SharedBudgetViewModel : ViewModel() {
     }
 
     fun addPayment(payment: Payment) {
-        _payments.value = paymentsFlow.value.plus(payment)
+        _payments.value = paymentsStateFlow.value.plus(payment)
     }
 
     fun addPerson(name: String) {
@@ -85,11 +86,30 @@ class SharedBudgetViewModel : ViewModel() {
         _people.add(person)
     }
 
-    fun saveGroupExpense(sharedExpense: GroupExpense) {
-        // if expense exists, consider it an edit, else add new expense
-        sharedExpense.saveChanges()
-        if (!sharedExpensesState.value.contains(sharedExpense)) {
-            _mutableSharedExpensesStateFlow.value = sharedExpensesState.value.plus(sharedExpense)
+    fun saveGroupExpense(groupExpense: GroupExpense) {
+        // save original in case of edit
+        val original = groupExpense.copy(
+            payee = groupExpense.payeeState.copy(),
+            sharedExpense = groupExpense.sharedExpense.copy(),
+            individualExpenses = groupExpense.individualExpenses.map { it.copy() }
+        )
+        groupExpense.saveChanges()
+
+        // if expense doesn't appear in list, add it, else assume it's an edit and log the change
+        if (!sharedExpensesStateFlow.value.contains(groupExpense)) {
+            _mutableSharedExpensesStateFlow.value = sharedExpensesStateFlow.value.plus(groupExpense)
+        } else if(groupExpense != original) {
+            val groupExpensesChanged = GroupExpensesChanged(
+                getLoggedIn(),
+                original,
+                groupExpense.copy(
+                    payee = groupExpense.payeeState.copy(),
+                    sharedExpense = groupExpense.sharedExpense.copy(),
+                    individualExpenses = groupExpense.individualExpenses.map { it.copy() }
+                )
+            )
+            _mutableChangesStateFlow.value =
+                _mutableChangesStateFlow.value.plus(groupExpensesChanged)
         }
         _mutableUiStateFlow.value = UiState.ShowBudget
     }

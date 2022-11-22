@@ -34,7 +34,7 @@ fun PreviewSharedExpenseView() {
     val groupExpense = GroupExpense(
         "000",
         "",
-        individualExpenseHolder,
+        person,
         sharedExpenseHolder,
         listOf(individualExpenseHolder)
     )

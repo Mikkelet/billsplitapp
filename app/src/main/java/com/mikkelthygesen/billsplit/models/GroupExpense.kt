@@ -12,11 +12,11 @@ import com.mikkelthygesen.billsplit.tryCatchDefault
 data class GroupExpense(
     val id: String,
     private var description: String,
-    private var payee: IndividualExpenseHolder,
+    private var payee: Person,
     val sharedExpense: SharedExpenseHolder,
     val individualExpenses: List<IndividualExpenseHolder>,
-) : IShareable {
     override val timeStamp: Long = System.currentTimeMillis()
+) : IShareable {
 
     var descriptionState by mutableStateOf(description)
     var payeeState by mutableStateOf(payee)

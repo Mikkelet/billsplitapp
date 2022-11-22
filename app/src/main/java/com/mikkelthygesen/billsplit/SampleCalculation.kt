@@ -5,6 +5,7 @@ import com.mikkelthygesen.billsplit.models.ExpenseHolder.SharedExpenseHolder
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
+import java.util.UUID
 import kotlin.math.absoluteValue
 
 val samplePeople = (1..3).map { Person("id$it", "Person $it") }
@@ -17,43 +18,43 @@ val sampleSharedExpense = SharedExpenseHolder(sampleIndividualExpenses.size * 20
 
 val sampleSharedExpenses: List<GroupExpense>
     get() {
-        val people = sampleIndividualExpenses
+        val individualExpenses = sampleIndividualExpenses
         val shared = sampleSharedExpense
         return listOf(
             GroupExpense(
                 "0",
                 "",
-                people[0],
+                samplePeople[0],
                 shared,
-                people
+                individualExpenses
             ),
             GroupExpense(
                 "1",
                 "",
-                people[1],
+                samplePeople[1],
                 shared,
-                people
+                individualExpenses
             ),
             GroupExpense(
                 "2",
                 "",
-                people[2],
+                samplePeople[2],
                 shared,
-                people
+                individualExpenses
             ),
             GroupExpense(
                 "3",
                 "",
-                people[2],
+                samplePeople[2],
                 shared,
-                people
+                individualExpenses
             ),
             GroupExpense(
                 "4",
                 "",
-                people[2],
+                samplePeople[2],
                 shared,
-                people
+                individualExpenses
             ),
         )
     }
@@ -76,11 +77,11 @@ fun calculateDebts(
     groupExpenses: List<GroupExpense>
 ): List<Pair<Person, List<Pair<Person, Float>>>> {
     return people.map { person ->
-        // get expenses payed for by payee
-        val payedForGroupExpenses = groupExpenses.filter { ge -> ge.payeeState.person == person }
-        // Payee cannot have debt to themselves
+        // get expenses payed for by person
+        val payedForGroupExpenses = groupExpenses.filter { ge -> ge.payeeState == person }
+        // person cannot have debt to themselves
         val payedForExpensesWithoutPayee =
-            payedForGroupExpenses.filter { it.payeeState.person == person }
+            payedForGroupExpenses.filter { it.payeeState == person }
         // Update individual expenses to include the shared expense
         val payedForIndividualExpenses =
             payedForExpensesWithoutPayee.flatMap { it.getIndividualExpensesWithShared() }

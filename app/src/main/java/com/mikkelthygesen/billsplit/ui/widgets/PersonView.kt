@@ -101,6 +101,7 @@ fun PersonView(
 
         Column(
             modifier = Modifier
+                .padding(start = 8.dp)
                 .weight(4f)
                 .fillMaxWidth()
         ) {
@@ -113,10 +114,12 @@ fun PersonView(
                     .paddingTop(12.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Top
             ) {
+                val nameText = if (groupExpense.payeeState == expenseHolder.person) "" +
+                        "${expenseHolder.nameState} is paying" else expenseHolder.nameState
                 ClickableText(
-                    text = AnnotatedString(expenseHolder.nameState),
+                    text = AnnotatedString(nameText),
                     onClick = {
                         if (flags.enableEditName) showDialog = true
                     },
@@ -137,7 +140,6 @@ fun PersonView(
                     }
             }
             Row(
-                modifier = Modifier.padding(0.dp, 8.dp, 0.dp, 8.dp),
                 verticalAlignment = CenterVertically
             ) {
                 Crossfade(
@@ -168,7 +170,7 @@ fun PersonView(
 @Composable
 private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHolder) {
     val isPayee =
-        expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payeeState == expenseHolder
+        expenseHolder is ExpenseHolder.IndividualExpenseHolder && groupExpense.payeeState == expenseHolder.person
     Box {
         if (expenseHolder is ExpenseHolder.IndividualExpenseHolder)
             Image(
@@ -178,7 +180,7 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: ExpenseHol
                     .clip(CircleShape)
                     .blur(30.dp)
                     .clickable {
-                        groupExpense.payeeState = expenseHolder
+                        groupExpense.payeeState = expenseHolder.person
                     },
                 painter = painterResource(id = R.drawable.ic_launcher_background),
                 contentDescription = "Person profile picture, click to mark as payee",
@@ -292,7 +294,7 @@ private fun PreviewPersonViewWithRemove() {
     val groupExpense = GroupExpense(
         "000",
         "",
-        individualExpenseHolder,
+        person,
         sharedExpenseHolder,
         listOf(individualExpenseHolder)
     )
@@ -302,7 +304,7 @@ private fun PreviewPersonViewWithRemove() {
         groupExpense = GroupExpense(
             "",
             "",
-            individualExpenseHolder,
+            person,
             sharedExpenseHolder,
             groupExpense.individualExpenses
         ),
@@ -326,7 +328,7 @@ private fun PreviewPersonViewWithoutToggle() {
     val groupExpense = GroupExpense(
         "000",
         "",
-        individualExpenseHolder,
+        person,
         sharedExpenseHolder,
         listOf(individualExpenseHolder)
     )
@@ -336,7 +338,7 @@ private fun PreviewPersonViewWithoutToggle() {
         groupExpense = GroupExpense(
             "",
             "",
-            individualExpenseHolder,
+            person,
             sharedExpenseHolder,
             groupExpense.individualExpenses
         ),

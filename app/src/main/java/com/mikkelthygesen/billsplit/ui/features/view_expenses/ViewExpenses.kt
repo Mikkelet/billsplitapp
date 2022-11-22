@@ -25,8 +25,8 @@ import kotlin.math.absoluteValue
 fun ViewExpenses(
     viewModel: SharedBudgetViewModel = viewModel()
 ) {
-    val paymentsFlow = viewModel.paymentsFlow.collectAsState()
-    val groupExpensesFlow = viewModel.sharedExpensesState.collectAsState()
+    val paymentsFlow = viewModel.paymentsStateFlow.collectAsState()
+    val groupExpensesFlow = viewModel.sharedExpensesStateFlow.collectAsState()
     val user = viewModel.getLoggedIn()
 
     Scaffold { padding ->
@@ -39,7 +39,7 @@ fun ViewExpenses(
                 .fillMaxSize()
         ) {
             val calculator = DebtCalculator(viewModel.people, groupExpenses, paymentsState)
-            val debtForPerson = calculator.calculateDebtsForPersonAfterPayments(user)
+            val debtForPerson = calculator.calculateEffectiveDebtOfPerson(user)
             calculator.logDebt(user)
             (debtForPerson)
                 .sortedBy { it.second }
@@ -54,7 +54,6 @@ fun ViewExpenses(
                             DebtToYou(debt = it)
                     }
                 }
-
         }
     }
 }

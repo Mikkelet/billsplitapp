@@ -173,7 +173,7 @@ fun PreviewExpenseView() {
     val groupExpense = GroupExpense(
         id = "000",
         "",
-        payee = participants[1],
+        payee = participants[1].person,
         sharedExpense = shared,
         individualExpenses = participants
     )

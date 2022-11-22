@@ -1,5 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -19,6 +21,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.ExpenseHolder
@@ -109,19 +112,38 @@ fun ExpenseTextField(
 
 private fun textFieldError(expenseHolder: ExpenseHolder, textFieldValue: String) =
     if (textFieldValue.isBlank()) false
-    else tryParseToFloat(expenseHolder, textFieldValue)
+    else if (tryParseToFloat(expenseHolder, textFieldValue)) {
+        textFieldValue.toFloat() < 0F
+    } else true
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewTextField() {
-    ExpenseTextField(expenseHolder =
-    ExpenseHolder.IndividualExpenseHolder(
-        person = Person("ID0", "Mikkel"),
-        expense = 1000F,
-        isParticipant = true
-    ),
-        onChangeListener = {},
-        onConfirm = {},
-        onScrollPosition = {}
-    )
+    Box(modifier = Modifier.padding(16.dp)) {
+        ExpenseTextField(expenseHolder = ExpenseHolder.IndividualExpenseHolder(
+            person = Person("ID0", "Mikkel"),
+            expense = 1000F,
+            isParticipant = true
+        ),
+            onChangeListener = {},
+            onConfirm = {},
+            onScrollPosition = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewTextFieldError() {
+    Box(modifier = Modifier.padding(16.dp)) {
+        ExpenseTextField(expenseHolder = ExpenseHolder.IndividualExpenseHolder(
+            person = Person("ID0", "Mikkel"),
+            expense = -1000F,
+            isParticipant = true
+        ),
+            onChangeListener = {},
+            onConfirm = {},
+            onScrollPosition = {}
+        )
+    }
 }
