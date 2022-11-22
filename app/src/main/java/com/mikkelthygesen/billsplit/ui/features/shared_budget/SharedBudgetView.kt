@@ -3,7 +3,6 @@ package com.mikkelthygesen.billsplit.ui.features.shared_budget
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,8 +16,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
@@ -58,10 +59,17 @@ fun SharedBudgetView(
                         .weight(6f)
                         .fillMaxWidth()
                 ) {
+                    val isLatestMessage = index == 0
                     when (shareable) {
-                        is GroupExpense -> SharedExpenseListItem(groupExpense = shareable)
+                        is GroupExpense -> SharedExpenseListItem(
+                            groupExpense = shareable,
+                            isLastMessage = isLatestMessage
+                        )
                         is Payment -> PaymentListView(payment = shareable)
-                        is GroupExpensesChanged -> ChangesListView(groupExpensesChanged = shareable)
+                        is GroupExpensesChanged -> ChangesListView(
+                            groupExpensesChanged = shareable,
+                            isLastMessage = isLatestMessage
+                        )
                     }
                 }
                 if (shareable.createdBy == viewModel.getLoggedIn())
@@ -104,11 +112,14 @@ private fun PaymentListView(payment: Payment) {
 }
 
 @Composable
-private fun ChangesListView(groupExpensesChanged: GroupExpensesChanged) {
+private fun ChangesListView(
+    groupExpensesChanged: GroupExpensesChanged,
+    isLastMessage: Boolean
+) {
     val original = groupExpensesChanged.groupExpenseOriginal
     val updated = groupExpensesChanged.groupExpenseEdited
     var expanded by remember {
-        mutableStateOf(false)
+        mutableStateOf(isLastMessage)
     }
     Column(
         modifier = Modifier
@@ -145,10 +156,11 @@ private fun ChangesListView(groupExpensesChanged: GroupExpensesChanged) {
 @Composable
 private fun SharedExpenseListItem(
     viewModel: SharedBudgetViewModel = viewModel(),
-    groupExpense: GroupExpense
+    groupExpense: GroupExpense,
+    isLastMessage: Boolean
 ) {
     var expanded by remember {
-        mutableStateOf(false)
+        mutableStateOf(isLastMessage)
     }
     Row(
         modifier = Modifier
@@ -167,8 +179,12 @@ private fun SharedExpenseListItem(
                 .padding(end = 16.dp)
         ) {
             if (groupExpense.descriptionState.isNotBlank())
-                Text(text = groupExpense.descriptionState)
+                Text(
+                    text = "\"${groupExpense.descriptionState}\"",
+                    style = TextStyle(fontSize = 18.sp, fontStyle = FontStyle.Italic)
+                )
             else Text(text = "${groupExpense.createdBy.nameState} added a new expense!")
+            Box(modifier = Modifier.height(8.dp))
             Text(text = "$${groupExpense.getTotal()} was paid by ${groupExpense.payeeState.nameState}")
             if (expanded) {
                 if (groupExpense.sharedExpenseState > 0F)
@@ -213,7 +229,7 @@ private fun SharedExpenseListItem(
 @Composable
 private fun PreviewSharedExpenseListItem() {
     val groupExpense = sampleSharedExpenses.first()
-    Box(modifier = Modifier.height(100.dp)) {
-        SharedExpenseListItem(groupExpense = groupExpense)
+    Box(modifier = Modifier.wrapContentHeight(),) {
+        SharedExpenseListItem(groupExpense = groupExpense, isLastMessage = true)
     }
 }
