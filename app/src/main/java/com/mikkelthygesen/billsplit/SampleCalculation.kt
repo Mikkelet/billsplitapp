@@ -7,6 +7,11 @@ import com.mikkelthygesen.billsplit.models.Person
 import kotlin.math.absoluteValue
 
 val samplePeople = (1..3).map { Person("id$it", "Person $it") }
+val samplePeopleShera = listOf(
+    Person("0", "She-ra", R.drawable.shera_pfp),
+    Person("1", "Catra", R.drawable.catra_pfp),
+    Person("2", "Glimmer", R.drawable.glimmer_pfp),
+)
 
 val sampleIndividualExpenses = samplePeople.mapIndexed { i, p ->
     IndividualExpense(p, i * 100F, true)

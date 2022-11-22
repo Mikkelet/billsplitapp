@@ -6,7 +6,8 @@ import androidx.compose.runtime.setValue
 
 data class Person(
     val pId: String,
-    private var name: String
+    private var name: String,
+    val pfpResId:Int = 0,
 ) {
     var nameState by mutableStateOf(name)
 

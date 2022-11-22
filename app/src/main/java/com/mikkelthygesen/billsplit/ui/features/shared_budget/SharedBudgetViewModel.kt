@@ -10,6 +10,7 @@ import java.util.*
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
 import com.mikkelthygesen.billsplit.samplePeople
+import com.mikkelthygesen.billsplit.samplePeopleShera
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -31,7 +32,7 @@ class SharedBudgetViewModel : ViewModel() {
         object OnBackPressed : UiEvent()
     }
 
-    private val _people = mutableListOf<Person>(*samplePeople.toTypedArray())
+    private val _people = mutableListOf<Person>(*samplePeopleShera.toTypedArray())
     val people: List<Person> = _people
 
     private val _payments = MutableStateFlow<List<Payment>>(listOf(Payment(people.first(),people[1],100F)))
@@ -67,19 +68,14 @@ class SharedBudgetViewModel : ViewModel() {
             groupExpenses + payments + changes
         }.shareIn(viewModelScope, SharingStarted.WhileSubscribed())
 
-    init {
-        _people.addAll((1..3).map { Person("id-$it", "Person $it") })
-    }
-
     fun addExpense() {
-        val resetParticipants = getResetParticipants()
         val sharedExpense = GroupExpense(
             id = UUID.randomUUID().toString(),
             createdBy = getLoggedIn(),
             description = "",
             payee = people.first(),
             sharedExpense = 0F,
-            individualExpenses = resetParticipants,
+            individualExpenses = getResetParticipants(),
         )
         _mutableUiStateFlow.value = UiState.ShowAddExpense(sharedExpense)
     }
@@ -119,7 +115,7 @@ class SharedBudgetViewModel : ViewModel() {
     }
 
     private fun getResetParticipants(): List<IndividualExpense> {
-        return people.map { IndividualExpense(it, 0F, true) }
+        return people.map { IndividualExpense(it, 0F, true) }.also { println("qqq $it") }
     }
 
     fun showBudget() {

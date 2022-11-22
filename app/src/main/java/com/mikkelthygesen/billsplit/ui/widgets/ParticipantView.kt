@@ -37,6 +37,7 @@ fun PreviewParticipantView() {
     val sharedExpenseHolder = 1000F
     val groupExpense = GroupExpense(
         "000",
+        person,
         "",
         person,
         sharedExpenseHolder,

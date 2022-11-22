@@ -85,7 +85,7 @@ fun PersonView(
             Alignment.CenterHorizontally
         ) {
             ProfilePicture(groupExpense = groupExpense, expenseHolder = expenseHolder)
-            if (flags.enableRemoval && expenseHolder is IndividualExpense)
+            if (flags.enableRemoval)
                 IconButton(
                     onClick = {
                         onRemoveClicked(expenseHolder)
@@ -175,13 +175,12 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: Individual
             Image(
                 modifier = Modifier
                     .width(64.dp)
-                    .height(64.dp)
+                    .aspectRatio(1F)
                     .clip(CircleShape)
-                    .blur(30.dp)
                     .clickable {
                         groupExpense.payeeState = expenseHolder.person
                     },
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = expenseHolder.person.pfpResId),
                 contentDescription = "Person profile picture, click to mark as payee",
                 contentScale = ContentScale.Crop
             )

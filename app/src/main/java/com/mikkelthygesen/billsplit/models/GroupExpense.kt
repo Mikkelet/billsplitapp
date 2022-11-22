@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
 import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
+import kotlin.random.Random
 
 data class GroupExpense(
     val id: String,
@@ -14,7 +15,7 @@ data class GroupExpense(
     private var payee: Person,
     private var sharedExpense: Float,
     val individualExpenses: List<IndividualExpense>,
-    override val timeStamp: Long = System.currentTimeMillis()
+    override val timeStamp: Long = System.currentTimeMillis().plus(Random(100L).nextLong())
 ) : IShareable {
 
     var descriptionState by mutableStateOf(description)

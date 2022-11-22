@@ -3,6 +3,7 @@ package com.mikkelthygesen.billsplit.models
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.mikkelthygesen.billsplit.R
 
 
 data class IndividualExpense(
@@ -28,13 +29,16 @@ data class IndividualExpense(
     }
 
     override fun toString(): String {
-        return "ExpenseHolder(name=${person.nameState}, expense=$expenseState, isParticipant=$isParticipantState)"
+        return "ExpenseHolder(name=$person, expense=$expenseState, isParticipant=$isParticipantState)"
     }
 
     fun isShared() = person.pId == getSharedExpenseHolder().person.pId
 
     companion object {
         private const val SHARED_ID = "-1"
-        fun getSharedExpenseHolder(expense: Float = 0F) = IndividualExpense(Person(SHARED_ID, "Shared"), expense)
+        fun getSharedExpenseHolder(expense: Float = 0F) = IndividualExpense(
+            Person(SHARED_ID, "Shared", R.drawable.ic_baseline_groups_24),
+            expense
+        )
     }
 }
