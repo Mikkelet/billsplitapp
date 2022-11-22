@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
@@ -210,16 +208,17 @@ private fun SharedExpenseListItem(
                     }
             }
         }
-        Button(
+        IconButton(
             modifier = Modifier
                 .wrapContentWidth()
                 .fillMaxHeight(),
             onClick = { viewModel.editSharedExpense(groupExpense) },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.secondary
-            )
         ) {
-            Text(text = "Open", style = TextStyle(color = MaterialTheme.colors.onSecondary))
+            Icon(
+                painter = painterResource(id = R.drawable.ic_baseline_edit_24),
+                contentDescription = "Edit expense",
+                tint = MaterialTheme.colors.secondary
+            )
         }
     }
 }
@@ -229,7 +228,7 @@ private fun SharedExpenseListItem(
 @Composable
 private fun PreviewSharedExpenseListItem() {
     val groupExpense = sampleSharedExpenses.first()
-    Box(modifier = Modifier.wrapContentHeight(),) {
+    Box(modifier = Modifier.wrapContentHeight()) {
         SharedExpenseListItem(groupExpense = groupExpense, isLastMessage = true)
     }
 }
