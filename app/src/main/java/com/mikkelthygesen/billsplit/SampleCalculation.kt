@@ -6,14 +6,13 @@ import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
 import kotlin.math.absoluteValue
 
-val samplePeople = (1..3).map { Person("id$it", "Person $it") }
 val samplePeopleShera = listOf(
-    Person("0", "She-ra", R.drawable.shera_pfp),
-    Person("1", "Catra", R.drawable.catra_pfp),
-    Person("2", "Glimmer", R.drawable.glimmer_pfp),
+    Person("0", "Aang", R.drawable.aang),
+    Person("1", "Toph", R.drawable.toph),
+    Person("2", "Katara", R.drawable.katara),
 )
 
-val sampleIndividualExpenses = samplePeople.mapIndexed { i, p ->
+val sampleIndividualExpenses = samplePeopleShera.mapIndexed { i, p ->
     IndividualExpense(p, i * 100F, true)
 }
 
@@ -26,57 +25,62 @@ val sampleSharedExpenses: List<GroupExpense>
         return listOf(
             GroupExpense(
                 "0",
-                samplePeople.first(),
-                "",
-                samplePeople[0],
+                samplePeopleShera[2],
+                "Taking down the fire nation",
+                samplePeopleShera[0],
                 shared,
-                individualExpenses
+                sampleIndividualExpenses.map { it.copy() },
+                1
             ),
             GroupExpense(
                 "1",
-                samplePeople.first(),
-                "",
-                samplePeople[1],
+                samplePeopleShera[2],
+                "Beach day",
+                samplePeopleShera[1],
                 shared,
-                individualExpenses
+                sampleIndividualExpenses.map { it.copy() },
+                2
             ),
             GroupExpense(
                 "2",
-                samplePeople.first(),
-                "",
-                samplePeople[2],
+                samplePeopleShera[1],
+                "Appa haircut",
+                samplePeopleShera[2],
                 shared,
-                individualExpenses
+                sampleIndividualExpenses.map { it.copy() },
+                3
             ),
             GroupExpense(
                 "3",
-                samplePeople.first(),
+                samplePeopleShera.first(),
                 "",
-                samplePeople[2],
+                samplePeopleShera[2],
                 shared,
-                individualExpenses
+                sampleIndividualExpenses.map { it.copy() },
+                4
             ),
             GroupExpense(
                 "4",
-                samplePeople.first(),
-                "",
-                samplePeople[2],
+                samplePeopleShera.first(),
+                "Foods",
+                samplePeopleShera[2],
                 shared,
-                individualExpenses
+                sampleIndividualExpenses.map { it.copy() },
+                5
             ),
         )
     }
 
 val samplePayments: List<Payment>
     get() {
-        val person1 = samplePeople[0]
-        val person2 = samplePeople[1]
-        val person3 = samplePeople[2]
+        val person1 = samplePeopleShera[0]
+        val person2 = samplePeopleShera[1]
+        val person3 = samplePeopleShera[2]
 
         return listOf(
-            Payment(person2, person3, 500F),
-            Payment(person1, person3, 200F),
-            Payment(person2, person1, 100F),
+            Payment(person2, person3, 500F, 6),
+            Payment(person1, person3, 200F, 7),
+            Payment(person2, person1, 100F, 8),
         )
     }
 
@@ -187,7 +191,7 @@ fun calculateDebtsAfterPayments(
 
 fun calculateTotalDebt() {
     val total = sampleSharedExpenses
-        .map { it.getTotal() }
+        .map { it.total }
         .reduceOrZero()
     println("Total=$total")
 }
@@ -233,11 +237,11 @@ fun main() {
         println("${it.createdBy.nameState} paid $${it.amount} to ${it.paidTo.nameState}")
     }
     println("")
-    samplePeople.forEach { person ->
+    samplePeopleShera.forEach { person ->
         println("Debts for ${person.nameState}")
         calculateDebtsAfterPayments(
             person,
-            people = samplePeople,
+            people = samplePeopleShera,
             groupExpenses = sampleSharedExpenses,
             payments = samplePayments,
         ).forEach {

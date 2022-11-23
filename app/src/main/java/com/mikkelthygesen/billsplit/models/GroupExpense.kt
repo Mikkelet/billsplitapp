@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
 import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
-import kotlin.random.Random
 
 data class GroupExpense(
     val id: String,
@@ -15,33 +14,28 @@ data class GroupExpense(
     private var payee: Person,
     private var sharedExpense: Float,
     val individualExpenses: List<IndividualExpense>,
-    override val timeStamp: Long = System.currentTimeMillis().plus(Random(100L).nextLong())
+    override val timeStamp: Long = System.currentTimeMillis()
 ) : IShareable {
 
     var descriptionState by mutableStateOf(description)
     var payeeState by mutableStateOf(payee)
     var sharedExpenseState by mutableStateOf(sharedExpense)
 
+    val total:Float
+        get() = individualExpenses.map { it.expenseState }.reduceOrZero() + sharedExpenseState
     private val sharedExpensePerParticipant
-        get() = tryCatchDefault(0F) {
-            sharedExpenseState / participants
-        }
+        get() = tryCatchDefault(0F) { sharedExpenseState / participants }
     private val participants: Int
         get() = individualExpenses.count { it.isParticipantState }
 
-    fun getTotal(): Float {
-        return individualExpenses.map { it.expenseState }.reduceOrZero() + sharedExpenseState
-    }
+    fun getParticipants() = individualExpenses.filter { it.isParticipantState }.map { it.person }
 
     fun getIndividualExpensesWithShared() = individualExpenses.map { ie ->
         ie.copy().apply {
             if (isParticipantState)
                 expenseState += sharedExpensePerParticipant
+            saveChanges()
         }
-    }
-
-    override fun toString(): String {
-        return "GroupExpense(id=$id, description=$descriptionState, payee=$payeeState, sharedExpense=$sharedExpense, expense=$individualExpenses)"
     }
 
     fun isChanged(): Boolean {

@@ -21,11 +21,11 @@ import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetView
 import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
 import com.mikkelthygesen.billsplit.ui.features.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
-import com.mikkelthygesen.billsplit.ui.widgets.FabView
 import com.mikkelthygesen.billsplit.ui.widgets.GenericDialog
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
 class MainActivity : ComponentActivity() {
+
     private val viewModel: SharedBudgetViewModel by viewModels()
 
     init {
@@ -62,17 +62,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     backgroundColor = MaterialTheme.colors.background,
                     topBar = { MainTopBar() },
-                    floatingActionButtonPosition = FabPosition.End,
-                    floatingActionButton = {
-                        Crossfade(targetState = uiState) {
-                            when (it) {
-                                is SharedBudgetViewModel.UiState.ShowBudget ->
-                                    FabView()
-                                else -> {}
-                            }
-                        }
-                    },
-                    bottomBar = { MainBottomBar(uiState) }
+                    bottomBar = { MainBottomBar(uiState = uiState) }
                 ) {
                     Column {
                         when (val dialogState = dialogStateFlow.value) {
@@ -112,24 +102,27 @@ class MainActivity : ComponentActivity() {
 private fun MainBottomBar(
     uiState: SharedBudgetViewModel.UiState
 ) {
-    if (uiState is SharedBudgetViewModel.UiState.ShowAddExpense) {
-        val groupExpense = uiState.sharedExpense
-        Row(
-            Modifier
-                .background(MaterialTheme.colors.background)
-                .padding(8.dp),
-            Arrangement.Center
-        ) {
-            Text(
-                text = "Total",
-                style = TextStyle(color = MaterialTheme.colors.onBackground)
-            )
-            Box(Modifier.weight(1f))
-            Text(
-                text = "$${groupExpense.getTotal()}",
-                style = TextStyle(color = MaterialTheme.colors.onBackground)
-            )
+    when (uiState) {
+        is SharedBudgetViewModel.UiState.ShowAddExpense -> {
+            val groupExpense = uiState.sharedExpense
+            Row(
+                Modifier
+                    .background(MaterialTheme.colors.background)
+                    .padding(8.dp),
+                Arrangement.Center
+            ) {
+                Text(
+                    text = "Total",
+                    style = TextStyle(color = MaterialTheme.colors.onBackground)
+                )
+                Box(Modifier.weight(1f))
+                Text(
+                    text = "$${groupExpense.total}",
+                    style = TextStyle(color = MaterialTheme.colors.onBackground)
+                )
+            }
         }
+        else -> {}
     }
 }
 
@@ -162,7 +155,7 @@ private fun MainTopBar(
                         }
                     }
                     is SharedBudgetViewModel.UiState.ShowAddExpense ->
-                        if (state.sharedExpense.getTotal() > 0)
+                        if (state.sharedExpense.total > 0)
                             IconButton(iconResId = R.drawable.ic_check) {
                                 viewModel.saveGroupExpense(state.sharedExpense)
                             }

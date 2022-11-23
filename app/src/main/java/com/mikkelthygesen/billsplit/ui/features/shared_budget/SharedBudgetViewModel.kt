@@ -9,8 +9,9 @@ import com.mikkelthygesen.billsplit.models.Payment
 import java.util.*
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.models.interfaces.IShareable
-import com.mikkelthygesen.billsplit.samplePeople
+import com.mikkelthygesen.billsplit.samplePayments
 import com.mikkelthygesen.billsplit.samplePeopleShera
+import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -35,20 +36,13 @@ class SharedBudgetViewModel : ViewModel() {
     private val _people = mutableListOf<Person>(*samplePeopleShera.toTypedArray())
     val people: List<Person> = _people
 
-    private val _payments = MutableStateFlow<List<Payment>>(listOf(Payment(people.first(),people[1],100F)))
+    private val _payments = MutableStateFlow<List<Payment>>(samplePayments)
     val paymentsStateFlow: StateFlow<List<Payment>> = _payments
 
     private val _mutableUiStateFlow = MutableStateFlow<UiState>(UiState.ShowBudget)
     val uiStateFlow: StateFlow<UiState> = _mutableUiStateFlow
 
-    private val _mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(listOf(GroupExpense(
-        id = UUID.randomUUID().toString(),
-        people[2],
-        "We went to a nice restaruant",
-        people.first(),
-        1200F,
-        people.map { IndividualExpense(it,200F) }
-    )))
+    private val _mutableSharedExpensesStateFlow = MutableStateFlow<List<GroupExpense>>(sampleSharedExpenses)
     val sharedExpensesStateFlow: StateFlow<List<GroupExpense>> = _mutableSharedExpensesStateFlow
 
     private val _mutableChangesStateFlow = MutableStateFlow<List<GroupExpensesChanged>>(emptyList())
@@ -100,8 +94,7 @@ class SharedBudgetViewModel : ViewModel() {
         if (!sharedExpensesStateFlow.value.contains(groupExpense)) {
             _mutableSharedExpensesStateFlow.value = sharedExpensesStateFlow.value.plus(groupExpense)
         } else if (originalCopy != groupExpense) {
-            val updatedCopy =
-                groupExpense.copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
+            val updatedCopy = groupExpense.copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
             val groupExpensesChanged = GroupExpensesChanged(getLoggedIn(), originalCopy, updatedCopy)
             _mutableChangesStateFlow.value =
                 _mutableChangesStateFlow.value.plus(groupExpensesChanged)
@@ -115,7 +108,7 @@ class SharedBudgetViewModel : ViewModel() {
     }
 
     private fun getResetParticipants(): List<IndividualExpense> {
-        return people.map { IndividualExpense(it, 0F, true) }.also { println("qqq $it") }
+        return people.map { IndividualExpense(it, 0F, true) }
     }
 
     fun showBudget() {
