@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.fmt2dec
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
@@ -73,7 +74,7 @@ fun SharedBudgetView(
                 val latestIndex =
                     tryCatchDefault(true) {
                         shareablesState[index - 1].createdBy != shareable.createdBy
-                                || shareablesState  [index -1] is Payment
+                                || shareablesState[index - 1] is Payment
                     }
                 if (shareable.createdBy != viewModel.getLoggedIn() && shareable !is Payment) {
                     if (latestIndex)
@@ -81,6 +82,7 @@ fun SharedBudgetView(
                             person = shareable.createdBy,
                             modifier = Modifier
                                 .weight(1f)
+                                .align(Alignment.Bottom)
                                 .padding(end = 8.dp)
                         ) else Box(modifier = Modifier.weight(1f))
                 }
@@ -118,6 +120,7 @@ fun SharedBudgetView(
                             person = shareable.createdBy,
                             modifier = Modifier
                                 .weight(1f)
+                                .align(Alignment.Bottom)
                                 .padding(start = 8.dp)
                         )
                     else Box(modifier = Modifier.weight(1f))
@@ -193,7 +196,7 @@ private fun ChangesListView(
                 }
                 Column(Modifier.padding(horizontal = 12.dp)) {
                     if (wasTotalChanged)
-                        Text(text = "$${groupExpensesChanged.groupExpenseOriginal.total} ▶ $${groupExpensesChanged.groupExpenseEdited.total}")
+                        Text(text = "$${groupExpensesChanged.groupExpenseOriginal.total.fmt2dec()} ▶ $${groupExpensesChanged.groupExpenseEdited.total.fmt2dec()}")
                     if (wasPayerChanged)
                         Text(text = "${original.payeeState.nameState} ▶ ${updated.payeeState.nameState}")
                     if (wasDescriptionChanged)
@@ -210,7 +213,7 @@ private fun ChangesListView(
                     original.individualExpenses.mapIndexed { index, originalExpense ->
                         val updatedExpense = updated.individualExpenses[index]
                         if (originalExpense.expenseState != updatedExpense.expenseState)
-                            Text(text = "$${originalExpense.expenseState} ▶ $${updatedExpense.expenseState}")
+                            Text(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
                     }
                 }
             }
@@ -251,11 +254,11 @@ private fun SharedExpenseListItem(
         Box(modifier = Modifier.height(8.dp))
         if (!expanded)
             Text(
-                text = "$${groupExpense.total}",
+                text = "$${groupExpense.total.fmt2dec()}",
                 style = TextStyle(fontStyle = FontStyle.Italic, fontSize = 20.sp)
             )
         else {
-            Text(text = "$${groupExpense.total} was paid by ${groupExpense.payeeState.nameState}")
+            Text(text = "$${groupExpense.total.fmt2dec()} was paid by ${groupExpense.payeeState.nameState}")
             Box(modifier = Modifier.height(8.dp))
             Row {
                 Column {
@@ -270,7 +273,7 @@ private fun SharedExpenseListItem(
                 Column(modifier = Modifier.padding(horizontal = 8.dp)) {
                     if (groupExpense.sharedExpenseState > 0f)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "$${groupExpense.sharedExpenseState} / ")
+                            Text(text = "$${groupExpense.sharedExpenseState.fmt2dec()} / ")
                             val participants =
                                 groupExpense.individualExpenses
                                     .filter { it.isParticipantState }
@@ -279,7 +282,7 @@ private fun SharedExpenseListItem(
                         }
                     groupExpense.individualExpenses.map {
                         if (it.expenseState > 0F) {
-                            Text(text = "$${it.expenseState}")
+                            Text(text = "$${it.expenseState.fmt2dec()}")
                         }
                     }
                 }
@@ -356,6 +359,7 @@ private fun ExpandableView(
         if (expanded)
             IconButton(
                 modifier = Modifier
+                    .align(Alignment.CenterVertically)
                     .wrapContentWidth()
                     .fillMaxHeight(),
                 onClick = onIconClick,
