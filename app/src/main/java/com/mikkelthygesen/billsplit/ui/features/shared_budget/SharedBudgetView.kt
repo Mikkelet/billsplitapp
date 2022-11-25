@@ -180,8 +180,7 @@ private fun ChangesListView(
                 val wasPayerChanged = original.payeeState != updated.payeeState
                 val wasDescriptionChanged =
                     original.descriptionState != updated.descriptionState
-                val wasParticipantsChanged =
-                    original.getParticipants().size != updated.getParticipants().size
+                val wasParticipantsChanged = original.getParticipants() != updated.getParticipants()
                 Column(Modifier.height(intrinsicSize = IntrinsicSize.Max), Arrangement.Top) {
                     if (wasTotalChanged) Text(text = "- Total")
                     if (wasPayerChanged) Text(text = "- Payer")
