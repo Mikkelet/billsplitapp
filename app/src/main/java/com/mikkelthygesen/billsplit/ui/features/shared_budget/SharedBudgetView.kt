@@ -71,7 +71,10 @@ fun SharedBudgetView(
             ) {
                 val shareable = shareablesState[index]
                 val latestIndex =
-                    tryCatchDefault(true) { shareablesState[index - 1].createdBy != shareable.createdBy }
+                    tryCatchDefault(true) {
+                        shareablesState[index - 1].createdBy != shareable.createdBy
+                                || shareablesState  [index -1] is Payment
+                    }
                 if (shareable.createdBy != viewModel.getLoggedIn() && shareable !is Payment) {
                     if (latestIndex)
                         ProfilePicture(
@@ -227,8 +230,9 @@ private fun SharedExpenseListItem(
     }
     ExpandableView(
         modifier = Modifier.let {
-            if(isFocused)
-                it.clip(RoundedCornerShape(10.dp))
+            if (isFocused)
+                it
+                    .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colors.secondary)
                     .padding(2.dp)
                     .clickable { expanded = !expanded }
