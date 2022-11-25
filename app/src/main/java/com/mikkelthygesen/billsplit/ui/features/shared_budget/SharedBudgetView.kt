@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -151,7 +150,7 @@ private fun PaymentListView(payment: Payment) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "${payment.createdBy.nameState} paid $${payment.amount} to ${payment.paidTo.nameState}",
+            text = "${payment.createdBy.nameState} paid $${payment.amount.fmt2dec()} to ${payment.paidTo.nameState}",
             style = TextStyle(color = Color.Gray)
         )
     }
@@ -299,12 +298,6 @@ private fun Menu(
         Modifier
             .padding(bottom = 24.dp, top = 8.dp)
             .wrapContentWidth()
-            .animateContentSize(
-                animationSpec = tween<IntSize>(
-                    durationMillis = 2000,
-                    easing = LinearEasing
-                )
-            )
             .clip(CircleShape)
             .background(MaterialTheme.colors.primary)
             .clickable { viewModel.addExpense() }
