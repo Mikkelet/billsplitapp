@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.features.view_expenses
+package com.mikkelthygesen.billsplit.ui.features.group.view_expenses
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
@@ -18,12 +18,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
+import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
 import kotlin.math.absoluteValue
 
 @Composable
 fun ViewExpenses(
-    viewModel: SharedBudgetViewModel = viewModel()
+    viewModel: GroupViewModel = viewModel()
 ) {
     val paymentsFlow = viewModel.paymentsStateFlow.collectAsState()
     val groupExpensesFlow = viewModel.sharedExpensesStateFlow.collectAsState()
@@ -68,7 +68,7 @@ private fun DebtToYou(debt: Pair<Person, Float>) {
 
 @Composable
 private fun YourDebt(
-    viewModel: SharedBudgetViewModel = viewModel(),
+    viewModel: GroupViewModel = viewModel(),
     debt: Pair<Person, Float>
 ) {
     Row(

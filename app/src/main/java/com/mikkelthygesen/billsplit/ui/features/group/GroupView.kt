@@ -1,15 +1,18 @@
-package com.mikkelthygesen.billsplit.ui.features.shared_budget
+package com.mikkelthygesen.billsplit.ui.features.group
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +38,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun SharedBudgetView(
-    viewModel: SharedBudgetViewModel = viewModel()
+fun GroupView(
+    viewModel: GroupViewModel = viewModel()
 ) {
     val flow = viewModel.shareableStateFlow().collectAsState(initial = emptyList())
     val shareablesState = flow.value.sortedBy { it.timeStamp }.reversed()
@@ -221,7 +224,7 @@ private fun ChangesListView(
 
 @Composable
 private fun SharedExpenseListItem(
-    viewModel: SharedBudgetViewModel = viewModel(),
+    viewModel: GroupViewModel = viewModel(),
     groupExpense: GroupExpense,
     isFocused: Boolean,
     isLastMessage: Boolean
@@ -291,7 +294,7 @@ private fun SharedExpenseListItem(
 
 @Composable
 private fun Menu(
-    viewModel: SharedBudgetViewModel = viewModel()
+    viewModel: GroupViewModel = viewModel()
 ) {
     Row(
         Modifier
@@ -381,7 +384,7 @@ private fun PreviewSharedExpenseListItem() {
             .padding(20.dp)
     ) {
         SharedExpenseListItem(
-            viewModel = SharedBudgetViewModel(),
+            viewModel = GroupViewModel(),
             groupExpense = groupExpense,
             isLastMessage = true,
             isFocused = true

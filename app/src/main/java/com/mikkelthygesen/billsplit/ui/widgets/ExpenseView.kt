@@ -158,7 +158,7 @@ fun PersonView(
                 }
                 Box(Modifier.weight(1f)) {}
                 Text(
-                    text = "$${String.format("%,.2f", totalExpense)}",
+                    text = "$${totalExpense.fmt2dec()}",
                     style = TextStyle(fontSize = 20.sp)
                 )
             }
@@ -179,7 +179,7 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: Individual
                     .clickable {
                         groupExpense.payeeState = expenseHolder.person
                     },
-                painter = painterResource(id = expenseHolder.person.pfpResId),
+                painter = painterResource(id = if (expenseHolder.person.pfpResId != 0) expenseHolder.person.pfpResId else R.drawable.ic_launcher_foreground),
                 contentDescription = "Person profile picture, click to mark as payee",
                 contentScale = ContentScale.Crop
             )
@@ -319,7 +319,7 @@ private fun PreviewPersonViewWithoutToggle() {
     val flags = PersonViewFlags(
         enableEditName = true, enableParticipationToggle = false, enableRemoval = false
     )
-    val person = Person("0", "Mikkel")
+    val person = Person("0", "Mikkel", 0)
     val individualExpense = IndividualExpense(person, 1000f, true)
     val sharedExpenseHolder = 1000f
     val groupExpense = GroupExpense(

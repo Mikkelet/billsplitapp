@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.features.shared_budget
+package com.mikkelthygesen.billsplit.ui.features.group
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +15,7 @@ import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class SharedBudgetViewModel : ViewModel() {
+class GroupViewModel : ViewModel() {
 
     sealed class UiState {
         object ShowBudget : UiState()

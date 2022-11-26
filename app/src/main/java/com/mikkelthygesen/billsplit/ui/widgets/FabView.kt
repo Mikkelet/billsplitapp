@@ -10,12 +10,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.ui.features.shared_budget.SharedBudgetViewModel
+import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun FabView(
-    viewModel: SharedBudgetViewModel = viewModel(),
+    viewModel: GroupViewModel = viewModel(),
     @DrawableRes iconResId: Int = R.drawable.ic_add_plus
 ) {
     FloatingActionButton(
