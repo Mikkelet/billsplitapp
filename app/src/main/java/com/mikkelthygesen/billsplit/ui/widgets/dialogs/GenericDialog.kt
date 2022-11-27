@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.widgets
+package com.mikkelthygesen.billsplit.ui.widgets.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

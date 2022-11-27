@@ -28,34 +28,25 @@ fun ViewExpenses(
     val paymentsFlow = viewModel.paymentsStateFlow.collectAsState()
     val groupExpensesFlow = viewModel.sharedExpensesStateFlow.collectAsState()
     val user = viewModel.getLoggedIn()
+    val paymentsState = paymentsFlow.value
+    val groupExpenses = groupExpensesFlow.value
 
-    Scaffold { padding ->
-        val paymentsState = paymentsFlow.value
-        val groupExpenses = groupExpensesFlow.value
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(start = 12.dp)
-                .fillMaxSize()
-        ) {
-            val calculator = DebtCalculator(viewModel.people, groupExpenses, paymentsState)
-            val debtForPerson = calculator.calculateEffectiveDebtOfPerson(user)
-            calculator.logDebt(user)
-            (debtForPerson)
-                .sortedBy { it.second }
-                .reversed().map {
-                    Box(
-                        modifier = Modifier.height(64.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (it.second > 0)
-                            YourDebt(debt = it)
-                        else if (it.second < 0)
-                            DebtToYou(debt = it)
-                    }
-                }
+    val calculator = DebtCalculator(viewModel.people, groupExpenses, paymentsState)
+    val debtForPerson = calculator.calculateEffectiveDebtOfPerson(user)
+    calculator.logDebt(user)
+    (debtForPerson)
+        .sortedBy { it.second }
+        .reversed().map {
+            Box(
+                modifier = Modifier.height(64.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                if (it.second > 0)
+                    YourDebt(debt = it)
+                else if (it.second < 0)
+                    DebtToYou(debt = it)
+            }
         }
-    }
 }
 
 @Composable

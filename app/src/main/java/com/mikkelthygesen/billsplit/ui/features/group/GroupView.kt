@@ -9,10 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,19 +23,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.*
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.fmt2dec
+import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.sampleSharedExpenses
-import com.mikkelthygesen.billsplit.tryCatchDefault
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
+
 @Composable
-fun GroupView(
+fun GroupEventsView(
+    modifier: Modifier,
     viewModel: GroupViewModel = viewModel()
 ) {
     val flow = viewModel.shareableStateFlow().collectAsState(initial = emptyList())
@@ -53,7 +52,7 @@ fun GroupView(
         focusListItemIndex = -1
     }
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 12.dp)
             .fillMaxHeight()
             .fillMaxWidth(),
@@ -365,6 +364,35 @@ private fun ExpandableView(
                     tint = MaterialTheme.colors.secondary
                 )
             }
+    }
+}
+
+
+@Composable
+private fun MainBottomBar(
+    uiState: BaseViewModel.UiState
+) {
+    when (uiState) {
+        is GroupViewModel.ShowExpense -> {
+            val groupExpense = uiState.groupExpense
+            Row(
+                Modifier
+                    .background(MaterialTheme.colors.background)
+                    .padding(8.dp),
+                Arrangement.Center
+            ) {
+                Text(
+                    text = "Total",
+                    style = TextStyle(color = MaterialTheme.colors.onBackground)
+                )
+                Box(Modifier.weight(1f))
+                Text(
+                    text = "$${groupExpense.total}",
+                    style = TextStyle(color = MaterialTheme.colors.onBackground)
+                )
+            }
+        }
+        else -> {}
     }
 }
 
