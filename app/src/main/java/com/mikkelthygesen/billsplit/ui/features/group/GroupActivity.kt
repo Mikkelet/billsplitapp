@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.features.group.add_expense.ExpenseView
+import com.mikkelthygesen.billsplit.ui.features.group.group.GroupEventsView
 import com.mikkelthygesen.billsplit.ui.features.group.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton

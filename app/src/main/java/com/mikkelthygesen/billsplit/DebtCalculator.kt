@@ -6,7 +6,7 @@ import java.util.*
 class DebtCalculator(
     private val people: List<Person>,
     expenses: List<GroupExpense>,
-    private val payments: List<Payment>
+    payments: List<Payment>
 ) {
     private val groupExpenses = expenses.plus(payments.map {
         GroupExpense(
@@ -21,17 +21,14 @@ class DebtCalculator(
         )
     })
 
-    fun calculateDebtsByPayee(): List<Pair<Person, List<Pair<Person, Float>>>> =
+    private fun calculateDebtsByPayee(): List<Pair<Person, List<Pair<Person, Float>>>> =
         calculateDebts(people, groupExpenses)
 
-    fun calculatesDebtByIndebted(): List<Pair<Person, List<Pair<Person, Float>>>> =
+    private fun calculatesDebtByIndebted(): List<Pair<Person, List<Pair<Person, Float>>>> =
         calculateDebtTo(people, groupExpenses)
 
     fun calculateEffectiveDebtOfPerson(person: Person): List<Pair<Person, Float>> =
         calculateEffectiveDebt(person, people, groupExpenses)
-
-    fun calculateDebtsForPersonAfterPayments(person: Person): List<Pair<Person, Float>> =
-        calculateDebtsAfterPayments(person, people, groupExpenses, payments)
 
     fun logDebt(person: Person) {
         println("==== DEBT ====")

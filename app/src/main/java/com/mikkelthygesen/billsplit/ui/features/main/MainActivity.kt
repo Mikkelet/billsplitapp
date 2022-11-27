@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit
+package com.mikkelthygesen.billsplit.ui.features.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,17 +8,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
+import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.ui.features.group.GroupActivity
+import com.mikkelthygesen.billsplit.ui.features.main.add_group.AddGroupView
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
     init {
         onBackPressedDispatcher.addCallback(this) {
             when (viewModel.uiStateFlow.value) {
-                !is MainViewModel.Main -> viewModel.onBackButtonPressed()
+                !is MainViewModel.Main -> viewModel.showMain()
                 else -> finish()
             }
         }
@@ -42,7 +43,6 @@ class MainActivity : ComponentActivity() {
             val dialogStateFlow = viewModel.dialogState.collectAsState()
 
             BillSplitTheme {
-                val uiState = uiStateFlow.value
                 LaunchedEffect(Unit) {
                     viewModel.uiEventsState.collect { event ->
                         when (event) {
@@ -55,25 +55,56 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
-                Scaffold(
-                    backgroundColor = MaterialTheme.colors.background,
-                    topBar = { MainTopBar() },
-                ) {
-                    when (dialogStateFlow.value) {
-                        is BaseViewModel.DialogState.DismissDialogs -> Unit
-                    }
-
-                    Crossfade(
-                        modifier = Modifier.padding(it),
-                        targetState = uiState
-                    ) { uiState ->
-                        when (uiState) {
-                            is MainViewModel.Main -> MainView()
-                        }
-                    }
-                }
+                MainView(
+                    uiState = uiStateFlow.value,
+                    dialogState = dialogStateFlow.value
+                )
             }
+        }
+    }
+}
+
+@Composable
+fun MainView(
+    dialogState: BaseViewModel.DialogState,
+    uiState: BaseViewModel.UiState
+) {
+    Scaffold(
+        backgroundColor = MaterialTheme.colors.background,
+        topBar = { MainTopBar() },
+        bottomBar = { BottomNavBar() }
+    ) {
+        when (dialogState) {
+            is BaseViewModel.DialogState.DismissDialogs -> Unit
+        }
+
+        Crossfade(
+            modifier = Modifier.padding(it),
+            targetState = uiState
+        ) { uiState ->
+            when (uiState) {
+                is MainViewModel.AddGroup -> AddGroupView(uiState.group)
+                else -> Text(text = ("Hello"))
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomNavBar(
+    viewModel: MainViewModel = viewModel()
+) {
+    BottomAppBar(
+        modifier = Modifier,
+    ) {
+        IconButton(iconResId = R.drawable.ic_baseline_edit_24) {
+            viewModel.showMain()
+        }
+        IconButton(iconResId = R.drawable.ic_money) {
+            viewModel.addGroup()
+        }
+        IconButton(iconResId = R.drawable.ic_check) {
+
         }
     }
 }
@@ -92,13 +123,12 @@ private fun MainTopBar(
             contentColor = MaterialTheme.colors.onPrimary,
             actions = {
                 when (state) {
-                    is MainViewModel.Main -> {
-                        IconButton(
-                            iconResId = R.drawable.ic_money,
-                            onClick = { viewModel.showGroup("") }
-                        )
+                    is MainViewModel.AddGroup -> {
+                        IconButton(iconResId = R.drawable.ic_check) {
+                            if (state.group.nameState.isNotBlank())
+                                viewModel.saveGroup(state.group)
+                        }
                     }
-                    else -> {}
                 }
             },
             navigationIcon = {
@@ -106,11 +136,19 @@ private fun MainTopBar(
                     IconButton(iconResId = R.drawable.ic_back) {
                         when (state) {
                             !is MainViewModel.Main -> viewModel.onBackButtonPressed()
-                            else -> {}
                         }
                     }
                 }
             }
         )
     }
+}
+
+@Preview
+@Composable
+private fun PreviewMainView() {
+    MainView(
+        dialogState = BaseViewModel.DialogState.DismissDialogs,
+        uiState = MainViewModel.AddGroup(Group())
+    )
 }

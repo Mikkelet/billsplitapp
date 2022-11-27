@@ -45,4 +45,8 @@ abstract class BaseViewModel : ViewModel() {
             _mutableUiEventsStateFlow.emit(event)
         }
     }
+
+    fun updateUiState(event: UiState) {
+        _mutableUiStateFlow.value = event
+    }
 }

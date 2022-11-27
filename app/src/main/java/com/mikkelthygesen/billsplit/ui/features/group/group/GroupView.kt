@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.features.group
+package com.mikkelthygesen.billsplit.ui.features.group.group
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -30,6 +30,7 @@ import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
