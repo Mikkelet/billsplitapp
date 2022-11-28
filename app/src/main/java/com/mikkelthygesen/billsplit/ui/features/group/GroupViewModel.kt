@@ -51,7 +51,6 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     fun getGroup(groupId: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            delay(2000)
             val response = kotlin.runCatching { api.getGroup("p4Y79cmb9jTkOKhw4yMN") }
             if (response.isSuccess) println("qqq $response")
             else println("qqq ${response.exceptionOrNull()}")
