@@ -5,11 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -21,7 +20,9 @@ import com.mikkelthygesen.billsplit.ui.features.group.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 import com.mikkelthygesen.billsplit.ui.widgets.dialogs.ConfirmChangesDialog
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GroupActivity : ComponentActivity() {
 
     private val viewModel: GroupViewModel by viewModels()
@@ -112,6 +113,9 @@ class GroupActivity : ComponentActivity() {
                         is GroupViewModel.Events -> GroupEventsView(modifier = Modifier.padding(it))
                         is GroupViewModel.ShowDebt -> ViewExpenses()
                         is GroupViewModel.ShowExpense -> ExpenseView(groupExpense = uiState.groupExpense)
+                        is BaseViewModel.UiState.Loading -> Box(Modifier.fillMaxSize()) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             }

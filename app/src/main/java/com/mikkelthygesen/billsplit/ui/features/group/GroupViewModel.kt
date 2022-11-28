@@ -1,20 +1,33 @@
 package com.mikkelthygesen.billsplit.ui.features.group
 
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.base.BaseViewModel
+import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.models.interfaces.IShareable
+import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.samplePayments
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.toNewIndividualExpenses
+import dagger.assisted.Assisted
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-class GroupViewModel() : BaseViewModel() {
+@HiltViewModel
+class GroupViewModel @Inject constructor() : BaseViewModel() {
+
+    private val api = ServerApiImpl()
 
     object Events : UiState
     object ShowDebt : UiState
@@ -34,6 +47,17 @@ class GroupViewModel() : BaseViewModel() {
     private val _mutableChangesStateFlow = MutableStateFlow<List<GroupExpensesChanged>>(emptyList())
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Events)
 
+
+    fun getGroup(groupId: String) {
+        updateUiState(UiState.Loading)
+        viewModelScope.launch {
+            delay(2000)
+            val response = kotlin.runCatching { api.getGroup("p4Y79cmb9jTkOKhw4yMN") }
+            if (response.isSuccess) println("qqq $response")
+            else println("qqq ${response.exceptionOrNull()}")
+        }
+    }
+
     fun addExpense() {
         val sharedExpense = GroupExpense(
             id = UUID.randomUUID().toString(),
@@ -46,7 +70,7 @@ class GroupViewModel() : BaseViewModel() {
         _mutableUiStateFlow.value = ShowExpense(sharedExpense)
     }
 
-    fun shareableStateFlow(): SharedFlow<List<IShareable>> =
+    fun shareableStateFlow(): SharedFlow<List<Event>> =
         combine(
             sharedExpensesStateFlow,
             paymentsStateFlow,
@@ -75,6 +99,11 @@ class GroupViewModel() : BaseViewModel() {
         // if expense doesn't appear in list, add it, else assume it's an edit and log the change
         if (!sharedExpensesStateFlow.value.contains(groupExpense)) {
             _mutableSharedExpensesStateFlow.value = sharedExpensesStateFlow.value.plus(groupExpense)
+            viewModelScope.launch {
+                val req = kotlin.runCatching { api.addEvent(groupExpense.id, groupExpense) }
+                if (req.isSuccess) println("qqq success!")
+                else println("qqq error :( ${req.exceptionOrNull()}")
+            }
         } else if (originalCopy != groupExpense) {
             val updatedCopy = groupExpense
                 .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
@@ -86,7 +115,7 @@ class GroupViewModel() : BaseViewModel() {
             _mutableChangesStateFlow.value =
                 _mutableChangesStateFlow.value.plus(groupExpensesChanged)
         }
-        _mutableUiStateFlow.value = Events
+        showEvents()
     }
 
     fun showConfirmChangesDialog(groupExpense: GroupExpense) {
@@ -94,15 +123,15 @@ class GroupViewModel() : BaseViewModel() {
     }
 
     fun showDebt() {
-        _mutableUiStateFlow.value = ShowDebt
+        updateUiState(ShowDebt)
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {
-        _mutableUiStateFlow.value = ShowExpense(sharedExpense)
+        updateUiState(ShowExpense(sharedExpense))
     }
 
     fun showEvents() {
-        _mutableUiStateFlow.value = Events
+        updateUiState(Events)
     }
 
     fun getLoggedIn() = people.first()

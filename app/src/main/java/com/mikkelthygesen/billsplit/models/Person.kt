@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import java.util.UUID
 
 data class Person(
-    val pId: String = UUID.randomUUID().toString(),
+    val uid: String = UUID.randomUUID().toString(),
     private var name: String = "",
     val pfpResId:Int = 0,
 ) {
@@ -14,11 +14,11 @@ data class Person(
 
     override fun equals(other: Any?): Boolean {
         return if (other is Person)
-            this.pId == other.pId
+            this.uid == other.uid
         else false
     }
 
     override fun hashCode(): Int {
-        return pId.hashCode()
+        return uid.hashCode()
     }
 }

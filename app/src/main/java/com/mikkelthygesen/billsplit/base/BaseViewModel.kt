@@ -14,8 +14,8 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     interface UiState {
-        object Loading : DialogState
-        class Error(val exception: Exception) : DialogState
+        object Loading : UiState
+        class Error(val exception: Exception) : UiState
     }
 
     interface UiEvent {

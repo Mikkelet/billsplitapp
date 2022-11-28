@@ -32,7 +32,7 @@ data class IndividualExpense(
         return "ExpenseHolder(name=$person, expense=$expenseState, isParticipant=$isParticipantState)"
     }
 
-    fun isShared() = person.pId == getSharedExpenseHolder().person.pId
+    fun isShared() = person.uid == getSharedExpenseHolder().person.uid
 
     companion object {
         private const val SHARED_ID = "-1"

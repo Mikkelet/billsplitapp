@@ -3,7 +3,7 @@ package com.mikkelthygesen.billsplit.models
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.mikkelthygesen.billsplit.models.interfaces.IShareable
+import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
 
@@ -15,7 +15,7 @@ data class GroupExpense(
     private var sharedExpense: Float,
     val individualExpenses: List<IndividualExpense>,
     override val timeStamp: Long = System.currentTimeMillis()
-) : IShareable {
+) : Event {
 
     var descriptionState by mutableStateOf(description)
     var payeeState by mutableStateOf(payee)

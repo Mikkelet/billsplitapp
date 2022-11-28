@@ -83,7 +83,7 @@ fun MainView(
             targetState = uiState
         ) { uiState ->
             when (uiState) {
-                is MainViewModel.AddGroup -> AddGroupView(uiState.group)
+                is MainViewModel.AddGroup -> AddGroupView(group = uiState.group)
                 else -> Text(text = ("Hello"))
             }
         }
@@ -126,7 +126,7 @@ private fun MainTopBar(
                     is MainViewModel.AddGroup -> {
                         IconButton(iconResId = R.drawable.ic_check) {
                             if (state.group.nameState.isNotBlank())
-                                viewModel.saveGroup(state.group)
+                                viewModel.getGroup(state.group.id)
                         }
                     }
                 }
