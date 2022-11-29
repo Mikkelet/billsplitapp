@@ -14,4 +14,12 @@ data class PersonDTO(
         name = name,
         pfpResId = R.drawable.catra_pfp
     )
+
+    companion object {
+        fun fromPerson(person: Person) = PersonDTO(
+            id = person.uid,
+            name = person.nameState,
+            pfpUrl = ""
+        )
+    }
 }

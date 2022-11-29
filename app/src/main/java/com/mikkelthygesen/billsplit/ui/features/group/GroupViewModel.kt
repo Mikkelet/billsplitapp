@@ -1,27 +1,15 @@
 package com.mikkelthygesen.billsplit.ui.features.group
 
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.models.*
 import com.mikkelthygesen.billsplit.models.interfaces.Event
-import com.mikkelthygesen.billsplit.samplePayments
-import com.mikkelthygesen.billsplit.samplePeopleShera
-import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.toNewIndividualExpenses
-import dagger.assisted.Assisted
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.*
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,52 +23,56 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     object ShowAddPersonDialog : DialogState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
 
-    private val _people = mutableListOf<Person>(*samplePeopleShera.toTypedArray())
+    private val _people = mutableListOf<Person>()
     val people: List<Person> = _people
+    private lateinit var group: Group
 
-    private val _payments = MutableStateFlow(samplePayments)
-    val paymentsStateFlow: StateFlow<List<Payment>> = _payments
-
-    private val _mutableSharedExpensesStateFlow = MutableStateFlow(sampleSharedExpenses)
-    val sharedExpensesStateFlow: StateFlow<List<GroupExpense>> = _mutableSharedExpensesStateFlow
-
-    private val _mutableChangesStateFlow = MutableStateFlow<List<GroupExpensesChanged>>(emptyList())
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Events)
-
+    private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
+    val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
 
     fun getGroup(groupId: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val response = kotlin.runCatching { api.getGroup("p4Y79cmb9jTkOKhw4yMN") }
-            if (response.isSuccess) println("qqq $response")
-            else println("qqq ${response.exceptionOrNull()}")
+            println("qqq retrievingId=$groupId")
+            val response = kotlin.runCatching { api.getGroup(groupId) }
+            response.fold(
+                onSuccess = {
+                    println("qqq getGroup=${it.toGroup()}")
+                    group = it.toGroup()
+                    _people.addAll(group.peopleState)
+                    _mutableEventsStateFlow.value = group.events
+                    updateUiState(Events)
+                },
+                onFailure = Timber::e
+            )
         }
     }
 
     fun addExpense() {
-        val sharedExpense = GroupExpense(
-            id = UUID.randomUUID().toString(),
+        val groupExpense = GroupExpense(
+            id = group.id,
             createdBy = people.first(), // TODO get logged in
             description = "",
             payee = people.first(),
             sharedExpense = 0F,
             individualExpenses = people.toNewIndividualExpenses(),
         )
-        _mutableUiStateFlow.value = ShowExpense(sharedExpense)
+        _mutableUiStateFlow.value = ShowExpense(groupExpense)
     }
 
-    fun shareableStateFlow(): SharedFlow<List<Event>> =
-        combine(
-            sharedExpensesStateFlow,
-            paymentsStateFlow,
-            _mutableChangesStateFlow
-        ) { groupExpenses, payments, changes ->
-            groupExpenses + payments + changes
-        }.shareIn(viewModelScope, SharingStarted.WhileSubscribed())
-
-
     fun addPayment(payment: Payment) {
-        _payments.value = paymentsStateFlow.value.plus(payment)
+        viewModelScope.launch {
+            val response = kotlin.runCatching { api.addEvent(group.id, payment) }
+            response.fold(
+                onSuccess = {
+                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(payment)
+                },
+                onFailure = {
+                    println("qqq error submitting payment $it")
+                }
+            )
+        }
     }
 
     fun addPerson(name: String) {
@@ -96,23 +88,39 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         // save expenses
         groupExpense.saveChanges()
         // if expense doesn't appear in list, add it, else assume it's an edit and log the change
-        if (!sharedExpensesStateFlow.value.contains(groupExpense)) {
-            _mutableSharedExpensesStateFlow.value = sharedExpensesStateFlow.value.plus(groupExpense)
+        if (!eventStateFlow.value.contains(groupExpense)) {
             viewModelScope.launch {
-                val req = kotlin.runCatching { api.addEvent(groupExpense.id, groupExpense) }
-                if (req.isSuccess) println("qqq success!")
-                else println("qqq error :( ${req.exceptionOrNull()}")
+                val response = kotlin.runCatching { api.addEvent(groupExpense.id, groupExpense) }
+                response.fold(
+                    onSuccess = {
+                        _mutableEventsStateFlow.value = eventStateFlow.value.plus(groupExpense)
+                    },
+                    onFailure = {
+                        println("qqq error submitting $it")
+                    }
+                )
             }
         } else if (originalCopy != groupExpense) {
             val updatedCopy = groupExpense
                 .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
             val groupExpensesChanged = GroupExpensesChanged(
+                id = originalCopy.id,
                 createdBy = originalCopy.createdBy, // TODO getLoggedIn
                 groupExpenseOriginal = originalCopy,
                 groupExpenseEdited = updatedCopy
             )
-            _mutableChangesStateFlow.value =
-                _mutableChangesStateFlow.value.plus(groupExpensesChanged)
+            viewModelScope.launch {
+                val response = runCatching { api.addEvent(group.id, groupExpensesChanged) }
+                response.fold(
+                    onSuccess = {
+                        _mutableEventsStateFlow.value =
+                            eventStateFlow.value.plus(groupExpensesChanged)
+                    },
+                    onFailure = {
+                        println("qqq error submitting $it")
+                    }
+                )
+            }
         }
         showEvents()
     }

@@ -5,43 +5,44 @@ import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.json.JsonContentPolymorphicSerializer
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull.serializer
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 
+@Polymorphic
 @kotlinx.serialization.Serializable(with = EventDTO.EventDTOSerializer::class)
 sealed class EventDTO {
 
-    abstract val eventType: String
-
     @kotlinx.serialization.Serializable
+    @SerialName(TYPE_EXPENSE)
     data class ExpenseDTO(
-        override val eventType: String = TYPE_EXPENSE,
         val id: String,
-        val createdBy: String,
+        val createdBy: PersonDTO,
         val timeStamp: Long,
         val description: String,
-        val payee: String,
+        val payee: PersonDTO,
         val sharedExpense: Float,
         val individualExpenses: List<IndividualExpenseDTO>,
     ) : EventDTO()
 
     @kotlinx.serialization.Serializable
+    @SerialName(TYPE_PAYMENT)
     data class PaymentDTO(
-        override val eventType: String = TYPE_PAYMENT,
         val id: String,
-        val createdBy: String,
+        val createdBy: PersonDTO,
         val timeStamp: Long,
-        val paidTo: String,
+        val paidTo: PersonDTO,
         val amount: Float,
     ) : EventDTO()
 
     @kotlinx.serialization.Serializable
+    @SerialName(TYPE_CHANGE)
     data class ChangeDTO(
-        override val eventType: String = TYPE_CHANGE,
-        val createdBy: String,
+        val id: String,
+        val createdBy: PersonDTO,
         val timeStamp: Long,
         val groupExpenseOriginal: ExpenseDTO,
         val groupExpenseEdited: ExpenseDTO
@@ -52,31 +53,32 @@ sealed class EventDTO {
         const val TYPE_CHANGE = "change"
         const val TYPE_EXPENSE = "expense"
 
-        fun fromExpense(expense: GroupExpense) = ExpenseDTO(
+        private fun Person.toPersonDTO() = PersonDTO.fromPerson(this)
+
+        fun fromExpense(expense: GroupExpense): ExpenseDTO = ExpenseDTO(
             id = expense.id,
             description = expense.descriptionState,
-            createdBy = expense.createdBy.uid,
+            createdBy = expense.createdBy.toPersonDTO(),
             sharedExpense = expense.sharedExpenseState,
             individualExpenses = expense.individualExpenses.map {
-                IndividualExpenseDTO.fromIndividualExpense(
-                    it
-                )
+                IndividualExpenseDTO.fromIndividualExpense(it)
             },
-            payee = expense.payeeState.uid,
-            timeStamp = expense.timeStamp
+            payee = expense.payeeState.toPersonDTO(),
+            timeStamp = expense.timeStamp,
         )
 
-        fun fromPayment(payment: Payment) = PaymentDTO(
-            id = "",
+        fun fromPayment(payment: Payment): PaymentDTO = PaymentDTO(
+            id = payment.id,
             timeStamp = payment.timeStamp,
-            createdBy = payment.createdBy.uid,
+            createdBy = payment.createdBy.toPersonDTO(),
             amount = payment.amount,
-            paidTo = payment.paidTo.uid
+            paidTo = payment.paidTo.toPersonDTO()
         )
 
-        fun fromChange(expensesChanged: GroupExpensesChanged) = ChangeDTO(
+        fun fromChange(expensesChanged: GroupExpensesChanged): ChangeDTO = ChangeDTO(
+            id = expensesChanged.id,
             timeStamp = expensesChanged.timeStamp,
-            createdBy = expensesChanged.createdBy.uid,
+            createdBy = expensesChanged.createdBy.toPersonDTO(),
             groupExpenseEdited = fromExpense(expensesChanged.groupExpenseEdited),
             groupExpenseOriginal = fromExpense(expensesChanged.groupExpenseOriginal)
         )
@@ -84,38 +86,40 @@ sealed class EventDTO {
 
     fun toEvent() = when (this) {
         is ChangeDTO -> GroupExpensesChanged(
-            createdBy = Person(uid = createdBy),
+            id = id,
+            createdBy = createdBy.toPerson(),
             timeStamp = timeStamp,
             groupExpenseOriginal = GroupExpense(
                 id = groupExpenseOriginal.id,
                 timeStamp = groupExpenseOriginal.timeStamp,
-                createdBy = Person(uid = groupExpenseOriginal.createdBy),
+                createdBy = groupExpenseOriginal.createdBy.toPerson(),
                 description = groupExpenseOriginal.description,
                 sharedExpense = groupExpenseOriginal.sharedExpense,
-                payee = Person(uid = groupExpenseOriginal.payee),
+                payee = groupExpenseOriginal.payee.toPerson(),
                 individualExpenses = groupExpenseOriginal.individualExpenses.map { it.toIndividualExpense() }
             ),
             groupExpenseEdited = GroupExpense(
                 id = groupExpenseEdited.id,
                 timeStamp = groupExpenseEdited.timeStamp,
-                createdBy = Person(uid = groupExpenseEdited.createdBy),
+                createdBy = groupExpenseEdited.createdBy.toPerson(),
                 description = groupExpenseEdited.description,
                 sharedExpense = groupExpenseEdited.sharedExpense,
-                payee = Person(uid = groupExpenseEdited.payee),
+                payee = groupExpenseEdited.payee.toPerson(),
                 individualExpenses = groupExpenseEdited.individualExpenses.map { it.toIndividualExpense() }
             )
         )
         is PaymentDTO -> Payment(
-            createdBy = Person(uid = createdBy),
+            id = id,
+            createdBy = createdBy.toPerson(),
             timeStamp = timeStamp,
-            paidTo = Person(uid = paidTo),
+            paidTo = paidTo.toPerson(),
             amount = amount
         )
         is ExpenseDTO -> GroupExpense(
             id = id,
             timeStamp = timeStamp,
-            createdBy = Person(uid=createdBy),
-            payee = Person(uid = payee),
+            createdBy = createdBy.toPerson(),
+            payee = payee.toPerson(),
             individualExpenses = individualExpenses.map { it.toIndividualExpense() },
             sharedExpense = sharedExpense,
             description = description
@@ -125,7 +129,8 @@ sealed class EventDTO {
 
     object EventDTOSerializer : JsonContentPolymorphicSerializer<EventDTO>(EventDTO::class) {
         override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out EventDTO> {
-            return when (element.jsonObject["eventType"]?.jsonPrimitive?.content) {
+            val json = element.jsonObject["type"]
+            return when (json?.jsonPrimitive?.content) {
                 TYPE_CHANGE -> ChangeDTO.serializer()
                 TYPE_PAYMENT -> PaymentDTO.serializer()
                 TYPE_EXPENSE -> ExpenseDTO.serializer()
@@ -134,4 +139,3 @@ sealed class EventDTO {
         }
     }
 }
-

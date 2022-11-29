@@ -8,7 +8,7 @@ import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
 
 data class GroupExpense(
-    val id: String,
+    override val id: String,
     override val createdBy: Person,
     private var description: String,
     private var payee: Person,

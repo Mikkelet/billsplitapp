@@ -126,7 +126,7 @@ private fun MainTopBar(
                     is MainViewModel.AddGroup -> {
                         IconButton(iconResId = R.drawable.ic_check) {
                             if (state.group.nameState.isNotBlank())
-                                viewModel.getGroup(state.group.id)
+                                viewModel.saveGroup(state.group)
                         }
                     }
                 }
@@ -149,6 +149,6 @@ private fun MainTopBar(
 private fun PreviewMainView() {
     MainView(
         dialogState = BaseViewModel.DialogState.DismissDialogs,
-        uiState = MainViewModel.AddGroup(Group())
+        uiState = MainViewModel.AddGroup(Group("id"))
     )
 }

@@ -12,13 +12,13 @@ class ServerApiImpl {
 
     private val retrofit = Retrofit.serverApi
 
-    suspend fun addGroup(group: Group) {
+    suspend fun addGroup(group: Group): GroupDTO {
         val groupDTO = GroupDTO.fromGroup(group)
         val addGroupDTO = AddGroupRequestDTO(groupDTO)
         return retrofit.addGroup(addGroupDTO)
     }
 
-    suspend fun addEvent(groupId: String, event: Event) {
+    suspend fun addEvent(groupId: String, event: Event): EventDTO {
         val eventDto: EventDTO = when (event) {
             is GroupExpense -> EventDTO.fromExpense(event)
             is Payment -> EventDTO.fromPayment(event)
@@ -28,7 +28,7 @@ class ServerApiImpl {
         return retrofit.addEvent(AddEventRequestDTO(groupId, eventDto))
     }
 
-    suspend fun getGroup(groupId:String):GetGroupResponseDTO{
+    suspend fun getGroup(groupId: String): GetGroupResponseDTO {
         return retrofit.getGroup(GetGroupRequestDTO(groupId))
     }
 }

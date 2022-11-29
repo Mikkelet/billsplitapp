@@ -41,7 +41,7 @@ fun GroupEventsView(
     modifier: Modifier,
     viewModel: GroupViewModel = viewModel()
 ) {
-    val flow = viewModel.shareableStateFlow().collectAsState(initial = emptyList())
+    val flow = viewModel.eventStateFlow.collectAsState(initial = emptyList())
     val shareablesState = flow.value.sortedBy { it.timeStamp }.reversed()
     val lazyListState = LazyListState()
     val coroutineScope = rememberCoroutineScope()

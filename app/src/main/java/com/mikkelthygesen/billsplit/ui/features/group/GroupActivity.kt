@@ -26,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class GroupActivity : ComponentActivity() {
 
     private val viewModel: GroupViewModel by viewModels()
+    private val groupId by lazy { intent.extras?.getString("group_id") ?: "" }
 
     init {
         onBackPressedDispatcher.addCallback(this) {
@@ -42,6 +43,7 @@ class GroupActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.getGroup(groupId)
         setContent {
             BillSplitTheme {
                 val groupUiState = viewModel.uiStateFlow.collectAsState()

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.DebtCalculator
+import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
@@ -25,13 +26,12 @@ import kotlin.math.absoluteValue
 fun ViewExpenses(
     viewModel: GroupViewModel = viewModel()
 ) {
-    val paymentsFlow = viewModel.paymentsStateFlow.collectAsState()
-    val groupExpensesFlow = viewModel.sharedExpensesStateFlow.collectAsState()
+    val eventsFlow = viewModel.eventStateFlow.collectAsState()
     val user = viewModel.getLoggedIn()
-    val paymentsState = paymentsFlow.value
-    val groupExpenses = groupExpensesFlow.value
+    val payments = eventsFlow.value.filterIsInstance<Payment>()
+    val groupExpenses = eventsFlow.value.filterIsInstance<GroupExpense>()
 
-    val calculator = DebtCalculator(viewModel.people, groupExpenses, paymentsState)
+    val calculator = DebtCalculator(viewModel.people, groupExpenses, payments)
     val debtForPerson = calculator.calculateEffectiveDebtOfPerson(user)
     calculator.logDebt(user)
     (debtForPerson)

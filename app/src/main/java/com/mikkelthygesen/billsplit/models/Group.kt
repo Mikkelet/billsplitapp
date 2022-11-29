@@ -7,7 +7,7 @@ import com.mikkelthygesen.billsplit.models.interfaces.Event
 import java.util.UUID
 
 data class Group(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String,
     private var name: String = "",
     private var people: List<Person> = emptyList(),
     val createdBy: Person = Person(),

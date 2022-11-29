@@ -15,10 +15,10 @@ import retrofit2.Retrofit
 @ExperimentalSerializationApi
 object Retrofit {
 
-    private val BASE_URL = if(BuildConfig.DEBUG) "http://localhost:5000/billsplittapp/us-central1/" else "https://us-central1-billsplittapp.cloudfunctions.net/"
+    private val BASE_URL = if(BuildConfig.DEBUG) "http://10.0.2.2:5000/billsplittapp/us-central1/" else "https://us-central1-billsplittapp.cloudfunctions.net/"
     private val BASE_URL_PROD = "https://us-central1-billsplittapp.cloudfunctions.net/"
 
-    val serverApi: ServerApi = getRetrofit(BASE_URL_PROD).create(ServerApi::class.java)
+    val serverApi: ServerApi = getRetrofit(BASE_URL).create(ServerApi::class.java)
 
     private fun getRetrofit(withBaseUrl: String): Retrofit {
         val contentType = "application/json".toMediaType()
