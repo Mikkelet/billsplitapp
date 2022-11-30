@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.models.Person
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -15,6 +16,7 @@ class MainViewModel : BaseViewModel() {
     object Main : UiState
     object Settings : UiState
     class AddGroup(val group: Group) : UiState
+    class Groups(val groups: List<Group>) : UiState
 
     class ShowGroup(val groupId: String) : UiEvent
 
@@ -24,26 +26,49 @@ class MainViewModel : BaseViewModel() {
         updateUiState(Main)
     }
 
-    fun showGroup(id: String) {
-        emitUiEvent(ShowGroup(id))
+    fun showGroup(groupId: String) {
+        emitUiEvent(ShowGroup(groupId))
     }
 
     fun addGroup() {
-        val group = Group("")
+        val group = Group(
+            id = "",
+            createdBy = getLoggedIn(),
+            people = listOf(getLoggedIn())
+        )
         updateUiState(AddGroup(group))
     }
 
-    fun saveGroup(group: Group) {
-        group.applyChanges()
+    fun getGroups() {
+        updateUiState(UiState.Loading)
         viewModelScope.launch {
-            println("qqq launching")
-            val req = runCatching { api.addGroup(group) }
-            req.fold(
+            val response = kotlin.runCatching { api.getGroups(getLoggedIn().uid) }
+            response.fold(
                 onSuccess = {
-                    showGroup(it.toGroup().id)
+                    println("qqq success $it")
+                    updateUiState(Groups(it))
                 },
                 onFailure = Timber::e
             )
         }
+    }
+
+    fun saveGroup(group: Group) {
+        updateUiState(UiState.Loading)
+        group.applyChanges()
+        viewModelScope.launch {
+            val req = runCatching { api.addGroup(group) }
+            updateUiState(Main)
+            req.fold(
+                onSuccess = {
+                    emitUiEvent(ShowGroup(it.id))
+                },
+                onFailure = Timber::e
+            )
+        }
+    }
+
+    companion object {
+        fun getLoggedIn() = Person("j6ETnEOrCpOJt7lBt2pU", "Mikkel")
     }
 }

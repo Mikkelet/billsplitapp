@@ -10,10 +10,10 @@ import com.mikkelthygesen.billsplit.models.interfaces.Event
 @Suppress("OPT_IN_USAGE")
 class ServerApiImpl {
 
-    suspend fun addGroup(group: Group): GroupDTO {
+    suspend fun addGroup(group: Group): Group {
         val groupDTO = GroupDTO.fromGroup(group)
         val addGroupDTO = AddGroupRequestDTO(groupDTO)
-        return ServerApi.addGroup(addGroupDTO)
+        return ServerApi.addGroup(addGroupDTO).toGroup()
     }
 
     suspend fun addEvent(groupId: String, event: Event): EventDTO {
@@ -28,5 +28,10 @@ class ServerApiImpl {
 
     suspend fun getGroup(groupId: String): GetGroupResponseDTO {
         return ServerApi.getGroup(GetGroupRequestDTO(groupId))
+    }
+
+    suspend fun getGroups(userId: String): List<Group> {
+        val dtos = ServerApi.getGroups(GetGroups.Request(userId))
+        return dtos.groups.map { it.toGroup() }
     }
 }

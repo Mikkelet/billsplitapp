@@ -46,8 +46,8 @@ sealed class EventDTO {
         val id: String,
         val createdBy: PersonDTO,
         val timeStamp: Long,
-        val groupExpenseOriginal: ExpenseDTO,
-        val groupExpenseEdited: ExpenseDTO
+        val groupExpenseOriginal: EventDTO,
+        val groupExpenseEdited: EventDTO
     ) : EventDTO()
 
     companion object {
@@ -91,24 +91,30 @@ sealed class EventDTO {
             id = id,
             createdBy = createdBy.toPerson(),
             timeStamp = timeStamp,
-            groupExpenseOriginal = GroupExpense(
-                id = groupExpenseOriginal.id,
-                timeStamp = groupExpenseOriginal.timeStamp,
-                createdBy = groupExpenseOriginal.createdBy.toPerson(),
-                description = groupExpenseOriginal.description,
-                sharedExpense = groupExpenseOriginal.sharedExpense,
-                payee = groupExpenseOriginal.payee.toPerson(),
-                individualExpenses = groupExpenseOriginal.individualExpenses.map { it.toIndividualExpense() }
-            ),
-            groupExpenseEdited = GroupExpense(
-                id = groupExpenseEdited.id,
-                timeStamp = groupExpenseEdited.timeStamp,
-                createdBy = groupExpenseEdited.createdBy.toPerson(),
-                description = groupExpenseEdited.description,
-                sharedExpense = groupExpenseEdited.sharedExpense,
-                payee = groupExpenseEdited.payee.toPerson(),
-                individualExpenses = groupExpenseEdited.individualExpenses.map { it.toIndividualExpense() }
-            )
+            groupExpenseOriginal = let {
+                val expense = groupExpenseOriginal as ExpenseDTO
+                GroupExpense(
+                    id = expense.id,
+                    timeStamp = expense.timeStamp,
+                    createdBy = expense.createdBy.toPerson(),
+                    description = expense.description,
+                    sharedExpense = expense.sharedExpense,
+                    payee = expense.payee.toPerson(),
+                    individualExpenses = expense.individualExpenses.map { it.toIndividualExpense() }
+                )
+            },
+            groupExpenseEdited = let {
+                val expense = groupExpenseEdited as ExpenseDTO
+                GroupExpense(
+                    id = expense.id,
+                    timeStamp = expense.timeStamp,
+                    createdBy = expense.createdBy.toPerson(),
+                    description = expense.description,
+                    sharedExpense = expense.sharedExpense,
+                    payee = expense.payee.toPerson(),
+                    individualExpenses = groupExpenseEdited.individualExpenses.map { it.toIndividualExpense() }
+                )
+            }
         )
         is PaymentDTO -> Payment(
             id = id,

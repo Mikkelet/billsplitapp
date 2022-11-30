@@ -16,8 +16,9 @@ fun IconButton(
     onClick: () -> Unit,
 ) {
     IconButton(
+        modifier = modifier,
         onClick = onClick
     ) {
-        Icon(painter = painterResource(id = iconResId), contentDescription = "")
+        Icon(painter = painterResource(id = iconResId), contentDescription = "", tint = color)
     }
 }

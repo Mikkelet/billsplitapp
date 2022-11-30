@@ -6,25 +6,27 @@ import io.ktor.client.request.*
 
 object ServerApi {
 
-    suspend fun addEvent(addEventRequestDTO: AddEventRequestDTO): EventDTO {
+    suspend fun addEvent(body: AddEventRequestDTO): EventDTO {
         return KtorClient.client.post("addEvent") {
-            setBody(addEventRequestDTO)
+            setBody(body)
         }.body()
     }
 
-    suspend fun getGroup(getGroupRequestDTO: GetGroupRequestDTO): GetGroupResponseDTO {
+    suspend fun getGroup(body: GetGroupRequestDTO): GetGroupResponseDTO {
         return KtorClient.client.post("getGroup") {
-            setBody(getGroupRequestDTO)
+            setBody(body)
         }.body()
     }
 
-    suspend fun addGroup(addGroupRequestDTO: AddGroupRequestDTO): GroupDTO {
-        val response = KtorClient.client.post("addGroup") {
-            setBody(addGroupRequestDTO)
-        }
-        println("qqq add group response=$response")
-        val body = response.body<GroupDTO>()
-        println("qqq add group $body")
-        return body
+    suspend fun getGroups(body: GetGroups.Request): GetGroups.Response {
+        return KtorClient.client.post("getGroups") {
+            setBody(body)
+        }.body()
+    }
+
+    suspend fun addGroup(body: AddGroupRequestDTO): GroupDTO {
+        return KtorClient.client.post("addGroup") {
+            setBody(body)
+        }.body()
     }
 }

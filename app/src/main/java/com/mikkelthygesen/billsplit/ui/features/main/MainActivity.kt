@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
@@ -20,8 +21,10 @@ import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.ui.features.group.GroupActivity
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.AddGroupView
+import com.mikkelthygesen.billsplit.ui.features.main.groups.GroupsList
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
+import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 
 class MainActivity : ComponentActivity() {
 
@@ -84,6 +87,8 @@ fun MainView(
         ) { uiState ->
             when (uiState) {
                 is MainViewModel.AddGroup -> AddGroupView(group = uiState.group)
+                is MainViewModel.Groups -> GroupsList(groups = uiState.groups)
+                is BaseViewModel.UiState.Loading -> LoadingView()
                 else -> Text(text = ("Hello"))
             }
         }
@@ -94,18 +99,32 @@ fun MainView(
 private fun BottomNavBar(
     viewModel: MainViewModel = viewModel()
 ) {
+    val uiStateFlow = viewModel.uiStateFlow.collectAsState()
+    val uiState = uiStateFlow.value
     BottomAppBar(
         modifier = Modifier,
     ) {
-        IconButton(iconResId = R.drawable.ic_baseline_edit_24) {
-            viewModel.showMain()
-        }
-        IconButton(iconResId = R.drawable.ic_money) {
-            viewModel.addGroup()
-        }
-        IconButton(iconResId = R.drawable.ic_check) {
-
-        }
+        BottomNavigationItem(
+            selected = uiState is MainViewModel.Main,
+            onClick = viewModel::showMain,
+            icon = {
+                Icon(painter = painterResource(id = R.drawable.ic_baseline_search_24), contentDescription = "")
+            }
+        )
+        BottomNavigationItem(
+            selected = uiState is MainViewModel.AddGroup,
+            onClick = viewModel::addGroup,
+            icon = {
+                Icon(painter = painterResource(id = R.drawable.ic_money), contentDescription = "")
+            }
+        )
+        BottomNavigationItem(
+            selected = uiState is MainViewModel.Groups,
+            onClick = viewModel::getGroups,
+            icon = {
+                Icon(painter = painterResource(id = R.drawable.ic_baseline_groups_24), contentDescription = "")
+            }
+        )
     }
 }
 
@@ -124,18 +143,9 @@ private fun MainTopBar(
             actions = {
                 when (state) {
                     is MainViewModel.AddGroup -> {
-                        IconButton(iconResId = R.drawable.ic_check) {
+                        IconButton(iconResId = R.drawable.ic_check, color = MaterialTheme.colors.onPrimary) {
                             if (state.group.nameState.isNotBlank())
                                 viewModel.saveGroup(state.group)
-                        }
-                    }
-                }
-            },
-            navigationIcon = {
-                if (state !is MainViewModel.Main) {
-                    IconButton(iconResId = R.drawable.ic_back) {
-                        when (state) {
-                            !is MainViewModel.Main -> viewModel.onBackButtonPressed()
                         }
                     }
                 }

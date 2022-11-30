@@ -17,32 +17,30 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
 
     private val api = ServerApiImpl()
 
-    object Events : UiState
+    object Expenses : UiState
     object ShowDebt : UiState
-    class ShowExpense(val groupExpense: GroupExpense) : UiState
-    object ShowAddPersonDialog : DialogState
+    class EditExpense(val groupExpense: GroupExpense) : UiState
+    object Settings : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
 
     private val _people = mutableListOf<Person>()
     val people: List<Person> = _people
     private lateinit var group: Group
 
-    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Events)
+    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Expenses)
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
 
     fun getGroup(groupId: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            println("qqq retrievingId=$groupId")
             val response = kotlin.runCatching { api.getGroup(groupId) }
             response.fold(
                 onSuccess = {
-                    println("qqq getGroup=${it.toGroup()}")
                     group = it.toGroup()
                     _people.addAll(group.peopleState)
                     _mutableEventsStateFlow.value = group.events
-                    updateUiState(Events)
+                    updateUiState(Expenses)
                 },
                 onFailure = Timber::e
             )
@@ -52,25 +50,25 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     fun addExpense() {
         val groupExpense = GroupExpense(
             id = group.id,
-            createdBy = people.first(), // TODO get logged in
+            createdBy = getLoggedIn(),
             description = "",
-            payee = people.first(),
+            payee = getLoggedIn(),
             sharedExpense = 0F,
             individualExpenses = people.toNewIndividualExpenses(),
         )
-        _mutableUiStateFlow.value = ShowExpense(groupExpense)
+        _mutableUiStateFlow.value = EditExpense(groupExpense)
     }
 
     fun addPayment(payment: Payment) {
+        updateUiState(UiState.Loading)
         viewModelScope.launch {
             val response = kotlin.runCatching { api.addEvent(group.id, payment) }
             response.fold(
                 onSuccess = {
                     _mutableEventsStateFlow.value = eventStateFlow.value.plus(payment)
+                    updateUiState(Expenses)
                 },
-                onFailure = {
-                    println("qqq error submitting payment $it")
-                }
+                onFailure = Timber::e
             )
         }
     }
@@ -134,11 +132,11 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {
-        updateUiState(ShowExpense(sharedExpense))
+        updateUiState(EditExpense(sharedExpense))
     }
 
     fun showEvents() {
-        updateUiState(Events)
+        updateUiState(Expenses)
     }
 
     fun getLoggedIn() = people.first()

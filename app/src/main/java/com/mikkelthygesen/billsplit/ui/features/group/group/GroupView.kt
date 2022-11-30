@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -35,15 +36,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-
 @Composable
 fun GroupEventsView(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     viewModel: GroupViewModel = viewModel()
 ) {
-    val flow = viewModel.eventStateFlow.collectAsState(initial = emptyList())
-    val shareablesState = flow.value.sortedBy { it.timeStamp }.reversed()
-    val lazyListState = LazyListState()
+    val eventsFlow = viewModel.eventStateFlow.collectAsState(initial = emptyList())
+    val eventsState = eventsFlow.value.sortedBy { it.timeStamp }.reversed()
+    val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     var focusListItemIndex by remember {
         mutableStateOf(-1)
@@ -66,22 +66,22 @@ fun GroupEventsView(
             }
         }
         items(
-            count = shareablesState.size,
-            key = { shareablesState[it].timeStamp }) { index ->
+            count = eventsState.size,
+            key = { eventsState[it].timeStamp }) { index ->
             Row(
                 Modifier.padding(vertical = 4.dp),
                 Arrangement.SpaceEvenly
             ) {
-                val shareable = shareablesState[index]
+                val event = eventsState[index]
                 val latestIndex =
                     tryCatchDefault(true) {
-                        shareablesState[index - 1].createdBy != shareable.createdBy
-                                || shareablesState[index - 1] is Payment
+                        eventsState[index - 1].createdBy != event.createdBy
+                                || eventsState[index - 1] is Payment
                     }
-                if (shareable.createdBy != viewModel.getLoggedIn() && shareable !is Payment) {
+                if (event.createdBy != viewModel.getLoggedIn() && event !is Payment) {
                     if (latestIndex)
                         ProfilePicture(
-                            person = shareable.createdBy,
+                            person = event.createdBy,
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
@@ -94,21 +94,21 @@ fun GroupEventsView(
                         .fillMaxWidth(),
                 ) {
                     val isLatestMessage = index == 0
-                    when (shareable) {
+                    when (event) {
                         is GroupExpense -> SharedExpenseListItem(
-                            groupExpense = shareable,
+                            groupExpense = event,
                             isFocused = index == focusListItemIndex,
                             isLastMessage = isLatestMessage
                         )
-                        is Payment -> PaymentListView(payment = shareable)
+                        is Payment -> PaymentListView(payment = event)
                         is GroupExpensesChanged -> ChangesListView(
-                            groupExpensesChanged = shareable,
+                            groupExpensesChanged = event,
                             isLastMessage = isLatestMessage,
                             onClickGoToExpense = { id ->
                                 coroutineScope.launch {
                                     val groupExpense =
-                                        shareablesState.first { it is GroupExpense && it.id == id }
-                                    val indexOf = shareablesState.indexOf(groupExpense)
+                                        eventsState.first { it is GroupExpense && it.id == id }
+                                    val indexOf = eventsState.indexOf(groupExpense)
                                     lazyListState.animateScrollToItem(indexOf)
                                     focusListItemIndex = indexOf
                                 }
@@ -116,10 +116,10 @@ fun GroupEventsView(
                         )
                     }
                 }
-                if (shareable.createdBy == viewModel.getLoggedIn() && shareable !is Payment) {
+                if (event.createdBy == viewModel.getLoggedIn() && event !is Payment) {
                     if (latestIndex)
                         ProfilePicture(
-                            person = shareable.createdBy,
+                            person = event.createdBy,
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
@@ -365,35 +365,6 @@ private fun ExpandableView(
                     tint = MaterialTheme.colors.secondary
                 )
             }
-    }
-}
-
-
-@Composable
-private fun MainBottomBar(
-    uiState: BaseViewModel.UiState
-) {
-    when (uiState) {
-        is GroupViewModel.ShowExpense -> {
-            val groupExpense = uiState.groupExpense
-            Row(
-                Modifier
-                    .background(MaterialTheme.colors.background)
-                    .padding(8.dp),
-                Arrangement.Center
-            ) {
-                Text(
-                    text = "Total",
-                    style = TextStyle(color = MaterialTheme.colors.onBackground)
-                )
-                Box(Modifier.weight(1f))
-                Text(
-                    text = "$${groupExpense.total}",
-                    style = TextStyle(color = MaterialTheme.colors.onBackground)
-                )
-            }
-        }
-        else -> {}
     }
 }
 
