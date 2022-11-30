@@ -55,11 +55,12 @@ object KtorClient {
         }
     }.apply {
         plugin(HttpSend).intercept { req ->
+
+            println("NETW --> ${req.method.value}(${req.url.build()})")
+            Timber.i("NETW --- ${req.body}")
             val call = execute(req)
             val response = call.response
             val durationMillis = response.responseTime.timestamp - response.requestTime.timestamp
-            println("NETW --> ${req.method.value}(${req.url.build().fullPath})")
-            Timber.i("NETW --- ${req.body}")
             println("NETW <-- [${response.body<Any>()}] ($durationMillis ms)")
             call
         }
