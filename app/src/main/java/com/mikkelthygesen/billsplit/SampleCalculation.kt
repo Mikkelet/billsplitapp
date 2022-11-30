@@ -78,9 +78,24 @@ val samplePayments: List<Payment>
         val person3 = samplePeopleShera[2]
 
         return listOf(
-            Payment(person2, person3, 500F, 6),
-            Payment(person1, person3, 200F, 7),
-            Payment(person2, person1, 100F, 8),
+            Payment(
+                createdBy = person2,
+                paidTo = person3,
+                amount = 500F,
+                timeStamp = 6
+            ),
+            Payment(
+                createdBy = person1,
+                paidTo = person3,
+                amount = 200F,
+                timeStamp = 7
+            ),
+            Payment(
+                createdBy = person2,
+                paidTo = person1,
+                amount = 100F,
+                timeStamp = 8
+            ),
         )
     }
 

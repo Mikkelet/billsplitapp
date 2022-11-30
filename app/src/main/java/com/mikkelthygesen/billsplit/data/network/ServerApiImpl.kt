@@ -10,12 +10,10 @@ import com.mikkelthygesen.billsplit.models.interfaces.Event
 @Suppress("OPT_IN_USAGE")
 class ServerApiImpl {
 
-    private val retrofit = Retrofit.serverApi
-
     suspend fun addGroup(group: Group): GroupDTO {
         val groupDTO = GroupDTO.fromGroup(group)
         val addGroupDTO = AddGroupRequestDTO(groupDTO)
-        return retrofit.addGroup(addGroupDTO)
+        return ServerApi.addGroup(addGroupDTO)
     }
 
     suspend fun addEvent(groupId: String, event: Event): EventDTO {
@@ -25,10 +23,10 @@ class ServerApiImpl {
             is GroupExpensesChanged -> EventDTO.fromChange(event)
             else -> throw Exception("Invalid event")
         }
-        return retrofit.addEvent(AddEventRequestDTO(groupId, eventDto))
+        return ServerApi.addEvent(AddEventRequestDTO(groupId, eventDto))
     }
 
     suspend fun getGroup(groupId: String): GetGroupResponseDTO {
-        return retrofit.getGroup(GetGroupRequestDTO(groupId))
+        return ServerApi.getGroup(GetGroupRequestDTO(groupId))
     }
 }

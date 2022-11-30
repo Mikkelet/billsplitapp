@@ -36,11 +36,11 @@ class MainViewModel : BaseViewModel() {
     fun saveGroup(group: Group) {
         group.applyChanges()
         viewModelScope.launch {
+            println("qqq launching")
             val req = runCatching { api.addGroup(group) }
             req.fold(
                 onSuccess = {
-                    println("qqq new groupId=${it.id}")
-                    emitUiEvent(ShowGroup(it.toGroup().id))
+                    showGroup(it.toGroup().id)
                 },
                 onFailure = Timber::e
             )

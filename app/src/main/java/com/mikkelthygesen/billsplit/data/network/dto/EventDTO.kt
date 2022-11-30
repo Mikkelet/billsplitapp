@@ -4,16 +4,18 @@ import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.serialization.*
+import io.ktor.util.reflect.*
+import io.ktor.utils.io.*
+import io.ktor.utils.io.charsets.*
+import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 
-@Polymorphic
-@kotlinx.serialization.Serializable(with = EventDTO.EventDTOSerializer::class)
+@kotlinx.serialization.Serializable
 sealed class EventDTO {
 
     @kotlinx.serialization.Serializable

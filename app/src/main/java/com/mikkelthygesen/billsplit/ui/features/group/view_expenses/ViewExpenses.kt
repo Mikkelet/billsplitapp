@@ -76,7 +76,10 @@ private fun YourDebt(
                 .weight(1f)
                 .wrapContentWidth(),
             onClick = {
-                val payment = Payment(viewModel.getLoggedIn(), debt.first, debt.second)
+                val payment = Payment(
+                    createdBy = viewModel.getLoggedIn(),
+                    paidTo = debt.first,
+                    amount = debt.second)
                 viewModel.addPayment(payment)
             }) {
             Text(text = "PAY")
