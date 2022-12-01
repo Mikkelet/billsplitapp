@@ -18,7 +18,7 @@ object ServerApi {
         }.body()
     }
 
-    suspend fun getGroups(body: GetGroups.Request): GetGroups.Response {
+    suspend fun getGroups(body: GetGroupsDTO.Request): GetGroupsDTO.Response {
         return KtorClient.client.post("getGroups") {
             setBody(body)
         }.body()

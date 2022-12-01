@@ -22,28 +22,15 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.ui.widgets.ParticipantView
+import com.mikkelthygesen.billsplit.sampleIndividualExpenses
+import com.mikkelthygesen.billsplit.sampleSharedExpenses
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.ExpenseViewHeader
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.ParticipantView
 import com.mikkelthygesen.billsplit.ui.widgets.SharedExpensesView
 import kotlin.math.roundToInt
 
 
 private val SCROLL_OFFSET = 200.dp.value
-
-
-@Composable
-fun QuickExpenseView(
-    groupExpense: GroupExpense
-) {
-    ExpenseView(groupExpense = groupExpense)
-}
-
-@Composable
-fun AddSharedExpense(
-    groupExpense: GroupExpense
-) {
-    ExpenseView(groupExpense = groupExpense)
-}
-
 
 @Composable
 fun ExpenseView(
@@ -62,7 +49,7 @@ fun ExpenseView(
         color = MaterialTheme.colors.background,
     ) {
         Column(modifier = Modifier.verticalScroll(scrollState)) {
-            Header(groupExpense)
+            ExpenseViewHeader(groupExpense)
             SharedExpensesView(
                 modifier = Modifier.onGloballyPositioned {
                     sharedExpensePositionY = it.positionInParent().y - SCROLL_OFFSET
@@ -95,84 +82,8 @@ fun ExpenseView(
     }
 }
 
-@Composable
-fun DescriptionTextField(
-    modifier: Modifier,
-    initialValue: String,
-    onChange: (String) -> Unit
-) {
-    var textFieldValue by remember {
-        mutableStateOf(TextFieldValue(text = initialValue))
-    }
-    val focusRequester = LocalFocusManager.current
-    TextField(
-        modifier = modifier
-            .fillMaxWidth(),
-        value = textFieldValue,
-        leadingIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_baseline_edit_24),
-                contentDescription = "",
-                tint = MaterialTheme.colors.onBackground
-            )
-        },
-        textStyle = TextStyle(
-            color = MaterialTheme.colors.onBackground
-        ),
-        singleLine = true,
-        onValueChange = {
-            textFieldValue = it
-            onChange(it.text)
-        },
-        placeholder = { Text(text = "Enter a description") },
-        colors = TextFieldDefaults.textFieldColors(
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            backgroundColor = MaterialTheme.colors.background.copy(alpha = .7f),
-            textColor = Color.White
-        ),
-        keyboardActions = KeyboardActions {
-            focusRequester.clearFocus()
-        },
-    )
-}
-
-@Composable
-private fun Header(
-    groupExpense: GroupExpense
-) {
-    Box(Modifier.padding(bottom = 32.dp)) {
-        Image(
-            painter = painterResource(id = R.drawable.best_restraunts),
-            contentDescription = "",
-        )
-        DescriptionTextField(
-            Modifier.align(Alignment.BottomStart),
-            initialValue = groupExpense.descriptionState
-        ) {
-            groupExpense.descriptionState = it
-        }
-    }
-}
-
 @Preview
 @Composable
 fun PreviewExpenseView() {
-    val shared = 100F
-    val participants =
-        (0..3).map {
-            IndividualExpense(
-                Person("id$it", "Person $it"),
-                1 * 100F
-            )
-        }
-    val groupExpense = GroupExpense(
-        id = "000",
-        participants.first().person,
-        "",
-        payee = participants.first().person,
-        sharedExpense = shared,
-        individualExpenses = participants
-    )
-    ExpenseView(groupExpense = groupExpense)
+    ExpenseView(groupExpense = sampleSharedExpenses.first())
 }

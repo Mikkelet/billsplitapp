@@ -68,6 +68,11 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
+    fun addFriend(userId: String){
+        updateUiState(UiState.Loading)
+        viewModelScope.launch { api.addFriend(userId) }
+    }
+
     companion object {
         fun getLoggedIn() = Person("j6ETnEOrCpOJt7lBt2pU", "Mikkel")
     }

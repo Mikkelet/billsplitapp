@@ -24,7 +24,7 @@ import com.mikkelthygesen.billsplit.ui.features.group.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
-import com.mikkelthygesen.billsplit.ui.widgets.dialogs.ConfirmChangesDialog
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.ConfirmChangesDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

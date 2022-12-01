@@ -6,6 +6,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.PersonView
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.PersonViewFlags
 
 @Composable
 fun SharedExpensesView(

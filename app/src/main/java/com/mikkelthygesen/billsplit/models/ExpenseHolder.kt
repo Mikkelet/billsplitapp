@@ -14,8 +14,6 @@ data class IndividualExpense(
     var expenseState by mutableStateOf(expense)
     var isParticipantState by mutableStateOf(isParticipant)
 
-    fun reset() = IndividualExpense(person, 0F, true)
-
     fun isChanged() = isParticipantState != isParticipant || expense != expenseState
 
     fun revertChanges() {

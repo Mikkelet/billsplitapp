@@ -1,37 +1,35 @@
 package com.mikkelthygesen.billsplit.ui.features.group.group
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.*
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.sampleSharedExpenses
+import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.ChangesListView
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewExpense
+import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewPayment
+import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -80,8 +78,8 @@ fun GroupEventsView(
                     }
                 if (event.createdBy != viewModel.getLoggedIn() && event !is Payment) {
                     if (latestIndex)
-                        ProfilePicture(
-                            person = event.createdBy,
+                        CircularImageView(
+                            imageResId = event.createdBy.pfpResId,
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
@@ -95,12 +93,12 @@ fun GroupEventsView(
                 ) {
                     val isLatestMessage = index == 0
                     when (event) {
-                        is GroupExpense -> SharedExpenseListItem(
+                        is GroupExpense -> ListViewExpense(
                             groupExpense = event,
                             isFocused = index == focusListItemIndex,
                             isLastMessage = isLatestMessage
                         )
-                        is Payment -> PaymentListView(payment = event)
+                        is Payment -> ListViewPayment(payment = event)
                         is GroupExpensesChanged -> ChangesListView(
                             groupExpensesChanged = event,
                             isLastMessage = isLatestMessage,
@@ -118,226 +116,14 @@ fun GroupEventsView(
                 }
                 if (event.createdBy == viewModel.getLoggedIn() && event !is Payment) {
                     if (latestIndex)
-                        ProfilePicture(
-                            person = event.createdBy,
+                        CircularImageView(
+                            imageResId = event.createdBy.pfpResId,
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
                                 .padding(start = 8.dp)
                         )
                     else Box(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProfilePicture(modifier: Modifier, person: Person) {
-    RoundImage(modifier = modifier, resId = person.pfpResId)
-}
-
-@Composable
-private fun RoundImage(modifier: Modifier = Modifier, resId: Int) {
-    Image(
-        modifier = modifier
-            .aspectRatio(1f)
-            .clip(CircleShape),
-        painter = painterResource(id = resId),
-        contentDescription = "",
-        contentScale = ContentScale.Crop
-    )
-}
-
-@Composable
-private fun SmallRoundImage(resId: Int) {
-    RoundImage(
-        Modifier
-            .height(20.dp)
-            .padding(horizontal = 16.dp),
-        resId = resId
-    )
-}
-
-@Composable
-private fun DividerLine() {
-    Box(
-        Modifier
-            .padding(8.dp)
-            .height(1.dp)
-            .fillMaxWidth()
-            .background(MaterialTheme.colors.onPrimary.copy(alpha = 0.5f))
-    )
-}
-
-@Composable
-private fun PaymentListView(payment: Payment) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "${payment.createdBy.nameState} paid $${payment.amount.fmt2dec()} to ${payment.paidTo.nameState}",
-            style = TextStyle(color = Color.Gray)
-        )
-    }
-}
-
-@Composable
-private fun ChangesListView(
-    groupExpensesChanged: GroupExpensesChanged,
-    isLastMessage: Boolean,
-    onClickGoToExpense: (String) -> Unit
-) {
-    val original = groupExpensesChanged.groupExpenseOriginal
-    val updated = groupExpensesChanged.groupExpenseEdited
-    var expanded by remember {
-        mutableStateOf(isLastMessage)
-    }
-    val wasTotalChanged = original.total != updated.total
-    val wasPayerChanged = original.payeeState != updated.payeeState
-    val wasDescriptionChanged =
-        original.descriptionState != updated.descriptionState
-    val wasParticipantsChanged = original.getParticipants() != updated.getParticipants()
-
-    ExpandableView(
-        modifier = Modifier
-            .wrapContentHeight()
-            .clickable { expanded = !expanded },
-        expanded = expanded,
-        iconResId = R.drawable.ic_baseline_search_24,
-        onIconClick = { onClickGoToExpense(groupExpensesChanged.groupExpenseOriginal.id) }
-    ) {
-        Text(text = "${groupExpensesChanged.createdBy.nameState} made changes to an expense")
-        if (expanded) {
-            Column {
-                if (wasTotalChanged) {
-                    DividerLine()
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_money)
-                        Text(text = "$${groupExpensesChanged.groupExpenseOriginal.total.fmt2dec()} ▶ $${groupExpensesChanged.groupExpenseEdited.total.fmt2dec()}")
-                    }
-                }
-                if (wasPayerChanged) {
-                    DividerLine()
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_money)
-                        Text(text = "${original.payeeState.nameState} ▶ ${updated.payeeState.nameState}")
-                    }
-                }
-                if (wasDescriptionChanged) {
-                    DividerLine()
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_baseline_edit_24)
-                        Text(
-                            text = "\"${updated.descriptionState}\"",
-                            style = TextStyle(fontStyle = FontStyle.Italic)
-                        )
-                    }
-                }
-                if (wasParticipantsChanged) {
-                    DividerLine()
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_baseline_groups_24)
-                        ParticipantsView(list = original.getParticipants())
-                        Text(text = " ▶ ")
-                        ParticipantsView(list = updated.getParticipants())
-                    }
-                }
-                if (wasDescriptionChanged) {
-                    DividerLine()
-                    Column {
-                        original.individualExpenses.mapIndexed { index, originalExpense ->
-                            val updatedExpense = updated.individualExpenses[index]
-                            if (originalExpense.expenseState != updatedExpense.expenseState) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    ProfilePicture(
-                                        Modifier
-                                            .height(20.dp)
-                                            .padding(horizontal = 16.dp),
-                                        person = originalExpense.person
-                                    )
-                                    Text(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
-                                }
-                                if (index != original.individualExpenses.lastIndex)
-                                    DividerLine()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SharedExpenseListItem(
-    viewModel: GroupViewModel = viewModel(),
-    groupExpense: GroupExpense,
-    isFocused: Boolean,
-    isLastMessage: Boolean
-) {
-    var expanded by remember {
-        mutableStateOf(isLastMessage)
-    }
-    ExpandableView(
-        modifier = Modifier.let {
-            if (isFocused)
-                it
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colors.secondary)
-                    .padding(2.dp)
-                    .clickable { expanded = !expanded }
-            else it.clickable { expanded = !expanded }
-        },
-        expanded = expanded,
-        iconResId = R.drawable.ic_baseline_edit_24,
-        onIconClick = { viewModel.editSharedExpense(groupExpense) }
-    ) {
-        if (groupExpense.descriptionState.isNotBlank())
-            Text(
-                text = "\"${groupExpense.descriptionState}\"",
-                style = TextStyle(fontSize = 18.sp, fontStyle = FontStyle.Italic)
-            )
-        else Text(text = "${groupExpense.createdBy.nameState} added a new expense!")
-        Box(modifier = Modifier.height(8.dp))
-        if (!expanded)
-            Text(
-                text = "$${groupExpense.total.fmt2dec()}",
-                style = TextStyle(fontStyle = FontStyle.Italic, fontSize = 20.sp)
-            )
-        else {
-            Text(text = "$${groupExpense.total.fmt2dec()} was paid by ${groupExpense.payeeState.nameState}")
-            Box(modifier = Modifier.height(8.dp))
-            Row {
-                Column {
-                    if (groupExpense.sharedExpenseState > 0F)
-                        Text(text = "Shared")
-                    groupExpense.individualExpenses.map {
-                        if (it.expenseState > 0F) {
-                            Text(text = it.person.nameState)
-                        }
-                    }
-                }
-                Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-                    if (groupExpense.sharedExpenseState > 0f)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "$${groupExpense.sharedExpenseState.fmt2dec()} / ")
-                            val participants =
-                                groupExpense.individualExpenses
-                                    .filter { it.isParticipantState }
-                                    .map { it.person }
-                            ParticipantsView(list = participants)
-                        }
-                    groupExpense.individualExpenses.map {
-                        if (it.expenseState > 0F) {
-                            Text(text = "$${it.expenseState.fmt2dec()}")
-                        }
-                    }
                 }
             }
         }
@@ -368,58 +154,6 @@ private fun Menu(
     }
 }
 
-@Composable
-private fun ParticipantsView(list: List<Person>) {
-    Row(Modifier.height(20.dp)) {
-        list.map {
-            ProfilePicture(person = it, modifier = Modifier.padding(horizontal = 2.dp))
-        }
-    }
-}
-
-@Composable
-private fun ExpandableView(
-    modifier: Modifier = Modifier,
-    expanded: Boolean = false,
-    onIconClick: () -> Unit,
-    iconResId: Int,
-    content: @Composable () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colors.primary)
-            .padding(vertical = 12.dp, horizontal = 8.dp),
-        Arrangement.SpaceBetween
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(end = 16.dp),
-            horizontalAlignment = if (!expanded) Alignment.CenterHorizontally else Alignment.Start
-        ) {
-            content()
-        }
-        if (expanded)
-            IconButton(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .wrapContentWidth()
-                    .fillMaxHeight(),
-                onClick = onIconClick,
-            ) {
-                Icon(
-                    painter = painterResource(id = iconResId),
-                    contentDescription = "Edit expense",
-                    tint = MaterialTheme.colors.secondary
-                )
-            }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun PreviewMenu() {
@@ -435,7 +169,7 @@ private fun PreviewSharedExpenseListItem() {
             .height(200.dp)
             .padding(20.dp)
     ) {
-        SharedExpenseListItem(
+        ListViewExpense(
             viewModel = GroupViewModel(),
             groupExpense = groupExpense,
             isLastMessage = true,

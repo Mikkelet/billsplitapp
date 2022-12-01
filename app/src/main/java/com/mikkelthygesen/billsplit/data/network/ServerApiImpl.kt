@@ -31,7 +31,7 @@ class ServerApiImpl {
     }
 
     suspend fun getGroups(userId: String): List<Group> {
-        val dtos = ServerApi.getGroups(GetGroups.Request(userId))
+        val dtos = ServerApi.getGroups(GetGroupsDTO.Request(userId))
         return dtos.groups.map { it.toGroup() }
     }
 }

@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.widgets
+package com.mikkelthygesen.billsplit.ui.features.group.widgets
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier

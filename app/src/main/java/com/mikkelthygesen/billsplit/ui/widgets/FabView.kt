@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.widgets
+        package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.padding

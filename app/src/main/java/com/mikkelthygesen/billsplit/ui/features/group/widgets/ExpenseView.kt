@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.widgets
+package com.mikkelthygesen.billsplit.ui.features.group.widgets
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
@@ -27,6 +27,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.widgets.ExpenseTextField
 
 data class PersonViewFlags(
     val enableEditName: Boolean,
