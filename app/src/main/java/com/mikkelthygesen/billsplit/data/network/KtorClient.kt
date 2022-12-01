@@ -36,7 +36,6 @@ object KtorClient {
         if (BuildConfig.DEBUG) "http://10.0.2.2:5000/billsplittapp/us-central1/" else "https://us-central1-billsplittapp.cloudfunctions.net"
 
     val client = HttpClient {
-
         install(ContentNegotiation) {
             json(json)
         }
@@ -55,7 +54,6 @@ object KtorClient {
         }
     }.apply {
         plugin(HttpSend).intercept { req ->
-
             println("NETW --> ${req.method.value}(${req.url.build()})")
             Timber.i("NETW --- ${req.body}")
             val call = execute(req)

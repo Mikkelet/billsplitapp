@@ -133,14 +133,40 @@ fun GroupEventsView(
 }
 
 @Composable
-private fun ProfilePicture(person: Person, modifier: Modifier) {
+private fun ProfilePicture(modifier: Modifier, person: Person) {
+    RoundImage(modifier = modifier, resId = person.pfpResId)
+}
+
+@Composable
+private fun RoundImage(modifier: Modifier = Modifier, resId: Int) {
     Image(
         modifier = modifier
             .aspectRatio(1f)
             .clip(CircleShape),
-        painter = painterResource(id = person.pfpResId),
-        contentDescription = "Person profile picture for ${person.nameState}",
+        painter = painterResource(id = resId),
+        contentDescription = "",
         contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
+private fun SmallRoundImage(resId: Int) {
+    RoundImage(
+        Modifier
+            .height(20.dp)
+            .padding(horizontal = 16.dp),
+        resId = resId
+    )
+}
+
+@Composable
+private fun DividerLine() {
+    Box(
+        Modifier
+            .padding(8.dp)
+            .height(1.dp)
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.onPrimary.copy(alpha = 0.5f))
     )
 }
 
@@ -170,51 +196,77 @@ private fun ChangesListView(
     var expanded by remember {
         mutableStateOf(isLastMessage)
     }
+    val wasTotalChanged = original.total != updated.total
+    val wasPayerChanged = original.payeeState != updated.payeeState
+    val wasDescriptionChanged =
+        original.descriptionState != updated.descriptionState
+    val wasParticipantsChanged = original.getParticipants() != updated.getParticipants()
+
     ExpandableView(
-        modifier = Modifier.clickable { expanded = !expanded },
+        modifier = Modifier
+            .wrapContentHeight()
+            .clickable { expanded = !expanded },
         expanded = expanded,
         iconResId = R.drawable.ic_baseline_search_24,
         onIconClick = { onClickGoToExpense(groupExpensesChanged.groupExpenseOriginal.id) }
     ) {
         Text(text = "${groupExpensesChanged.createdBy.nameState} made changes to an expense")
         if (expanded) {
-            Row {
-                val wasTotalChanged = original.total != updated.total
-                val wasPayerChanged = original.payeeState != updated.payeeState
-                val wasDescriptionChanged =
-                    original.descriptionState != updated.descriptionState
-                val wasParticipantsChanged = original.getParticipants() != updated.getParticipants()
-                Column(Modifier.height(intrinsicSize = IntrinsicSize.Max), Arrangement.Top) {
-                    if (wasTotalChanged) Text(text = "- Total")
-                    if (wasPayerChanged) Text(text = "- Payer")
-                    if (wasDescriptionChanged) Text(text = "- Description")
-                    if (wasParticipantsChanged) Text(text = "- Shared")
-                    original.individualExpenses.mapIndexed { index, originalExpense ->
-                        val updatedExpense = updated.individualExpenses[index]
-                        if (originalExpense.expenseState != updatedExpense.expenseState)
-                            Text(text = "- ${originalExpense.person.nameState}")
+            Column {
+                if (wasTotalChanged) {
+                    DividerLine()
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SmallRoundImage(R.drawable.ic_money)
+                        Text(text = "$${groupExpensesChanged.groupExpenseOriginal.total.fmt2dec()} ▶ $${groupExpensesChanged.groupExpenseEdited.total.fmt2dec()}")
                     }
                 }
-                Column(Modifier.padding(horizontal = 12.dp)) {
-                    if (wasTotalChanged)
-                        Text(text = "$${groupExpensesChanged.groupExpenseOriginal.total.fmt2dec()} ▶ $${groupExpensesChanged.groupExpenseEdited.total.fmt2dec()}")
-                    if (wasPayerChanged)
+                if (wasPayerChanged) {
+                    DividerLine()
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SmallRoundImage(R.drawable.ic_money)
                         Text(text = "${original.payeeState.nameState} ▶ ${updated.payeeState.nameState}")
-                    if (wasDescriptionChanged)
+                    }
+                }
+                if (wasDescriptionChanged) {
+                    DividerLine()
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SmallRoundImage(R.drawable.ic_baseline_edit_24)
                         Text(
                             text = "\"${updated.descriptionState}\"",
                             style = TextStyle(fontStyle = FontStyle.Italic)
                         )
-                    if (wasParticipantsChanged)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            ParticipantsView(list = original.getParticipants())
-                            Text(text = " ▶ ")
-                            ParticipantsView(list = updated.getParticipants())
+                    }
+                }
+                if (wasParticipantsChanged) {
+                    DividerLine()
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SmallRoundImage(R.drawable.ic_baseline_groups_24)
+                        ParticipantsView(list = original.getParticipants())
+                        Text(text = " ▶ ")
+                        ParticipantsView(list = updated.getParticipants())
+                    }
+                }
+                if (wasDescriptionChanged) {
+                    DividerLine()
+                    Column {
+                        original.individualExpenses.mapIndexed { index, originalExpense ->
+                            val updatedExpense = updated.individualExpenses[index]
+                            if (originalExpense.expenseState != updatedExpense.expenseState) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    ProfilePicture(
+                                        Modifier
+                                            .height(20.dp)
+                                            .padding(horizontal = 16.dp),
+                                        person = originalExpense.person
+                                    )
+                                    Text(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
+                                }
+                                if (index != original.individualExpenses.lastIndex)
+                                    DividerLine()
+                            }
                         }
-                    original.individualExpenses.mapIndexed { index, originalExpense ->
-                        val updatedExpense = updated.individualExpenses[index]
-                        if (originalExpense.expenseState != updatedExpense.expenseState)
-                            Text(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
                     }
                 }
             }

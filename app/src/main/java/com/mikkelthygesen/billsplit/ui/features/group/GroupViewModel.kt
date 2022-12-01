@@ -93,9 +93,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                     onSuccess = {
                         _mutableEventsStateFlow.value = eventStateFlow.value.plus(groupExpense)
                     },
-                    onFailure = {
-                        println("qqq error submitting $it")
-                    }
+                    onFailure = ::println
                 )
             }
         } else if (originalCopy != groupExpense) {
@@ -114,9 +112,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                         _mutableEventsStateFlow.value =
                             eventStateFlow.value.plus(groupExpensesChanged)
                     },
-                    onFailure = {
-                        println("qqq error submitting $it")
-                    }
+                    onFailure = ::println
                 )
             }
         }
