@@ -1,13 +1,11 @@
 package com.mikkelthygesen.billsplit.data.network
 
-import androidx.compose.ui.res.dimensionResource
+import com.mikkelthygesen.billsplit.data.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.network.dto.*
-import com.mikkelthygesen.billsplit.models.Group
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.models.Payment
+import com.mikkelthygesen.billsplit.models.*
 import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
+import kotlin.math.log
 
 @Suppress("OPT_IN_USAGE")
 class ServerApiImpl {
@@ -38,12 +36,16 @@ class ServerApiImpl {
         return dtos.groups.map { it.toGroup() }
     }
 
-    suspend fun addFriend(userId: String): AddFriendDTO.Response {
+    suspend fun addFriend(loggedInUserId: String, userId: String): AddFriendDTO.Response {
         val addFriendRequestDTO = AddFriendDTO.Request(
-            MainViewModel.getLoggedIn().uid,
+            loggedInUserId,
             userId,
             System.currentTimeMillis()
         )
         return ServerApi.addFriend(addFriendRequestDTO)
+    }
+
+    suspend fun getUser(uid: String): Person {
+        return Person("", "Mikkel")
     }
 }

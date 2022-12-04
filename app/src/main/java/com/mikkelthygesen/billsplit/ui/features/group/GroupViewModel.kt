@@ -1,7 +1,6 @@
 package com.mikkelthygesen.billsplit.ui.features.group
 
 import androidx.lifecycle.viewModelScope
-import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.*
@@ -19,10 +18,11 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     private val api = ServerApiImpl()
 
     object Expenses : UiState
-    object ShowDebt : UiState
+    class ShowDebt(val user: Person) : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
     object Settings : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
+    object LoggedOut : DialogState
 
     private val _people = mutableListOf<Person>()
     val people: List<Person> = _people
@@ -50,27 +50,36 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun addExpense() {
-        val groupExpense = GroupExpense(
-            id = group.id,
-            createdBy = getLoggedIn(),
-            description = "",
-            payee = getLoggedIn(),
-            sharedExpense = 0F,
-            individualExpenses = people.toNewIndividualExpenses(),
-        )
-        _mutableUiStateFlow.value = EditExpense(groupExpense)
+        checkAuthStatus {
+            val groupExpense = GroupExpense(
+                id = group.id,
+                createdBy = it,
+                description = "",
+                payee = it,
+                sharedExpense = 0F,
+                individualExpenses = people.toNewIndividualExpenses(),
+            )
+            _mutableUiStateFlow.value = EditExpense(groupExpense)
+        }
     }
 
-    suspend fun addPayment(payment: Payment){
-        val response = kotlin.runCatching {
-            api.addEvent(group.id, payment)
-        }
-        response.fold(
-            onSuccess = {
-                _mutableEventsStateFlow.value = eventStateFlow.value.plus(payment)
-            },
-            onFailure = Timber::e
-        )
+    suspend fun addPayment(paidTo: Person, amount: Float) {
+        if (loggedInUser != null) {
+            val payment = Payment(
+                createdBy = loggedInUser,
+                paidTo = paidTo,
+                amount = amount
+            )
+            val response = kotlin.runCatching {
+                api.addEvent(group.id, payment)
+            }
+            response.fold(
+                onSuccess = {
+                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(payment)
+                },
+                onFailure = Timber::e
+            )
+        } else onLoggedOutCallback()
     }
 
     fun addPerson(name: String) {
@@ -124,7 +133,9 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun showDebt() {
-        updateUiState(ShowDebt)
+        checkAuthStatus {
+            updateUiState(ShowDebt(it))
+        }
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {
@@ -135,5 +146,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         updateUiState(Expenses)
     }
 
-    fun getLoggedIn() = Person("j6ETnEOrCpOJt7lBt2pU", "Mikkel", R.drawable.glimmer_pfp)
+    override fun onLoggedOutCallback() {
+        showDialog(LoggedOut)
+    }
 }

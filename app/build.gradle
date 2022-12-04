@@ -90,6 +90,10 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
+    // firebase auth
+    implementation platform('com.google.firebase:firebase-bom:31.1.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.android.gms:play-services-auth:20.4.0'
 
     // hilt
     implementation "com.google.dagger:hilt-android:2.44"
@@ -102,3 +106,5 @@ dependencies {
 kapt {
     correctErrorTypes true
 }
+
+apply plugin: 'com.google.gms.google-services'

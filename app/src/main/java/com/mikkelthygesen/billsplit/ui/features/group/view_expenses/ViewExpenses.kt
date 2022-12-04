@@ -24,10 +24,10 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun ViewExpenses(
-    viewModel: GroupViewModel = viewModel()
+    viewModel: GroupViewModel = viewModel(),
+    user: Person
 ) {
     val eventsFlow = viewModel.eventStateFlow.collectAsState()
-    val user = viewModel.getLoggedIn()
     val payments: List<Payment> = eventsFlow.value.filterIsInstance<Payment>()
     val groupExpenses: List<GroupExpense> = eventsFlow.value.filterIsInstance<GroupExpense>()
 
@@ -92,13 +92,8 @@ private fun YourDebt(
                     .wrapContentWidth(),
                 onClick = {
                     isLoading = true
-                    val payment = Payment(
-                        createdBy = viewModel.getLoggedIn(),
-                        paidTo = debt.first,
-                        amount = debt.second
-                    )
                     coroutineScope.launch {
-                        viewModel.addPayment(payment)
+                        viewModel.addPayment(debt.first, debt.second)
                         isLoading = false
                     }
                 }) {
@@ -110,7 +105,7 @@ private fun YourDebt(
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewViewExpense() {
-    ViewExpenses()
+    ViewExpenses(user = Person("", ""))
 }
 
 @Preview

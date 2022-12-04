@@ -29,6 +29,9 @@ fun PasswordTextField(
     _PasswordTextField(
         value = value,
         placeHolder = "Password",
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Next
+        ),
         onChange = onChange,
         isError = { value.length < 6 }
     )

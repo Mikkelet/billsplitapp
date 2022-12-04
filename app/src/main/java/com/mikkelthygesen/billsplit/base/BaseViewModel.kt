@@ -2,6 +2,9 @@ package com.mikkelthygesen.billsplit.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikkelthygesen.billsplit.data.auth.AuthProvider
+import com.mikkelthygesen.billsplit.data.auth.authProvider
+import com.mikkelthygesen.billsplit.models.Person
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -9,6 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel() {
+
+    val loggedInUser: Person? = authProvider.loggedInUser
+
     interface DialogState {
         object DismissDialogs : DialogState
     }
@@ -22,7 +28,7 @@ abstract class BaseViewModel : ViewModel() {
         object OnBackPressed : UiEvent
     }
 
-    abstract val _mutableUiStateFlow: MutableStateFlow<UiState>
+    protected abstract val _mutableUiStateFlow: MutableStateFlow<UiState>
     val uiStateFlow: StateFlow<UiState> by lazy { _mutableUiStateFlow }
 
     protected val _mutableDialogStateFlow =
@@ -34,6 +40,10 @@ abstract class BaseViewModel : ViewModel() {
 
     fun onBackButtonPressed() {
         emitUiEvent(UiEvent.OnBackPressed)
+    }
+
+    fun showDialog(dialog: DialogState) {
+        _mutableDialogStateFlow.value = dialog
     }
 
     fun dismissDialog() {
@@ -49,4 +59,13 @@ abstract class BaseViewModel : ViewModel() {
     fun updateUiState(event: UiState) {
         _mutableUiStateFlow.value = event
     }
+
+
+    fun checkAuthStatus(successCallback: (Person) -> Unit) {
+        if (authProvider.isUserLoggedIn())
+            successCallback(authProvider.loggedInUser!!)
+        else onLoggedOutCallback()
+    }
+
+    abstract fun onLoggedOutCallback()
 }

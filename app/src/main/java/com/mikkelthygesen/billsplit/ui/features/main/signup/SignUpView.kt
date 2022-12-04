@@ -12,7 +12,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,7 +27,9 @@ fun SignUpView(
     mainViewModel: MainViewModel = viewModel()
 ) {
     _SignUpView(
-        onSignUpWithCredentials = { x, y -> },
+        onSignUpWithCredentials = { email, password ->
+            mainViewModel.signUpEmail(email, password)
+        },
         onSignUpWithGoogleClicked = { },
         onSignUpWithFacebookClicked = {},
         onAlreadySignedUpClicked = mainViewModel::showSignIn,
@@ -41,8 +42,8 @@ fun SignInView(
     mainViewModel: MainViewModel = viewModel()
 ) {
     _SignUpView(
-        onSignUpWithCredentials = { x, y -> },
-        onSignUpWithGoogleClicked = { },
+        onSignUpWithCredentials = { email, password -> mainViewModel.signInEmail(email, password) },
+        onSignUpWithGoogleClicked = {},
         onSignUpWithFacebookClicked = {},
         onAlreadySignedUpClicked = mainViewModel::showSignUp
     )
@@ -78,7 +79,11 @@ private fun _SignUpView(
                 text = title,
                 style = MaterialTheme.typography.h4.copy(textAlign = TextAlign.Center)
             )
-            Box(modifier = Modifier.defaultMinSize(16.dp).height(50.dp))
+            Box(
+                modifier = Modifier
+                    .defaultMinSize(16.dp)
+                    .height(50.dp)
+            )
             Box(
                 modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center

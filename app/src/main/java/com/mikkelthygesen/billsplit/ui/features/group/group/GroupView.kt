@@ -13,9 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -76,7 +74,7 @@ fun GroupEventsView(
                         eventsState[index - 1].createdBy != event.createdBy
                                 || eventsState[index - 1] is Payment
                     }
-                if (event.createdBy != viewModel.getLoggedIn() && event !is Payment) {
+                if (event.createdBy != viewModel.loggedInUser && event !is Payment) {
                     if (latestIndex)
                         CircularImageView(
                             imageResId = event.createdBy.pfpResId,
@@ -114,7 +112,7 @@ fun GroupEventsView(
                         )
                     }
                 }
-                if (event.createdBy == viewModel.getLoggedIn() && event !is Payment) {
+                if (event.createdBy == viewModel.loggedInUser && event !is Payment) {
                     if (latestIndex)
                         CircularImageView(
                             imageResId = event.createdBy.pfpResId,

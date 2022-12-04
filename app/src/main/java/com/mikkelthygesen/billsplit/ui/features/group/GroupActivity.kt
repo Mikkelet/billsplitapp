@@ -67,7 +67,7 @@ class GroupActivity : ComponentActivity() {
 
                 Scaffold(
                     topBar = { TopBar() },
-                    bottomBar = { BottomBar(uiState)}
+                    bottomBar = { BottomBar(uiState) }
                 ) {
                     when (val state = dialogState.value) {
                         is GroupViewModel.ConfirmChangesDialog -> ConfirmChangesDialog(groupExpense = state.groupExpense)
@@ -76,7 +76,7 @@ class GroupActivity : ComponentActivity() {
                     Crossfade(targetState = uiState, modifier = Modifier.padding(it)) { state ->
                         when (state) {
                             is GroupViewModel.Expenses -> GroupEventsView()
-                            is GroupViewModel.ShowDebt -> ViewExpenses()
+                            is GroupViewModel.ShowDebt -> ViewExpenses(user = state.user)
                             is GroupViewModel.EditExpense -> ExpenseView(groupExpense = state.groupExpense)
                             is BaseViewModel.UiState.Loading -> LoadingView()
                         }

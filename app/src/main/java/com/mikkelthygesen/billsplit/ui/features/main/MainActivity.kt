@@ -7,6 +7,7 @@ import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.FirebaseApp
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.Group
@@ -60,20 +62,36 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
-                Crossfade(targetState = uiStateFlow.value) {
-                    when (it) {
-                        MainViewModel.SignIn -> SignInView()
-                        MainViewModel.SignUp -> SignUpView()
-                        else -> MainView(
-                            uiState = uiStateFlow.value,
-                            dialogState = dialogStateFlow.value
-                        )
+                Scaffold(
+                    backgroundColor = MaterialTheme.colors.background,
+                    topBar = { if (showNavigation(uiStateFlow.value)) MainTopBar() },
+                    bottomBar = { if (showNavigation(uiStateFlow.value)) BottomNavBar() }
+                ) { padding ->
+                    Crossfade(
+                        modifier = Modifier.padding(padding),
+                        targetState = uiStateFlow.value
+                    ) { uiState ->
+                        when (uiState) {
+                            MainViewModel.SignIn -> SignInView()
+                            MainViewModel.SignUp -> SignUpView()
+                            else -> MainView(
+                                uiState = uiStateFlow.value,
+                                dialogState = dialogStateFlow.value
+                            )
+                        }
                     }
                 }
 
+
             }
         }
+    }
+}
+
+private fun showNavigation(uiState: BaseViewModel.UiState): Boolean {
+    return when (uiState) {
+        is MainViewModel.SignUp, MainViewModel.SignIn -> false
+        else -> true
     }
 }
 
@@ -82,26 +100,16 @@ fun MainView(
     dialogState: BaseViewModel.DialogState,
     uiState: BaseViewModel.UiState
 ) {
-    Scaffold(
-        backgroundColor = MaterialTheme.colors.background,
-        topBar = { MainTopBar() },
-        bottomBar = { BottomNavBar() }
-    ) {
-        when (dialogState) {
-            is BaseViewModel.DialogState.DismissDialogs -> Unit
-        }
 
-        Crossfade(
-            modifier = Modifier.padding(it),
-            targetState = uiState
-        ) { uiState ->
-            when (uiState) {
-                is MainViewModel.AddGroup -> AddGroupView(group = uiState.group)
-                is MainViewModel.Groups -> GroupsList(groups = uiState.groups)
-                is BaseViewModel.UiState.Loading -> LoadingView()
-                else -> Text(text = ("Hello"))
-            }
-        }
+    when (dialogState) {
+        is BaseViewModel.DialogState.DismissDialogs -> Unit
+    }
+
+    when (uiState) {
+        is MainViewModel.AddGroup -> AddGroupView(group = uiState.group)
+        is MainViewModel.Groups -> GroupsList(groups = uiState.groups)
+        is BaseViewModel.UiState.Loading -> LoadingView()
+        else -> Text(text = ("Hello"))
     }
 }
 
@@ -151,26 +159,25 @@ private fun MainTopBar(
 ) {
     val uiStateFlow = viewModel.uiStateFlow.collectAsState()
     val uiState = uiStateFlow.value
-    Crossfade(targetState = uiState) { state ->
-        TopAppBar(
-            title = { Text("Main!") },
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = MaterialTheme.colors.onPrimary,
-            actions = {
-                when (state) {
-                    is MainViewModel.AddGroup -> {
-                        IconButton(
-                            iconResId = R.drawable.ic_check,
-                            color = MaterialTheme.colors.onPrimary
-                        ) {
-                            if (state.group.nameState.isNotBlank())
-                                viewModel.saveGroup(state.group)
-                        }
+    TopAppBar(
+        title = { Text("Main!") },
+        backgroundColor = MaterialTheme.colors.primary,
+        contentColor = MaterialTheme.colors.onPrimary,
+        actions = {
+            when (uiState) {
+                is MainViewModel.AddGroup -> {
+                    IconButton(
+                        iconResId = R.drawable.ic_check,
+                        color = MaterialTheme.colors.onPrimary
+                    ) {
+                        if (uiState.group.nameState.isNotBlank())
+                            viewModel.saveGroup(uiState.group)
                     }
                 }
             }
-        )
-    }
+        }
+    )
+
 }
 
 @Preview

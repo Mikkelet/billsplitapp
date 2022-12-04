@@ -17,9 +17,9 @@ import com.mikkelthygesen.billsplit.ui.features.main.widgets.ProfileHeader
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
 
 @Composable
-fun ProfileView() {
+fun ProfileView(user: Person) {
     Column {
-        ProfileHeader()
+        ProfileHeader(user)
         FriendsView(friends = samplePeopleShera)
     }
 }
@@ -46,5 +46,5 @@ fun FriendsView(friends: List<Person>) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview() {
-    ProfileView()
+    ProfileView(Person())
 }
