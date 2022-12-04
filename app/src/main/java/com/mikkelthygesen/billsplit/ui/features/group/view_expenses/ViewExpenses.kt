@@ -3,10 +3,9 @@ package com.mikkelthygesen.billsplit.ui.features.group.view_expenses
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,25 +27,27 @@ fun ViewExpenses(
 ) {
     val eventsFlow = viewModel.eventStateFlow.collectAsState()
     val user = viewModel.getLoggedIn()
-    val payments = eventsFlow.value.filterIsInstance<Payment>()
-    val groupExpenses = eventsFlow.value.filterIsInstance<GroupExpense>()
+    val payments: List<Payment> = eventsFlow.value.filterIsInstance<Payment>()
+    val groupExpenses: List<GroupExpense> = eventsFlow.value.filterIsInstance<GroupExpense>()
 
     val calculator = DebtCalculator(viewModel.people, groupExpenses, payments)
     val debtForPerson = calculator.calculateEffectiveDebtOfPerson(user)
     calculator.logDebt(user)
-    (debtForPerson)
-        .sortedBy { it.second }
-        .reversed().map {
-            Box(
-                modifier = Modifier.height(64.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (it.second > 0)
-                    YourDebt(debt = it)
-                else if (it.second < 0)
-                    DebtToYou(debt = it)
+    Column {
+        (debtForPerson)
+            .sortedBy { it.second }
+            .reversed().map {
+                Box(
+                    modifier = Modifier.height(64.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    if (it.second > 0)
+                        YourDebt(debt = it)
+                    else if (it.second < 0)
+                        DebtToYou(debt = it)
+                }
             }
-        }
+    }
 }
 
 @Composable
@@ -62,6 +63,11 @@ private fun YourDebt(
     viewModel: GroupViewModel = viewModel(),
     debt: Pair<Person, Float>
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
+
     Row(
         modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -71,19 +77,32 @@ private fun YourDebt(
             text = "You owe $${debt.second} to ${debt.first.nameState}",
             style = TextStyle(color = Color.Red, fontSize = 20.sp)
         )
-        Button(
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentWidth(),
-            onClick = {
-                val payment = Payment(
-                    createdBy = viewModel.getLoggedIn(),
-                    paidTo = debt.first,
-                    amount = debt.second)
-                viewModel.addPayment(payment)
-            }) {
-            Text(text = "PAY")
-        }
+        if (isLoading)
+            CircularProgressIndicator(
+                Modifier
+                    .weight(1f)
+                    .size(16.dp)
+                    .wrapContentSize()
+            )
+        else
+            Button(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentWidth(),
+                onClick = {
+                    isLoading = true
+                    val payment = Payment(
+                        createdBy = viewModel.getLoggedIn(),
+                        paidTo = debt.first,
+                        amount = debt.second
+                    )
+                    coroutineScope.launch {
+                        viewModel.addPayment(payment)
+                        isLoading = false
+                    }
+                }) {
+                Text(text = "PAY")
+            }
     }
 }
 

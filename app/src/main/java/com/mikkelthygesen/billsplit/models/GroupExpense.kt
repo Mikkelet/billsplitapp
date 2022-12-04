@@ -21,7 +21,7 @@ data class GroupExpense(
     var payeeState by mutableStateOf(payee)
     var sharedExpenseState by mutableStateOf(sharedExpense)
 
-    val total:Float
+    val total: Float
         get() = individualExpenses.map { it.expenseState }.reduceOrZero() + sharedExpenseState
     private val sharedExpensePerParticipant
         get() = tryCatchDefault(0F) { sharedExpenseState / participants }
@@ -31,11 +31,12 @@ data class GroupExpense(
     fun getParticipants() = individualExpenses.filter { it.isParticipantState }.map { it.person }
 
     fun getIndividualExpensesWithShared() = individualExpenses.map { ie ->
-        ie.copy().apply {
-            if (isParticipantState)
-                expenseState += sharedExpensePerParticipant
-            saveChanges()
-        }
+        ie.copy(
+            expense =
+            if (ie.isParticipantState)
+                ie.expenseState + sharedExpensePerParticipant
+            else ie.expenseState
+        )
     }
 
     fun isChanged(): Boolean {

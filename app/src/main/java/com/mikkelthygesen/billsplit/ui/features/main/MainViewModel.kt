@@ -45,7 +45,6 @@ class MainViewModel : BaseViewModel() {
             val response = kotlin.runCatching { api.getGroups(getLoggedIn().uid) }
             response.fold(
                 onSuccess = {
-                    println("qqq success $it")
                     updateUiState(Groups(it))
                 },
                 onFailure = Timber::e
@@ -58,17 +57,17 @@ class MainViewModel : BaseViewModel() {
         group.applyChanges()
         viewModelScope.launch {
             val req = runCatching { api.addGroup(group) }
-            updateUiState(Main)
             req.fold(
                 onSuccess = {
-                    emitUiEvent(ShowGroup(it.id))
+                    if (uiStateFlow.value == UiState.Loading)
+                        emitUiEvent(ShowGroup(it.id))
                 },
                 onFailure = Timber::e
             )
         }
     }
 
-    fun addFriend(userId: String){
+    fun addFriend(userId: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch { api.addFriend(userId) }
     }

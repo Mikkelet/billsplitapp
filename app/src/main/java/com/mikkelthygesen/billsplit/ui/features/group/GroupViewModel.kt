@@ -25,7 +25,8 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
 
     private val _people = mutableListOf<Person>()
     val people: List<Person> = _people
-    private lateinit var group: Group
+    lateinit var group: Group
+        private set
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Expenses)
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
@@ -36,8 +37,8 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         viewModelScope.launch {
             val response = kotlin.runCatching { api.getGroup(groupId) }
             response.fold(
-                onSuccess = {
-                    group = it.toGroup()
+                onSuccess = { group ->
+                    this@GroupViewModel.group = group
                     _people.addAll(group.peopleState)
                     _mutableEventsStateFlow.value = group.events
                     updateUiState(Expenses)
@@ -59,18 +60,16 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         _mutableUiStateFlow.value = EditExpense(groupExpense)
     }
 
-    fun addPayment(payment: Payment) {
-        updateUiState(UiState.Loading)
-        viewModelScope.launch {
-            val response = kotlin.runCatching { api.addEvent(group.id, payment) }
-            response.fold(
-                onSuccess = {
-                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(payment)
-                    updateUiState(Expenses)
-                },
-                onFailure = Timber::e
-            )
+    suspend fun addPayment(payment: Payment){
+        val response = kotlin.runCatching {
+            api.addEvent(group.id, payment)
         }
+        response.fold(
+            onSuccess = {
+                _mutableEventsStateFlow.value = eventStateFlow.value.plus(payment)
+            },
+            onFailure = Timber::e
+        )
     }
 
     fun addPerson(name: String) {
