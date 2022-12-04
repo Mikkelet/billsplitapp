@@ -29,4 +29,10 @@ object ServerApi {
             setBody(body)
         }.body()
     }
+
+    suspend fun addFriend(addFriendRequestDTO: AddFriendDTO.Request): AddFriendDTO.Response {
+        return KtorClient.client.post("addFriend") {
+            setBody(addFriendRequestDTO)
+        }.body()
+    }
 }
