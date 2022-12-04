@@ -18,4 +18,8 @@ data class Person(
             return uid == other.uid
         return super.equals(other)
     }
+
+    override fun hashCode(): Int {
+        return uid.hashCode()
+    }
 }
