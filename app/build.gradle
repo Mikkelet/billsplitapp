@@ -28,6 +28,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions "version"
+    productFlavors {
+        production {
+            buildConfigField("String", "HOST_NAME", "\"https://us-central1-billsplittapp.cloudfunctions.net/\"")
+        }
+        develop {
+            buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5000/billsplittapp/us-central1/\"")
+        }
+        emulator {
+            buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5001/billsplittapp/us-central1/\"")
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
