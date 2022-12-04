@@ -19,6 +19,7 @@ import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
