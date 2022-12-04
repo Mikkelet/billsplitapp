@@ -15,12 +15,14 @@ class MainViewModel : BaseViewModel() {
 
     object Main : UiState
     object Settings : UiState
+    object SignIn : UiState
+    object SignUp : UiState
     class AddGroup(val group: Group) : UiState
     class Groups(val groups: List<Group>) : UiState
 
     class ShowGroup(val groupId: String) : UiEvent
 
-    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Main)
+    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(SignUp)
 
     fun showMain() {
         updateUiState(Main)
@@ -28,6 +30,14 @@ class MainViewModel : BaseViewModel() {
 
     fun showGroup(groupId: String) {
         emitUiEvent(ShowGroup(groupId))
+    }
+
+    fun showSignIn(){
+        updateUiState(SignIn)
+    }
+
+    fun showSignUp(){
+        updateUiState(SignUp)
     }
 
     fun addGroup() {

@@ -22,6 +22,8 @@ import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.ui.features.group.GroupActivity
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.AddGroupView
 import com.mikkelthygesen.billsplit.ui.features.main.groups.GroupsList
+import com.mikkelthygesen.billsplit.ui.features.main.signup.SignInView
+import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
@@ -58,10 +60,18 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                MainView(
-                    uiState = uiStateFlow.value,
-                    dialogState = dialogStateFlow.value
-                )
+
+                Crossfade(targetState = uiStateFlow.value) {
+                    when (it) {
+                        MainViewModel.SignIn -> SignInView()
+                        MainViewModel.SignUp -> SignUpView()
+                        else -> MainView(
+                            uiState = uiStateFlow.value,
+                            dialogState = dialogStateFlow.value
+                        )
+                    }
+                }
+
             }
         }
     }
@@ -108,7 +118,10 @@ private fun BottomNavBar(
             selected = uiState is MainViewModel.Main,
             onClick = viewModel::showMain,
             icon = {
-                Icon(painter = painterResource(id = R.drawable.ic_baseline_search_24), contentDescription = "")
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_baseline_search_24),
+                    contentDescription = ""
+                )
             }
         )
         BottomNavigationItem(
@@ -122,7 +135,10 @@ private fun BottomNavBar(
             selected = uiState is MainViewModel.Groups,
             onClick = viewModel::getGroups,
             icon = {
-                Icon(painter = painterResource(id = R.drawable.ic_baseline_groups_24), contentDescription = "")
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_baseline_groups_24),
+                    contentDescription = ""
+                )
             }
         )
     }
@@ -143,7 +159,10 @@ private fun MainTopBar(
             actions = {
                 when (state) {
                     is MainViewModel.AddGroup -> {
-                        IconButton(iconResId = R.drawable.ic_check, color = MaterialTheme.colors.onPrimary) {
+                        IconButton(
+                            iconResId = R.drawable.ic_check,
+                            color = MaterialTheme.colors.onPrimary
+                        ) {
                             if (state.group.nameState.isNotBlank())
                                 viewModel.saveGroup(state.group)
                         }
