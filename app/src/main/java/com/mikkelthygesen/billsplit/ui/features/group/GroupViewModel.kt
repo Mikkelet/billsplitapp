@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.features.group
 
 import androidx.lifecycle.viewModelScope
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.*
@@ -134,5 +135,5 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         updateUiState(Expenses)
     }
 
-    fun getLoggedIn() = people.first()
+    fun getLoggedIn() = Person("j6ETnEOrCpOJt7lBt2pU", "Mikkel", R.drawable.glimmer_pfp)
 }
