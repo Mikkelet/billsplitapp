@@ -117,7 +117,7 @@ fun calculateDebts(
         val accExpensesByIe = distinctByName.map { indebted ->
             // for each distinct indebted, filter a list of their individual debts
             val debtsByIndebted =
-                payedForIndividualExpenses.filter { it.person.nameState == indebted.person.nameState }
+                payedForIndividualExpenses.filter { it.person == indebted.person }
             // accumulate all their debts
             val totalDebt = debtsByIndebted.map { it.expenseState }.reduceOrZero()
             Pair(indebted.person, totalDebt)
@@ -267,6 +267,5 @@ fun main() {
             else if (debt < 0F)
                 println("\t${person.nameState} owes $$debt to ${otherPerson.nameState}")
         }
-
     }
 }
