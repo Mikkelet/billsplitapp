@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.data.network
 
 import com.mikkelthygesen.billsplit.BuildConfig
+import com.mikkelthygesen.billsplit.data.network.dto.AddFriendDTO
 import com.mikkelthygesen.billsplit.data.network.dto.EventDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -23,6 +24,20 @@ object KtorClient {
             subclass(EventDTO.ChangeDTO::class, EventDTO.ChangeDTO.serializer())
             subclass(EventDTO.PaymentDTO::class, EventDTO.PaymentDTO.serializer())
         }
+        polymorphic(AddFriendDTO.Response::class) {
+            subclass(
+                AddFriendDTO.Response.AlreadyRequested::class,
+                AddFriendDTO.Response.AlreadyRequested.serializer()
+            )
+            subclass(
+                AddFriendDTO.Response.RequestSent::class,
+                AddFriendDTO.Response.RequestSent.serializer()
+            )
+            subclass(
+                AddFriendDTO.Response.RequestAccepted::class,
+                AddFriendDTO.Response.RequestAccepted.serializer()
+            )
+        }
     }
 
     private val json = Json {
@@ -31,9 +46,6 @@ object KtorClient {
         serializersModule = module
         encodeDefaults = true
     }
-
-    private val BASE_URL =
-        if (BuildConfig.DEBUG) "http://10.0.2.2:5000/billsplittapp/us-central1/" else "https://us-central1-billsplittapp.cloudfunctions.net"
 
     val client = HttpClient {
         install(ContentNegotiation) {
@@ -48,7 +60,7 @@ object KtorClient {
             level = LogLevel.ALL
         }
         defaultRequest {
-            url(BASE_URL)
+            url(BuildConfig.HOST_NAME)
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
         }
