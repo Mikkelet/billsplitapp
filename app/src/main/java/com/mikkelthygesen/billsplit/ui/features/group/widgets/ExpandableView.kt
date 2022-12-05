@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mikkelthygesen.billsplit.sampleSharedExpenses
 
 @Composable
 fun ExpandableView(
@@ -21,47 +23,56 @@ fun ExpandableView(
     expanded: Boolean = false,
     onIconClick: () -> Unit,
     iconResId: Int,
+    title: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
-    Row(
+    Column(
         modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.primary)
             .padding(vertical = 12.dp, horizontal = 8.dp),
-        Arrangement.SpaceBetween
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(end = 16.dp),
-            horizontalAlignment = if (!expanded) Alignment.CenterHorizontally else Alignment.Start
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            content()
-        }
-        if (expanded)
-            IconButton(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .wrapContentWidth()
-                    .fillMaxHeight(),
-                onClick = onIconClick,
-            ) {
-                Icon(
-                    painter = painterResource(id = iconResId),
-                    contentDescription = "Edit expense",
-                    tint = MaterialTheme.colors.secondary
-                )
+            Box(modifier = Modifier.weight(5f)) {
+                title()
             }
+            if (expanded)
+                IconButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .wrapContentWidth(),
+                    onClick = onIconClick,
+                ) {
+                    Icon(
+                        painter = painterResource(id = iconResId),
+                        contentDescription = "Edit expense",
+                        tint = MaterialTheme.colors.secondary
+                    )
+                }
+        }
+        content()
     }
 }
 
 @Preview
 @Composable
-private fun Preview(){
-    ExpandableView(onIconClick = { }, iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_money) {
-
+private fun PreviewExpanded() {
+    ExpandableView(
+        onIconClick = { },
+        expanded = true,
+        title = { Text(text = "My titleMy titleMy titleMytitleMy titleMy titleMy titleMy title") },
+        iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_money
+    ) {
+        ListViewExpense(
+            groupExpense = sampleSharedExpenses.first(),
+            isFocused = true,
+            isLastMessage = true
+        )
     }
 }

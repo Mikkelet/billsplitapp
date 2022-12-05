@@ -32,9 +32,7 @@ fun FriendsView(friends: List<Person>) {
             items(friends.size) { index ->
                 val friend = friends[index]
                 Row {
-                    CircularImageView(
-                        modifier = Modifier.size(15.dp), imageResId = friend.pfpResId
-                    )
+                    ProfileHeader(user = friend)
                     Text(text = friend.nameState, style = TextStyle(fontSize = 15.sp))
                 }
             }

@@ -1,7 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.features.group.widgets
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,7 +10,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,31 +49,33 @@ private fun _ListViewExpense(
         mutableStateOf(isLastMessage)
     }
     ExpandableView(
-        modifier = Modifier.let {
-            if (isFocused)
-                it
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colors.secondary)
-                    .padding(2.dp)
-                    .clickable { expanded = !expanded }
-            else it.clickable { expanded = !expanded }
+        modifier = Modifier
+            .clickable { expanded = !expanded }
+            .let {
+                if (isFocused)
+                    it.border(2.dp, MaterialTheme.colors.secondary, RoundedCornerShape(2.dp))
+                else it
+            },
+        title = {
+            if (groupExpense.descriptionState.isNotBlank())
+                Text(
+                    text = "\"${groupExpense.descriptionState}\"",
+                    style = TextStyle(fontSize = 18.sp, fontStyle = FontStyle.Italic)
+                )
+            else Text(text = "${groupExpense.createdBy.nameState} added a new expense!")
         },
         expanded = expanded,
         iconResId = R.drawable.ic_baseline_edit_24,
-        onIconClick = { onActionClicked(groupExpense) }
+        onIconClick = { onActionClicked(groupExpense) },
     ) {
-        if (groupExpense.descriptionState.isNotBlank())
-            Text(
-                text = "\"${groupExpense.descriptionState}\"",
-                style = TextStyle(fontSize = 18.sp, fontStyle = FontStyle.Italic)
-            )
-        else Text(text = "${groupExpense.createdBy.nameState} added a new expense!")
-        Box(modifier = Modifier.height(8.dp))
         if (!expanded)
-            Text(
-                text = "$${groupExpense.total.fmt2dec()}",
-                style = TextStyle(fontStyle = FontStyle.Italic, fontSize = 20.sp)
-            )
+            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = "$${groupExpense.total.fmt2dec()}",
+                    style = TextStyle(fontStyle = FontStyle.Italic, fontSize = 20.sp)
+                )
+            }
         else {
             Text(text = "$${groupExpense.total.fmt2dec()} was paid by ${groupExpense.payeeState.nameState}")
             Box(modifier = Modifier.height(8.dp))
@@ -111,9 +112,18 @@ private fun _ListViewExpense(
 
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewExpanded() {
     val groupExpense = sampleSharedExpenses.first()
     Box(modifier = Modifier.height(200.dp)) {
         ListViewExpense(groupExpense = groupExpense, isFocused = false, isLastMessage = true)
+    }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    val groupExpense = sampleSharedExpenses.first()
+    Box(modifier = Modifier.height(200.dp)) {
+        ListViewExpense(groupExpense = groupExpense, isFocused = false, isLastMessage = false)
     }
 }

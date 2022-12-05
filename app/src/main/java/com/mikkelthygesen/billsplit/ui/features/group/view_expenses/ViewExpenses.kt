@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.ui.features.group.view_expenses
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -18,20 +19,38 @@ import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Payment
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.models.interfaces.Event
+import com.mikkelthygesen.billsplit.samplePeopleShera
+import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
 fun ViewExpenses(
-    viewModel: GroupViewModel = viewModel(),
+    groupViewModel: GroupViewModel = viewModel(),
     user: Person
 ) {
-    val eventsFlow = viewModel.eventStateFlow.collectAsState()
-    val payments: List<Payment> = eventsFlow.value.filterIsInstance<Payment>()
-    val groupExpenses: List<GroupExpense> = eventsFlow.value.filterIsInstance<GroupExpense>()
+    val eventsFlow = groupViewModel.eventStateFlow.collectAsState()
+    _ViewExpenses(
+        events = eventsFlow.value,
+        user = user,
+        people = groupViewModel.people
+    )
+}
 
-    val calculator = DebtCalculator(viewModel.people, groupExpenses, payments)
+
+@Composable
+@SuppressLint("ComposableNaming")
+private fun _ViewExpenses(
+    events: List<Event>,
+    user: Person,
+    people: List<Person>
+) {
+    val payments: List<Payment> = events.filterIsInstance<Payment>()
+    val groupExpenses: List<GroupExpense> = events.filterIsInstance<GroupExpense>()
+
+    val calculator = DebtCalculator(people, groupExpenses, payments)
     val debtForPerson = calculator.calculateEffectiveDebtOfPerson(user)
     calculator.logDebt(user)
     Column {
@@ -104,8 +123,12 @@ private fun YourDebt(
 
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun PreviewViewExpense() {
-    ViewExpenses(user = Person("", ""))
+private fun PreviewViewExpense() {
+    _ViewExpenses(
+        events = sampleSharedExpenses,
+        user = samplePeopleShera.first(),
+        people = samplePeopleShera
+    )
 }
 
 @Preview

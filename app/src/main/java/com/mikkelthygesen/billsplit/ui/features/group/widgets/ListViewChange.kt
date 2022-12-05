@@ -42,9 +42,11 @@ fun ChangesListView(
             .clickable { expanded = !expanded },
         expanded = expanded,
         iconResId = R.drawable.ic_baseline_search_24,
-        onIconClick = { onClickGoToExpense(groupExpensesChanged.groupExpenseOriginal.id) }
+        onIconClick = { onClickGoToExpense(groupExpensesChanged.groupExpenseOriginal.id) },
+        title = {
+            Text(text = "${groupExpensesChanged.createdBy.nameState} made changes to an expense")
+        }
     ) {
-        Text(text = "${groupExpensesChanged.createdBy.nameState} made changes to an expense")
         if (expanded) {
             Column {
                 if (wasTotalChanged) {
