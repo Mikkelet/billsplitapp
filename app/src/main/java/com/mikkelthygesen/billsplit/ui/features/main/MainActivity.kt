@@ -177,10 +177,9 @@ private fun MainTopBar(
             }
         }
     )
-
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PreviewMainView() {
     MainView(

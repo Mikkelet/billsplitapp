@@ -5,6 +5,7 @@ import com.mikkelthygesen.billsplit.data.network.dto.FriendStatusDTO
 
 sealed class Friend {
     abstract val person: Person
+
     data class FriendRequestReceived(override val person: Person) : Friend()
     data class FriendRequestSent(override val person: Person) : Friend()
     data class FriendAccepted(override val person: Person) : Friend()
@@ -14,7 +15,13 @@ sealed class Friend {
             return when (friendDTO.status) {
                 FriendStatusDTO.AlreadyRequested -> FriendRequestReceived(friendDTO.friend.toPerson())
                 FriendStatusDTO.RequestAccepted -> FriendAccepted(friendDTO.friend.toPerson())
-                FriendStatusDTO.RequestSent -> FriendRequestSent(friendDTO.friend.toPerson())
+                FriendStatusDTO.RequestSent -> {
+                    if (friendDTO.createdBy == friendDTO.friend.id) {
+                        FriendRequestReceived(friendDTO.friend.toPerson())
+                    } else {
+                        FriendRequestSent(friendDTO.friend.toPerson())
+                    }
+                }
             }
         }
     }
