@@ -7,14 +7,10 @@ import kotlinx.serialization.Serializable
 sealed class FriendStatusDTO {
 
     @Serializable
-    @SerialName("requestSent")
+    @SerialName("pending")
     object RequestSent : FriendStatusDTO()
 
     @Serializable
-    @SerialName("requestAccepted")
+    @SerialName("accepted")
     object RequestAccepted : FriendStatusDTO()
-
-    @Serializable
-    @SerialName("alreadyRequested")
-    object AlreadyRequested : FriendStatusDTO()
 }

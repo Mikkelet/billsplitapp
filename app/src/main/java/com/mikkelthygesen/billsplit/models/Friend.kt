@@ -13,7 +13,6 @@ sealed class Friend {
     companion object {
         fun fromDTO(friendDTO: FriendDTO): Friend {
             return when (friendDTO.status) {
-                FriendStatusDTO.AlreadyRequested -> FriendRequestReceived(friendDTO.friend.toPerson())
                 FriendStatusDTO.RequestAccepted -> FriendAccepted(friendDTO.friend.toPerson())
                 FriendStatusDTO.RequestSent -> {
                     if (friendDTO.createdBy == friendDTO.friend.id) {

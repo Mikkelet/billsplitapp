@@ -32,10 +32,6 @@ object KtorClient {
         }
         polymorphic(FriendStatusDTO::class) {
             subclass(
-                FriendStatusDTO.AlreadyRequested::class,
-                FriendStatusDTO.AlreadyRequested.serializer()
-            )
-            subclass(
                 FriendStatusDTO.RequestSent::class,
                 FriendStatusDTO.RequestSent.serializer()
             )
