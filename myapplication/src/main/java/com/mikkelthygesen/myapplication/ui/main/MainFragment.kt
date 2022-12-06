@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.google.android.material.textfield.TextInputEditText
 import com.mikkelthygesen.myapplication.R
 import com.mikkelthygesen.myapplication.databinding.FragmentMainBinding
 

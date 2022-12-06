@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel() {
 
-    val loggedInUser: Person? = authProvider.loggedInUser
+    val loggedInUser: Person?
+        get() = authProvider.loggedInUser
 
     interface DialogState {
         object DismissDialogs : DialogState

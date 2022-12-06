@@ -34,7 +34,7 @@ android {
             buildConfigField("String", "HOST_NAME", "\"https://us-central1-billsplittapp.cloudfunctions.net/\"")
         }
         develop {
-            buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5000/billsplittapp/us-central1/\"")
+            buildConfigField("String", "HOST_NAME", "\"http://127.0.0.1:5001/billsplittapp/us-central1/\"")
         }
         emulator {
             buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5001/billsplittapp/us-central1/\"")

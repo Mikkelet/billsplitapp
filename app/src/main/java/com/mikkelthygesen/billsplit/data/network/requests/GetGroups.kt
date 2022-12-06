@@ -1,6 +1,8 @@
-package com.mikkelthygesen.billsplit.data.network.dto
+package com.mikkelthygesen.billsplit.data.network.requests
 
-object GetGroupsDTO {
+import com.mikkelthygesen.billsplit.data.network.dto.GroupDTO
+
+object GetGroups {
     @kotlinx.serialization.Serializable
     data class Request(
         val userId: String

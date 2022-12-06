@@ -1,15 +1,21 @@
 package com.mikkelthygesen.billsplit
 
-import com.mikkelthygesen.billsplit.models.IndividualExpense
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.models.*
 import kotlin.math.absoluteValue
 
 val samplePeopleShera = listOf(
     Person("0", "Aang", R.drawable.aang),
     Person("1", "Toph", R.drawable.toph),
     Person("2", "Katara", R.drawable.katara),
+)
+
+val sampleGroup = Group(
+    id = "GROUP0",
+    name = "My group",
+    people = samplePeopleShera,
+    createdBy = samplePeopleShera.first(),
+    timeStamp = 0,
+    events = listOf()
 )
 
 val sampleIndividualExpenses = samplePeopleShera.mapIndexed { i, p ->

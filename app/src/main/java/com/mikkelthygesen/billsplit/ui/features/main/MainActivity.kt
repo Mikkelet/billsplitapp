@@ -24,6 +24,7 @@ import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.ui.features.group.GroupActivity
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.AddGroupView
 import com.mikkelthygesen.billsplit.ui.features.main.groups.GroupsList
+import com.mikkelthygesen.billsplit.ui.features.main.profile.ProfileView
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignInView
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
@@ -81,8 +82,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
-
             }
         }
     }
@@ -108,6 +107,7 @@ fun MainView(
     when (uiState) {
         is MainViewModel.AddGroup -> AddGroupView(group = uiState.group)
         is MainViewModel.Groups -> GroupsList(groups = uiState.groups)
+        is MainViewModel.ShowProfile -> ProfileView(user = uiState.user, friends = uiState.friends)
         is BaseViewModel.UiState.Loading -> LoadingView()
         else -> Text(text = ("Hello"))
     }
@@ -124,7 +124,7 @@ private fun BottomNavBar(
     ) {
         BottomNavigationItem(
             selected = uiState is MainViewModel.Main,
-            onClick = viewModel::showMain,
+            onClick = viewModel::showProfile,
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_search_24),

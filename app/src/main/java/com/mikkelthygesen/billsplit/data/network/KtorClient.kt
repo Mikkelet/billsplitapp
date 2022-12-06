@@ -1,8 +1,12 @@
 package com.mikkelthygesen.billsplit.data.network
 
 import com.mikkelthygesen.billsplit.BuildConfig
-import com.mikkelthygesen.billsplit.data.network.dto.AddFriendDTO
+import com.mikkelthygesen.billsplit.data.network.requests.AddFriend
 import com.mikkelthygesen.billsplit.data.network.dto.EventDTO
+import com.mikkelthygesen.billsplit.data.network.dto.FriendStatusDTO
+import com.mikkelthygesen.billsplit.sampleGroup
+import com.mikkelthygesen.billsplit.samplePeopleShera
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.FriendRequestSent
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -11,6 +15,8 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -24,19 +30,23 @@ object KtorClient {
             subclass(EventDTO.ChangeDTO::class, EventDTO.ChangeDTO.serializer())
             subclass(EventDTO.PaymentDTO::class, EventDTO.PaymentDTO.serializer())
         }
-        polymorphic(AddFriendDTO.Response::class) {
+        polymorphic(FriendStatusDTO::class) {
             subclass(
-                AddFriendDTO.Response.AlreadyRequested::class,
-                AddFriendDTO.Response.AlreadyRequested.serializer()
+                FriendStatusDTO.AlreadyRequested::class,
+                FriendStatusDTO.AlreadyRequested.serializer()
             )
             subclass(
-                AddFriendDTO.Response.RequestSent::class,
-                AddFriendDTO.Response.RequestSent.serializer()
+                FriendStatusDTO.RequestSent::class,
+                FriendStatusDTO.RequestSent.serializer()
             )
             subclass(
-                AddFriendDTO.Response.RequestAccepted::class,
-                AddFriendDTO.Response.RequestAccepted.serializer()
+                FriendStatusDTO.RequestAccepted::class,
+                FriendStatusDTO.RequestAccepted.serializer()
             )
+        }
+        polymorphic(AddFriend.Request::class) {
+            subclass(AddFriend.Request.UserId::class, AddFriend.Request.UserId.serializer())
+            subclass(AddFriend.Request.Email::class, AddFriend.Request.Email.serializer())
         }
     }
 
@@ -66,14 +76,16 @@ object KtorClient {
         }
     }.apply {
         plugin(HttpSend).intercept { req ->
-            println("NETW --> ${req.method.value}(${req.url.build()})")
-            Timber.i("NETW --- ${req.body}")
+            println("NETWORK --> ${req.method.value}(${req.url.build()})")
+            println(" --- ${req.body}")
             val call = execute(req)
             val response = call.response
             val durationMillis = response.responseTime.timestamp - response.requestTime.timestamp
-            println("NETW <-- [${response.body<Any>()}] ($durationMillis ms)")
+            println("NETWORK <-- [${response.body<Any>()}] ($durationMillis ms)")
             call
         }
     }
 }
+
+
 

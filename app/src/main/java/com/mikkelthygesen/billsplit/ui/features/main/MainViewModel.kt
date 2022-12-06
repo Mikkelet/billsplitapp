@@ -4,7 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
+import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.sampleGroup
+import com.mikkelthygesen.billsplit.samplePeopleShera
+import com.mikkelthygesen.billsplit.ui.features.main.profile.ProfileView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -15,42 +20,33 @@ class MainViewModel : BaseViewModel() {
     private val authProvider = AuthProvider()
 
     object Main : UiState
-    object Settings : UiState
     object SignIn : UiState
     object SignUp : UiState
     class AddGroup(val group: Group) : UiState
     class Groups(val groups: List<Group>) : UiState
+    class ShowProfile(val user: Person, val friends: List<Friend>) : UiState
 
     class ShowGroup(val groupId: String) : UiEvent
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Main)
 
-    fun showMain() {
-        updateUiState(UiState.Loading)
-    }
+    fun showMain() = updateUiState(UiState.Loading)
 
-    fun showGroup(groupId: String) {
-        emitUiEvent(ShowGroup(groupId))
-    }
+    fun showGroup(groupId: String) = emitUiEvent(ShowGroup(groupId))
 
-    fun showSignIn() {
-        updateUiState(SignIn)
-    }
+    fun showSignIn() = updateUiState(SignIn)
 
-    fun showSignUp() {
-        updateUiState(SignUp)
-    }
+    fun showSignUp() = updateUiState(SignUp)
 
     fun addGroup() {
-        checkAuthStatus(
-            successCallback = {
-                val group = Group(
-                    id = "",
-                    createdBy = it,
-                    people = listOf(it)
-                )
-                updateUiState(AddGroup(group))
-            })
+        checkAuthStatus {
+            val group = Group(
+                id = "",
+                createdBy = it,
+                people = listOf(it)
+            )
+            updateUiState(AddGroup(group))
+        }
     }
 
     fun getGroups() {
@@ -58,7 +54,7 @@ class MainViewModel : BaseViewModel() {
             successCallback = {
                 updateUiState(UiState.Loading)
                 viewModelScope.launch {
-                    val response = kotlin.runCatching { api.getGroups(it.uid) }
+                    val response = runCatching { api.getGroups(it.uid) }
                     response.fold(
                         onSuccess = {
                             updateUiState(Groups(it))
@@ -85,22 +81,63 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    fun addFriend(userId: String) {
+    fun showProfile() {
         updateUiState(UiState.Loading)
-        checkAuthStatus {
-            viewModelScope.launch { api.addFriend(it.uid, userId) }
+        checkAuthStatus { user ->
+            viewModelScope.launch {
+                val response = runCatching { api.getFriends(user.uid) }
+                response.fold(
+                    onSuccess = {
+                        updateUiState(ShowProfile(user, it))
+                    },
+                    onFailure = ::println
+                )
+            }
+        }
+
+    }
+
+    fun acceptFriendRequest(userId: String) {
+        updateUiState(UiState.Loading)
+        checkAuthStatus { user ->
+            viewModelScope.launch {
+                val response = kotlin.runCatching {
+                    api.addFriendUserId(user.uid, userId)
+                    api.getFriends(user.uid)
+                }
+                response.fold(
+                    onSuccess = {
+                        updateUiState(ShowProfile(user, it))
+                    },
+                    onFailure = ::println
+                )
+            }
+        }
+    }
+
+    fun addFriend(email: String) {
+        updateUiState(UiState.Loading)
+        checkAuthStatus { user ->
+            viewModelScope.launch {
+                val response = kotlin.runCatching {
+                    api.addFriendEmail(user.uid, email)
+                    api.getFriends(user.uid)
+                }
+                response.fold(
+                    onSuccess = {
+                        updateUiState(ShowProfile(user, it))
+                    },
+                    onFailure = ::println
+                )
+            }
         }
     }
 
     fun signUpEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         authProvider.signUpWithEmail(email, password,
-            onSuccess = {
-                updateUiState(Main)
-            },
-            onFailure = {
-                updateUiState(SignUp)
-            })
+            onSuccess = { updateUiState(Main) },
+            onFailure = { updateUiState(SignUp) })
     }
 
     override fun onLoggedOutCallback() {
@@ -110,11 +147,7 @@ class MainViewModel : BaseViewModel() {
     fun signInEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         authProvider.signInWithEmail(email, password,
-            onSuccess = {
-                updateUiState(Main)
-            },
-            onFailure = {
-                updateUiState(SignUp)
-            })
+            onSuccess = { updateUiState(Main) },
+            onFailure = { updateUiState(SignUp) })
     }
 }
