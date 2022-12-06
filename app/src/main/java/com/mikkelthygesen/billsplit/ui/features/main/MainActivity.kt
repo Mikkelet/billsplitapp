@@ -127,7 +127,7 @@ private fun BottomNavBar(
             onClick = viewModel::showProfile,
             icon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_search_24),
+                    painter = painterResource(id = R.drawable.ic_baseline_person_24),
                     contentDescription = ""
                 )
             }

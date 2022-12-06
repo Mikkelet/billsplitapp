@@ -100,7 +100,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 val response = kotlin.runCatching { api.addEvent(groupExpense.id, groupExpense) }
                 response.fold(
                     onSuccess = {
-                        _mutableEventsStateFlow.value = eventStateFlow.value.plus(groupExpense)
+                        _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
                     },
                     onFailure = ::println
                 )
@@ -110,7 +110,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
             val groupExpensesChanged = GroupExpensesChanged(
                 id = originalCopy.id,
-                createdBy = originalCopy.createdBy, // TODO getLoggedIn
+                createdBy = originalCopy.createdBy,
                 groupExpenseOriginal = originalCopy,
                 groupExpenseEdited = updatedCopy
             )
@@ -118,8 +118,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 val response = runCatching { api.addEvent(group.id, groupExpensesChanged) }
                 response.fold(
                     onSuccess = {
-                        _mutableEventsStateFlow.value =
-                            eventStateFlow.value.plus(groupExpensesChanged)
+                        _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
                     },
                     onFailure = ::println
                 )

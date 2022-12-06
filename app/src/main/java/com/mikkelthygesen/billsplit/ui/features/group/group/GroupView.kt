@@ -37,7 +37,7 @@ fun GroupEventsView(
     modifier: Modifier = Modifier,
     viewModel: GroupViewModel = viewModel()
 ) {
-    val eventsFlow = viewModel.eventStateFlow.collectAsState(initial = emptyList())
+    val eventsFlow = viewModel.eventStateFlow.collectAsState()
     val eventsState = eventsFlow.value.sortedBy { it.timeStamp }.reversed()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -63,7 +63,7 @@ fun GroupEventsView(
         }
         items(
             count = eventsState.size,
-            key = { eventsState[it].timeStamp }) { index ->
+            key = { eventsState[it].id }) { index ->
             Row(
                 Modifier.padding(vertical = 4.dp),
                 Arrangement.SpaceEvenly
