@@ -101,6 +101,9 @@ dependencies {
 
     // Logging
     implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    // Accompanist
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
 }
 
 kapt {

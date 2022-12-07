@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.FirebaseApp
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
@@ -49,7 +50,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiStateFlow = viewModel.uiStateFlow.collectAsState()
             val dialogStateFlow = viewModel.dialogState.collectAsState()
-
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setNavigationBarColor(
+                color = MaterialTheme.colors.primaryVariant
+            )
             BillSplitTheme {
                 LaunchedEffect(Unit) {
                     viewModel.uiEventsState.collect { event ->
@@ -179,7 +183,7 @@ private fun MainTopBar(
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewMainView() {
     MainView(
