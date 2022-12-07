@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.data.network.requests
 
-import com.mikkelthygesen.billsplit.data.network.dto.FriendStatusDTO
+import com.mikkelthygesen.billsplit.data.network.dto.FriendDTO
+import com.mikkelthygesen.billsplit.data.network.dto.PersonDTO
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,10 +25,10 @@ object AddFriend {
         data class UserId(
             override val createdBy: String,
             override val timeStamp: Long,
-            val userId: String
+            val user: PersonDTO
         ) : Request()
     }
 
     @Serializable
-    data class Response(val status: FriendStatusDTO)
+    data class Response(val friend: FriendDTO)
 }

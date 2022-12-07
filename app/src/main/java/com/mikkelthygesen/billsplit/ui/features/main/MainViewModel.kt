@@ -97,46 +97,20 @@ class MainViewModel : BaseViewModel() {
 
     }
 
-    fun acceptFriendRequest(userId: String) {
-        updateUiState(UiState.Loading)
-        checkAuthStatus { user ->
-            viewModelScope.launch {
-                val response = kotlin.runCatching {
-                    api.addFriendUserId(user.uid, userId)
-                    api.getFriends(user.uid)
-                }
-                response.fold(
-                    onSuccess = {
-                        updateUiState(ShowProfile(user, it))
-                    },
-                    onFailure = ::println
-                )
-            }
-        }
+    suspend fun acceptFriendRequest(userId: String, friend: Person) : Friend {
+        return api.addFriendUserId(userId, friend)
     }
 
-    fun addFriend(email: String) {
-        updateUiState(UiState.Loading)
-        checkAuthStatus { user ->
-            viewModelScope.launch {
-                val response = kotlin.runCatching {
-                    api.addFriendEmail(user.uid, email)
-                    api.getFriends(user.uid)
-                }
-                response.fold(
-                    onSuccess = {
-                        updateUiState(ShowProfile(user, it))
-                    },
-                    onFailure = ::println
-                )
-            }
-        }
+    suspend fun addFriend(userId: String, email: String) : Friend {
+        return api.addFriendEmail(userId, email)
     }
 
     fun signUpEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         authProvider.signUpWithEmail(email, password,
-            onSuccess = { updateUiState(Main) },
+            onSuccess = {
+                showProfile()
+            },
             onFailure = { updateUiState(SignUp) })
     }
 

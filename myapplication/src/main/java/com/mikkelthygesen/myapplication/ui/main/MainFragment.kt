@@ -1,14 +1,11 @@
 package com.mikkelthygesen.myapplication.ui.main
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import com.google.android.material.textfield.TextInputEditText
-import com.mikkelthygesen.myapplication.R
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.mikkelthygesen.myapplication.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(), PeopleAdapter.Listener {

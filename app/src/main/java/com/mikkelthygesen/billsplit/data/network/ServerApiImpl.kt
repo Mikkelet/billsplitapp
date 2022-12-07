@@ -34,24 +34,25 @@ class ServerApiImpl {
         return dtos.groups.map { it.toGroup() }
     }
 
-    suspend fun addFriendUserId(loggedInUserId: String, userId: String): FriendStatusDTO {
+    suspend fun addFriendUserId(loggedInUserId: String, user: Person): Friend {
         val request = AddFriend.Request.UserId(
             loggedInUserId,
             System.currentTimeMillis(),
-            userId,
+            PersonDTO.fromPerson(user),
         )
-        return ServerApi.addFriend(request).status
+        val friendDTO = ServerApi.addFriend(request).friend
+        return Friend.fromDTO(friendDTO)
     }
 
-    suspend fun addFriendEmail(loggedInUserId: String, email: String): FriendStatusDTO {
+    suspend fun addFriendEmail(loggedInUserId: String, email: String): Friend {
         val request = AddFriend.Request.Email(
             loggedInUserId,
             System.currentTimeMillis(),
             email,
         )
-        return ServerApi.addFriend(request).status
+        val friendDTO = ServerApi.addFriend(request).friend
+        return Friend.fromDTO(friendDTO)
     }
-
 
     suspend fun getFriends(userId: String): List<Friend> {
         val request = GetFriends.Request(userId)

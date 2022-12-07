@@ -60,39 +60,66 @@ private fun _ListViewExpense(
             if (groupExpense.descriptionState.isNotBlank())
                 Text(
                     text = "\"${groupExpense.descriptionState}\"",
-                    style = TextStyle(fontSize = 18.sp, fontStyle = FontStyle.Italic)
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontStyle = FontStyle.Italic
+                    ).copy(color = MaterialTheme.colors.onPrimary)
                 )
-            else Text(text = "${groupExpense.createdBy.nameState} added a new expense!")
+            else Text(
+                text = "${groupExpense.createdBy.nameState} added a new expense!",
+                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+            )
         },
         expanded = expanded,
         iconResId = R.drawable.ic_baseline_edit_24,
         onIconClick = { onActionClicked(groupExpense) },
     ) {
         if (!expanded)
-            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = "$${groupExpense.total.fmt2dec()}",
-                    style = TextStyle(fontStyle = FontStyle.Italic, fontSize = 20.sp)
+                    style = TextStyle(
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colors.onPrimary
+                    )
                 )
             }
         else {
-            Text(text = "$${groupExpense.total.fmt2dec()} was paid by ${groupExpense.payeeState.nameState}")
+            Text(
+                text = "$${groupExpense.total.fmt2dec()} was paid by ${groupExpense.payeeState.nameState}",
+                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+            )
             Box(modifier = Modifier.height(8.dp))
             Row {
                 Column {
                     if (groupExpense.sharedExpenseState > 0F)
-                        Text(text = "Shared")
+                        Text(
+                            text = "Shared",
+                            style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                        )
                     groupExpense.individualExpenses.map {
                         if (it.expenseState > 0F) {
-                            Text(text = it.person.nameState)
+                            Text(
+                                text = it.person.nameState,
+                                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                            )
+
                         }
                     }
                 }
                 Column(modifier = Modifier.padding(horizontal = 8.dp)) {
                     if (groupExpense.sharedExpenseState > 0f)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "$${groupExpense.sharedExpenseState.fmt2dec()} / ")
+                            Text(
+                                text = "$${groupExpense.sharedExpenseState.fmt2dec()} / ",
+                                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                            )
                             val participants =
                                 groupExpense.individualExpenses
                                     .filter { it.isParticipantState }
@@ -101,7 +128,10 @@ private fun _ListViewExpense(
                         }
                     groupExpense.individualExpenses.map {
                         if (it.expenseState > 0F) {
-                            Text(text = "$${it.expenseState.fmt2dec()}")
+                            Text(
+                                text = "$${it.expenseState.fmt2dec()}",
+                                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                            )
                         }
                     }
                 }

@@ -2,10 +2,13 @@ package com.mikkelthygesen.billsplit.ui.features.group.widgets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,30 +47,32 @@ fun ChangesListView(
         iconResId = R.drawable.ic_baseline_search_24,
         onIconClick = { onClickGoToExpense(groupExpensesChanged.groupExpenseOriginal.id) },
         title = {
-            Text(text = "${groupExpensesChanged.createdBy.nameState} made changes to an expense")
+            TextStylePrimary(text = "${groupExpensesChanged.createdBy.nameState} made changes to an expense")
         }
     ) {
         if (expanded) {
-            Column {
+            Column(
+                Modifier.padding(bottom = 12.dp)
+            ) {
                 if (wasTotalChanged) {
                     HorizontalDivider()
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_money)
-                        Text(text = "$${groupExpensesChanged.groupExpenseOriginal.total.fmt2dec()} ▶ $${groupExpensesChanged.groupExpenseEdited.total.fmt2dec()}")
+                        SmallRoundIcon(R.drawable.ic_money)
+                        TextStylePrimary(text = "$${groupExpensesChanged.groupExpenseOriginal.total.fmt2dec()} ▶ $${groupExpensesChanged.groupExpenseEdited.total.fmt2dec()}")
                     }
                 }
                 if (wasPayerChanged) {
                     HorizontalDivider()
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_money)
-                        Text(text = "${original.payeeState.nameState} ▶ ${updated.payeeState.nameState}")
+                        SmallRoundIcon(R.drawable.ic_money)
+                        TextStylePrimary(text = "${original.payeeState.nameState} ▶ ${updated.payeeState.nameState}")
                     }
                 }
                 if (wasDescriptionChanged) {
                     HorizontalDivider()
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_baseline_edit_24)
-                        Text(
+                        SmallRoundIcon(R.drawable.ic_baseline_edit_24)
+                        TextStylePrimary(
                             text = "\"${updated.descriptionState}\"",
                             style = TextStyle(fontStyle = FontStyle.Italic)
                         )
@@ -76,9 +81,9 @@ fun ChangesListView(
                 if (wasParticipantsChanged) {
                     HorizontalDivider()
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        SmallRoundImage(R.drawable.ic_baseline_groups_24)
+                        SmallRoundIcon(R.drawable.ic_baseline_groups_24)
                         ParticipantsView(list = original.getParticipants())
-                        Text(text = " ▶ ")
+                        TextStylePrimary(text = " ▶ ")
                         ParticipantsView(list = updated.getParticipants())
                     }
                 }
@@ -97,7 +102,7 @@ fun ChangesListView(
                                             .padding(horizontal = 16.dp),
                                         imageResId = originalExpense.person.pfpResId
                                     )
-                                    Text(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
+                                    TextStylePrimary(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
                                 }
                                 if (index != original.individualExpenses.lastIndex)
                                     HorizontalDivider()
@@ -111,12 +116,37 @@ fun ChangesListView(
 }
 
 @Composable
+private fun TextStylePrimary(
+    modifier: Modifier = Modifier,
+    text: String,
+    style: TextStyle = TextStyle()
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.body1.merge(style)
+            .copy(color = MaterialTheme.colors.onPrimary)
+    )
+}
+
+@Composable
+private fun SmallRoundIcon(resId: Int) {
+    Icon(
+        modifier = Modifier
+            .height(20.dp)
+            .padding(horizontal = 16.dp),
+        painter = painterResource(id = resId),
+        tint = MaterialTheme.colors.onPrimary,
+        contentDescription = ""
+    )
+}
+
+@Composable
 private fun SmallRoundImage(resId: Int) {
     CircularImageView(
         Modifier
             .height(20.dp)
             .padding(horizontal = 16.dp),
-        imageResId = resId
+        imageResId = resId,
     )
 }
 
@@ -157,7 +187,7 @@ private fun Preview() {
         groupExpenseEdited = expenseEdited,
         createdBy = expenseOriginal.createdBy,
     )
-    Box(Modifier.height(300.dp)) {
+    Box(Modifier.height(400.dp)) {
         ChangesListView(
             groupExpensesChanged = groupExpensesChanged,
             isLastMessage = true,

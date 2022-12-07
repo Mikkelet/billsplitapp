@@ -1,12 +1,9 @@
 package com.mikkelthygesen.billsplit.data.network
 
 import com.mikkelthygesen.billsplit.BuildConfig
-import com.mikkelthygesen.billsplit.data.network.requests.AddFriend
 import com.mikkelthygesen.billsplit.data.network.dto.EventDTO
 import com.mikkelthygesen.billsplit.data.network.dto.FriendStatusDTO
-import com.mikkelthygesen.billsplit.sampleGroup
-import com.mikkelthygesen.billsplit.samplePeopleShera
-import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.FriendRequestSent
+import com.mikkelthygesen.billsplit.data.network.requests.AddFriend
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -15,12 +12,9 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import timber.log.Timber
 
 object KtorClient {
 
