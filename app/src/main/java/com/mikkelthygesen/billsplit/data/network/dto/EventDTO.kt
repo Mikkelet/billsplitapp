@@ -134,16 +134,4 @@ sealed class EventDTO {
         )
         else -> throw Exception("Unknown type")
     }
-
-    object EventDTOSerializer : JsonContentPolymorphicSerializer<EventDTO>(EventDTO::class) {
-        override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out EventDTO> {
-            val json = element.jsonObject["type"]
-            return when (json?.jsonPrimitive?.content) {
-                TYPE_CHANGE -> ChangeDTO.serializer()
-                TYPE_PAYMENT -> PaymentDTO.serializer()
-                TYPE_EXPENSE -> ExpenseDTO.serializer()
-                else -> throw Exception("Unknown Module: key 'type' not found or does not matches any module type")
-            }
-        }
-    }
 }

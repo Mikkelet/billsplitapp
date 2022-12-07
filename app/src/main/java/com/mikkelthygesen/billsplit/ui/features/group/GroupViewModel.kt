@@ -75,7 +75,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
             }
             response.fold(
                 onSuccess = {
-                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(payment)
+                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
                 },
                 onFailure = ::println
             )
