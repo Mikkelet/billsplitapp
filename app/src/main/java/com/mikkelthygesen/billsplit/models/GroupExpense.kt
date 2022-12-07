@@ -8,11 +8,11 @@ import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
 
 data class GroupExpense(
-    override val id: String,
+    override val id: String = "",
     override val createdBy: Person,
-    private var description: String,
+    private var description: String = "",
     private var payee: Person,
-    private var sharedExpense: Float,
+    private var sharedExpense: Float = 0F,
     val individualExpenses: List<IndividualExpense>,
     override val timeStamp: Long = System.currentTimeMillis()
 ) : Event {

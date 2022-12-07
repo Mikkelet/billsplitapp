@@ -22,7 +22,7 @@ class AuthProvider {
     private val authListener = AuthStateListener {
         val user = it.currentUser
         if (user != null) {
-            val person = Person(user.uid)
+            val person = Person(user.uid, name = "Mikkel")
             loggedInUser = person
         }
     }
@@ -60,10 +60,9 @@ class AuthProvider {
     private fun onSignIn(authResult: AuthResult, onSuccess: (Person) -> Unit) {
         val user = authResult.user
         if (user != null) {
-            val person = Person(user.uid)
+            val person = Person(user.uid, name = "Mikkel")
             loggedInUser = person
             onSuccess(person)
         }
     }
-
 }

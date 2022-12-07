@@ -63,23 +63,22 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         }
     }
 
-    suspend fun addPayment(paidTo: Person, amount: Float) {
-        if (loggedInUser != null) {
-            val payment = Payment(
-                createdBy = loggedInUser!!,
-                paidTo = paidTo,
-                amount = amount
-            )
-            val response = runCatching {
-                api.addEvent(group.id, payment)
-            }
-            response.fold(
-                onSuccess = {
-                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                },
-                onFailure = ::println
-            )
-        } else onLoggedOutCallback()
+    suspend fun addPayment(user: Person, paidTo: Person, amount: Float) {
+        val payment = Payment(
+            createdBy = user,
+            paidTo = paidTo,
+            amount = amount
+        )
+        println("qqq $payment")
+        val response = runCatching {
+            api.addEvent(group.id, payment)
+        }
+        response.fold(
+            onSuccess = {
+                _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
+            },
+            onFailure = ::println
+        )
     }
 
     fun addPerson(name: String) {

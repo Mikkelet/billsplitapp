@@ -62,7 +62,7 @@ private fun _ViewExpenses(
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (it.second > 0)
-                        YourDebt(debt = it)
+                        YourDebt(debt = it, user = user)
                     else if (it.second < 0)
                         DebtToYou(debt = it)
                 }
@@ -81,6 +81,7 @@ private fun DebtToYou(debt: Pair<Person, Float>) {
 @Composable
 private fun YourDebt(
     viewModel: GroupViewModel = viewModel(),
+    user: Person,
     debt: Pair<Person, Float>
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -112,7 +113,10 @@ private fun YourDebt(
                 onClick = {
                     isLoading = true
                     coroutineScope.launch {
-                        viewModel.addPayment(debt.first, debt.second)
+                        viewModel.addPayment(
+                            user = user,
+                            paidTo = debt.first,
+                            amount = debt.second)
                         isLoading = false
                     }
                 }) {
@@ -134,5 +138,5 @@ private fun PreviewViewExpense() {
 @Preview
 @Composable
 private fun PreviewYourDebtView() {
-    YourDebt(debt = Pair(Person("ID0", "Mikkel"), 1000F))
+    YourDebt(debt = Pair(Person("ID0", "Mikkel"), 1000F), user = Person())
 }

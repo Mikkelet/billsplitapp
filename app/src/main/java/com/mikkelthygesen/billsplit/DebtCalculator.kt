@@ -8,18 +8,7 @@ class DebtCalculator(
     expenses: List<GroupExpense>,
     payments: List<Payment>
 ) {
-    private val groupExpenses = expenses.plus(payments.map {
-        GroupExpense(
-            id = UUID.randomUUID().toString(),
-            people.first(),
-            description = "",
-            it.createdBy,
-            0F,
-            listOf(
-                IndividualExpense(it.paidTo, it.amount, true)
-            )
-        )
-    })
+    private val groupExpenses = expenses.plus(payments.map { it.asExpense() })
 
     private fun calculateDebtsByPayee(): List<Pair<Person, List<Pair<Person, Float>>>> =
         calculateDebts(people, groupExpenses)

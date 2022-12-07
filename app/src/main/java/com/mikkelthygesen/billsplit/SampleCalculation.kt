@@ -119,8 +119,8 @@ fun calculateDebts(
         val payedForIndividualExpenses =
             payedForExpensesWithoutPayee.flatMap { it.getIndividualExpensesWithShared() }
         // get list of distinct indebted
-        val distinctByName = payedForIndividualExpenses.distinctBy { it.person.nameState }
-        val accExpensesByIe = distinctByName.map { indebted ->
+        val distinctById = payedForIndividualExpenses.distinctBy { it.person.uid }
+        val accExpensesByIe = distinctById.map { indebted ->
             // for each distinct indebted, filter a list of their individual debts
             val debtsByIndebted =
                 payedForIndividualExpenses.filter { it.person == indebted.person }
