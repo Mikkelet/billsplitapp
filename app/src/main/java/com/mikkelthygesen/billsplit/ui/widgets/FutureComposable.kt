@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import timber.log.Timber
 
 sealed class AsyncState<T> {
+    class Ready<T> : AsyncState<T>()
     class Loading<T> : AsyncState<T>()
     class Success<T>(val data: T) : AsyncState<T>()
     class Failure<T>(val error: Throwable) : AsyncState<T>()
@@ -33,11 +34,11 @@ fun <T> FutureComposable(
     }
 
     when (val state = asyncState) {
-        is AsyncState.Loading<T> -> loadingComposable()
         is AsyncState.Failure<T> -> errorComposable(state.error)
         is AsyncState.Success<T> -> when (state.data) {
             null -> Unit
             else -> successComposable(state.data)
         }
+        else -> loadingComposable()
     }
 }

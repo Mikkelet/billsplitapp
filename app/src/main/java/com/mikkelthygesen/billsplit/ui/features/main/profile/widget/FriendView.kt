@@ -18,6 +18,7 @@ import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
+import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,36 +32,24 @@ fun ProfilePageFriendView(
     var friendStatus by remember {
         mutableStateOf(friend)
     }
-    var loading by remember {
-        mutableStateOf(false)
-    }
-    val coroutineScope = rememberCoroutineScope()
 
     _FriendView(person = friend.person) {
         when (friendStatus) {
             is Friend.FriendRequestReceived -> {
-                if (loading) {
-                    CircularProgressIndicator()
-                } else {
-                    Button(onClick = {
-                        loading = true
-                        coroutineScope.launch {
-                            delay(2000L)
-                            val response = kotlin.runCatching {
-                                mainViewModel.acceptFriendRequest(user, friend.person)
-                            }
-                            response.fold(
-                                onSuccess = {
-                                    loading = false
-                                    friendStatus = it
-                                },
-                                onFailure = ::println
-                            )
-                        }
+                ClickableFutureComposable(
+                    asyncCallback = {
+                        mainViewModel.acceptFriendRequest(user, friend.person)
+                    },
+                    onSuccess = {
+                        if (it != null)
+                            friendStatus = it
+                    },
+                    loadingComposable = {
+                        Text(text = "Accepting...")
                     }) {
+                    Button(onClick = it) {
                         Text(text = "Accept")
                     }
-
                 }
             }
             is Friend.FriendRequestSent -> {
