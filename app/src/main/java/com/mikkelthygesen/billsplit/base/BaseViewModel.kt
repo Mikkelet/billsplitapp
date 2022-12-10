@@ -68,5 +68,11 @@ abstract class BaseViewModel : ViewModel() {
         else onLoggedOutCallback()
     }
 
+    suspend fun <T> checkAuthStatusAsync(successCallback: suspend (Person) -> T): T {
+        if (authProvider.isUserLoggedIn())
+            return successCallback(authProvider.loggedInUser!!)
+        else throw Exception("User logged out")
+    }
+
     abstract fun onLoggedOutCallback()
 }

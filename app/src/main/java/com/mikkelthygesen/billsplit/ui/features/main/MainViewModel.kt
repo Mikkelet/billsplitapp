@@ -23,8 +23,10 @@ class MainViewModel : BaseViewModel() {
     object SignIn : UiState
     object SignUp : UiState
     class AddGroup(val group: Group) : UiState
-    class Groups(val groups: List<Group>) : UiState
+    object MyGroups : UiState
     class ShowProfile(val user: Person, val friends: List<Friend>) : UiState
+
+    class AddFriendToGroupDialog(val friends: List<Friend>) : DialogState
 
     class ShowGroup(val groupId: String) : UiEvent
 
@@ -38,6 +40,8 @@ class MainViewModel : BaseViewModel() {
 
     fun showSignUp() = updateUiState(SignUp)
 
+    fun showMyGroups() = updateUiState(MyGroups)
+
     fun addGroup() {
         checkAuthStatus {
             val group = Group(
@@ -49,21 +53,10 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    fun getGroups() {
-        checkAuthStatus(
-            successCallback = {
-                updateUiState(UiState.Loading)
-                viewModelScope.launch {
-                    val response = runCatching { api.getGroups(it.uid) }
-                    response.fold(
-                        onSuccess = {
-                            updateUiState(Groups(it))
-                        },
-                        onFailure = Timber::e
-                    )
-                }
-            }
-        )
+    suspend fun getGroups(): List<Group> {
+        return checkAuthStatusAsync {
+            api.getGroups(it.uid)
+        }
     }
 
     fun saveGroup(group: Group) {
@@ -94,14 +87,17 @@ class MainViewModel : BaseViewModel() {
                 )
             }
         }
-
     }
 
-    suspend fun acceptFriendRequest(userId: String, friend: Person) : Friend {
+    fun ShowAddFriendToGroupDialog(friends: List<Friend>) {
+        showDialog(AddFriendToGroupDialog(friends))
+    }
+
+    suspend fun acceptFriendRequest(userId: String, friend: Person): Friend {
         return api.addFriendUserId(userId, friend)
     }
 
-    suspend fun addFriend(userId: String, email: String) : Friend {
+    suspend fun addFriend(userId: String, email: String): Friend {
         return api.addFriendEmail(userId, email)
     }
 

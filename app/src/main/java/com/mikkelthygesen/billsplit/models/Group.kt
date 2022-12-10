@@ -21,6 +21,10 @@ data class Group(
         peopleState = peopleState.plus(person)
     }
 
+    fun removePerson(person: Person){
+        peopleState = peopleState.minus(person)
+    }
+
     fun applyChanges() {
         name = nameState
         people = listOf(*peopleState.toTypedArray())

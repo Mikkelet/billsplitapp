@@ -1,18 +1,18 @@
 package com.mikkelthygesen.billsplit.ui.features.main.profile.widget
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun FriendView(
+fun ProfilePageFriendView(
     user: String,
     friend: Friend,
     mainViewModel: MainViewModel = viewModel(),
@@ -75,13 +75,35 @@ fun FriendView(
 }
 
 @Composable
+fun AddGroupFriendView(
+    friend: Person,
+    selected: Boolean,
+    onClick: (Boolean) -> Unit
+) {
+    var selectedState by remember {
+        mutableStateOf(selected)
+    }
+    _FriendView(
+        modifier = Modifier.clickable {
+            selectedState = !selectedState
+            onClick(selectedState)
+        },
+        person = friend
+    ) {
+        if (selected)
+            Icon(painter = painterResource(id = R.drawable.ic_money), contentDescription = "")
+    }
+}
+
+@Composable
 @SuppressLint("ComposableNaming")
 private fun _FriendView(
+    modifier: Modifier = Modifier,
     person: Person,
     trailingView: @Composable () -> Unit = {}
 ) {
     Row(
-        Modifier
+        modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -107,7 +129,7 @@ private fun _FriendView(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFriendRequestSent() {
-    FriendView(
+    ProfilePageFriendView(
         user = samplePeopleShera.first().uid,
         friend = Friend.FriendRequestSent(samplePeopleShera[1])
     )
@@ -116,7 +138,7 @@ private fun PreviewFriendRequestSent() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewAcceptRequest() {
-    FriendView(
+    ProfilePageFriendView(
         user = samplePeopleShera.first().uid,
         friend = Friend.FriendRequestReceived(samplePeopleShera[1])
     )
@@ -125,7 +147,7 @@ private fun PreviewAcceptRequest() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFriend() {
-    FriendView(
+    ProfilePageFriendView(
         user = samplePeopleShera.first().uid,
         friend = Friend.FriendAccepted(samplePeopleShera[1])
     )

@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.FirebaseApp
@@ -50,10 +52,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiStateFlow = viewModel.uiStateFlow.collectAsState()
             val dialogStateFlow = viewModel.dialogState.collectAsState()
-            val systemUiController = rememberSystemUiController()
-            systemUiController.setNavigationBarColor(
-                color = MaterialTheme.colors.primaryVariant
-            )
+
             BillSplitTheme {
                 LaunchedEffect(Unit) {
                     viewModel.uiEventsState.collect { event ->
@@ -109,11 +108,11 @@ fun MainView(
     }
 
     when (uiState) {
-        is MainViewModel.AddGroup -> AddGroupView(group = uiState.group)
-        is MainViewModel.Groups -> GroupsList(groups = uiState.groups)
+        is MainViewModel.AddGroup -> AddGroupView(group = uiState.group, friends = emptyList())
+        is MainViewModel.MyGroups -> GroupsList()
         is MainViewModel.ShowProfile -> ProfileView(user = uiState.user, friends = uiState.friends)
         is BaseViewModel.UiState.Loading -> LoadingView()
-        else -> Text(text = ("Hello"))
+        else -> Unit
     }
 }
 
@@ -123,11 +122,19 @@ private fun BottomNavBar(
 ) {
     val uiStateFlow = viewModel.uiStateFlow.collectAsState()
     val uiState = uiStateFlow.value
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setNavigationBarColor(
+        color = MaterialTheme.colors.background,
+    )
     BottomAppBar(
         modifier = Modifier,
+        backgroundColor = MaterialTheme.colors.background,
+        elevation = 0.dp
     ) {
         BottomNavigationItem(
-            selected = uiState is MainViewModel.Main,
+            selected = uiState is MainViewModel.ShowProfile,
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = Color.Gray,
             onClick = viewModel::showProfile,
             icon = {
                 Icon(
@@ -139,13 +146,17 @@ private fun BottomNavBar(
         BottomNavigationItem(
             selected = uiState is MainViewModel.AddGroup,
             onClick = viewModel::addGroup,
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = Color.Gray,
             icon = {
                 Icon(painter = painterResource(id = R.drawable.ic_money), contentDescription = "")
             }
         )
         BottomNavigationItem(
-            selected = uiState is MainViewModel.Groups,
-            onClick = viewModel::getGroups,
+            selected = uiState is MainViewModel.MyGroups,
+            onClick = viewModel::showMyGroups,
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = Color.Gray,
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_groups_24),

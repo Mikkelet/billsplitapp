@@ -21,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.FriendView
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.ProfilePageFriendView
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.ProfileHeader
 
 @Composable
@@ -69,7 +69,7 @@ fun FriendsView(user: Person, friends: List<Friend>) {
             }
             items(friends.size) { index ->
                 val friend = friends[index]
-                FriendView(user = user.uid, friend = friend)
+                ProfilePageFriendView(user = user.uid, friend = friend)
             }
         }
     }
