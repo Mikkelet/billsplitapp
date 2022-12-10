@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.AddFriendEmailTextField
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.ProfilePageFriendView
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.ProfileHeader
@@ -53,15 +54,19 @@ private fun _ProfileView(user: Person, friends: List<Friend>) {
 
 @Composable
 fun FriendsView(friends: List<Friend>) {
+    var friendsState by remember {
+        mutableStateOf(friends)
+    }
     Column(
         modifier = shadowModifier(MaterialTheme.colors.background),
     ) {
+
+
         Text(text = "Friends", style = TextStyle(fontSize = 30.sp))
-        OutlinedTextField(modifier = Modifier
-            .padding(vertical = 8.dp)
-            .fillMaxWidth(), value = "Add friend", onValueChange = {
-        })
-        friends.map {
+        AddFriendEmailTextField {
+            friendsState = friendsState.plus(it)
+        }
+        friendsState.map {
             ProfilePageFriendView(it)
         }
     }

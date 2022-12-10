@@ -74,7 +74,7 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    suspend fun getFriends() : List<Friend> {
+    suspend fun getFriends(): List<Friend> {
         return checkAuthStatusAsync { user ->
             api.getFriends(user.uid)
         }
@@ -87,8 +87,10 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    suspend fun addFriend(userId: String, email: String): Friend {
-        return api.addFriendEmail(userId, email)
+    suspend fun addFriend(email: String): Friend {
+        return checkAuthStatusAsync {
+            api.addFriendEmail(it.uid, email)
+        }
     }
 
     fun signUpEmail(email: String, password: String) {

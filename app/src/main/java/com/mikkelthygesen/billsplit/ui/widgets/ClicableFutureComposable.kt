@@ -25,7 +25,6 @@ fun <T> ClickableFutureComposable(
     val callback: () -> Unit = {
         coroutineScope.launch {
             asyncState = AsyncState.Loading()
-            delay(2000L)
             val response = runCatching { asyncCallback() }
             response.fold(
                 onSuccess = { asyncState = AsyncState.Success(it) },
