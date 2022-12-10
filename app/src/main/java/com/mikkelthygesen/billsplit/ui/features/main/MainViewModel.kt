@@ -24,7 +24,7 @@ class MainViewModel : BaseViewModel() {
     object SignUp : UiState
     class AddGroup(val group: Group) : UiState
     object MyGroups : UiState
-    class ShowProfile(val user: Person, val friends: List<Friend>) : UiState
+    object ShowProfile : UiState
 
     class AddFriendToGroupDialog(val friends: List<Friend>) : DialogState
 
@@ -41,6 +41,8 @@ class MainViewModel : BaseViewModel() {
     fun showSignUp() = updateUiState(SignUp)
 
     fun showMyGroups() = updateUiState(MyGroups)
+
+    fun showProfile() = updateUiState(ShowProfile)
 
     fun addGroup() {
         checkAuthStatus {
@@ -74,18 +76,9 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    fun showProfile() {
-        updateUiState(UiState.Loading)
-        checkAuthStatus { user ->
-            viewModelScope.launch {
-                val response = runCatching { api.getFriends(user.uid) }
-                response.fold(
-                    onSuccess = {
-                        updateUiState(ShowProfile(user, it))
-                    },
-                    onFailure = ::println
-                )
-            }
+    suspend fun getFriends() : List<Friend> {
+        return checkAuthStatusAsync { user ->
+            api.getFriends(user.uid)
         }
     }
 
@@ -108,10 +101,6 @@ class MainViewModel : BaseViewModel() {
                 showProfile()
             },
             onFailure = { updateUiState(SignUp) })
-    }
-
-    override fun onLoggedOutCallback() {
-        updateUiState(SignIn)
     }
 
     fun signInEmail(email: String, password: String) {

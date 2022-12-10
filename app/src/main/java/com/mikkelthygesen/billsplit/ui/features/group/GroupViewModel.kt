@@ -143,8 +143,4 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     fun showEvents() {
         updateUiState(Expenses)
     }
-
-    override fun onLoggedOutCallback() {
-        showDialog(LoggedOut)
-    }
 }

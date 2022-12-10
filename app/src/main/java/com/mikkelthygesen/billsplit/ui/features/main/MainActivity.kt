@@ -110,7 +110,7 @@ fun MainView(
     when (uiState) {
         is MainViewModel.AddGroup -> AddGroupView(group = uiState.group, friends = emptyList())
         is MainViewModel.MyGroups -> GroupsList()
-        is MainViewModel.ShowProfile -> ProfileView(user = uiState.user, friends = uiState.friends)
+        is MainViewModel.ShowProfile -> ProfileView()
         is BaseViewModel.UiState.Loading -> LoadingView()
         else -> Unit
     }

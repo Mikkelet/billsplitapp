@@ -1,8 +1,8 @@
 package com.mikkelthygesen.billsplit.base
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mikkelthygesen.billsplit.data.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.auth.authProvider
 import com.mikkelthygesen.billsplit.models.Person
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,6 +15,9 @@ abstract class BaseViewModel : ViewModel() {
 
     val loggedInUser: Person?
         get() = authProvider.loggedInUser
+
+    val requireLoggedInUser: Person
+        get() = loggedInUser!!
 
     interface DialogState {
         object DismissDialogs : DialogState
@@ -65,7 +68,12 @@ abstract class BaseViewModel : ViewModel() {
     fun checkAuthStatus(successCallback: (Person) -> Unit) {
         if (authProvider.isUserLoggedIn())
             successCallback(authProvider.loggedInUser!!)
-        else onLoggedOutCallback()
+    }
+
+    @Composable
+    fun CheckAuthStatusComposable(successCallback: @Composable (Person) -> Unit) {
+        if (authProvider.isUserLoggedIn())
+            successCallback(authProvider.loggedInUser!!)
     }
 
     suspend fun <T> checkAuthStatusAsync(successCallback: suspend (Person) -> T): T {
@@ -74,5 +82,7 @@ abstract class BaseViewModel : ViewModel() {
         else throw Exception("User logged out")
     }
 
-    abstract fun onLoggedOutCallback()
+    fun handleError(exception: Throwable) {
+        println(exception)
+    }
 }

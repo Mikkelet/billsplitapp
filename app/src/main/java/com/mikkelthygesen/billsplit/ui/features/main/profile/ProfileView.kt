@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,14 +23,19 @@ import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.ProfilePageFriendView
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.ProfileHeader
+import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 
 @Composable
 fun ProfileView(
-    user: Person,
-    friends: List<Friend>,
     mainViewModel: MainViewModel = viewModel()
 ) {
-    _ProfileView(user = user, friends = friends)
+    FutureComposable(
+        asyncCallback = {
+            val friends = mainViewModel.getFriends()
+            Pair(mainViewModel.requireLoggedInUser, friends)
+        }) {
+        _ProfileView(user = it.first, friends = it.second)
+    }
 }
 
 @Composable
