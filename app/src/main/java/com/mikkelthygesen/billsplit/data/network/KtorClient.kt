@@ -5,7 +5,6 @@ import com.mikkelthygesen.billsplit.data.network.dto.EventDTO
 import com.mikkelthygesen.billsplit.data.network.dto.FriendStatusDTO
 import com.mikkelthygesen.billsplit.data.network.requests.AddFriend
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
@@ -45,6 +44,7 @@ object KtorClient {
         ignoreUnknownKeys = true
         serializersModule = module
         encodeDefaults = true
+        prettyPrint = true
     }
 
     val client = HttpClient {
@@ -56,23 +56,13 @@ object KtorClient {
             this.requestTimeoutMillis = 20 * 1000
         }
         install(Logging) {
-            logger = Logger.DEFAULT
+            logger = Logger.SIMPLE
             level = LogLevel.ALL
         }
         defaultRequest {
             url(BuildConfig.HOST_NAME)
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
-        }
-    }.apply {
-        plugin(HttpSend).intercept { req ->
-            println("NETWORK --> ${req.method.value}(${req.url.build()})")
-            println(" --- ${req.body}")
-            val call = execute(req)
-            val response = call.response
-            val durationMillis = response.responseTime.timestamp - response.requestTime.timestamp
-            println("NETWORK <-- [${response.body<Any>()}] ($durationMillis ms)")
-            call
         }
     }
 }

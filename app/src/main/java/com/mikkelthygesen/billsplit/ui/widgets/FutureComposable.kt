@@ -2,6 +2,7 @@ package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import timber.log.Timber
 
 sealed class AsyncState<T> {
     class Loading<T> : AsyncState<T>()
@@ -13,7 +14,10 @@ sealed class AsyncState<T> {
 fun <T> FutureComposable(
     asyncCallback: suspend () -> T,
     loadingComposable: @Composable () -> Unit = { LoadingView() },
-    errorComposable: @Composable (Throwable) -> Unit = { Text(text = it.toString()) },
+    errorComposable: @Composable (Throwable) -> Unit = {
+        Timber.e(it)
+        Text(text = it.toString())
+    },
     successComposable: @Composable (T) -> Unit,
 ) {
     var asyncState: AsyncState<T> by remember {

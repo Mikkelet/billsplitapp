@@ -75,23 +75,18 @@ fun ProfilePageFriendView(
 }
 
 @Composable
-fun AddGroupFriendView(
+fun ClickableFriendView(
     friend: Person,
-    selected: Boolean,
-    onClick: (Boolean) -> Unit
+    trailingView: () -> Unit = { },
+    onClick: () -> Unit,
 ) {
-    var selectedState by remember {
-        mutableStateOf(selected)
-    }
     _FriendView(
         modifier = Modifier.clickable {
-            selectedState = !selectedState
-            onClick(selectedState)
+            onClick()
         },
         person = friend
     ) {
-        if (selected)
-            Icon(painter = painterResource(id = R.drawable.ic_money), contentDescription = "")
+        trailingView()
     }
 }
 
