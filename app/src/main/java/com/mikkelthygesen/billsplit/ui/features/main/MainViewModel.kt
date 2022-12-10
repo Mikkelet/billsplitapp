@@ -26,8 +26,6 @@ class MainViewModel : BaseViewModel() {
     object MyGroups : UiState
     object ShowProfile : UiState
 
-    class AddFriendToGroupDialog(val friends: List<Friend>) : DialogState
-
     class ShowGroup(val groupId: String) : UiEvent
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Main)
@@ -82,12 +80,11 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    fun ShowAddFriendToGroupDialog(friends: List<Friend>) {
-        showDialog(AddFriendToGroupDialog(friends))
-    }
+    suspend fun acceptFriendRequest(friend: Person): Friend {
+        return checkAuthStatusAsync { user ->
+            api.addFriendUserId(user.uid, friend)
 
-    suspend fun acceptFriendRequest(userId: String, friend: Person): Friend {
-        return api.addFriendUserId(userId, friend)
+        }
     }
 
     suspend fun addFriend(userId: String, email: String): Friend {

@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ProfilePageFriendView(
-    user: String,
     friend: Friend,
     mainViewModel: MainViewModel = viewModel(),
 ) {
@@ -38,7 +37,7 @@ fun ProfilePageFriendView(
             is Friend.FriendRequestReceived -> {
                 ClickableFutureComposable(
                     asyncCallback = {
-                        mainViewModel.acceptFriendRequest(user, friend.person)
+                        mainViewModel.acceptFriendRequest(friend.person)
                     },
                     onSuccess = {
                         if (it != null)
@@ -114,7 +113,6 @@ private fun _FriendView(
 @Composable
 private fun PreviewFriendRequestSent() {
     ProfilePageFriendView(
-        user = samplePeopleShera.first().uid,
         friend = Friend.FriendRequestSent(samplePeopleShera[1])
     )
 }
@@ -123,7 +121,6 @@ private fun PreviewFriendRequestSent() {
 @Composable
 private fun PreviewAcceptRequest() {
     ProfilePageFriendView(
-        user = samplePeopleShera.first().uid,
         friend = Friend.FriendRequestReceived(samplePeopleShera[1])
     )
 }
@@ -132,7 +129,6 @@ private fun PreviewAcceptRequest() {
 @Composable
 private fun PreviewFriend() {
     ProfilePageFriendView(
-        user = samplePeopleShera.first().uid,
         friend = Friend.FriendAccepted(samplePeopleShera[1])
     )
 }

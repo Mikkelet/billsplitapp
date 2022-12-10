@@ -3,6 +3,8 @@ package com.mikkelthygesen.billsplit.ui.features.main.widgets
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
 
 
@@ -29,32 +32,28 @@ fun ProfileHeader(
     ) {
         CircularImageView(
             modifier = Modifier
+                .padding(top = 32.dp)
                 .size(100.dp),
             imageResId = user.pfpResId
         )
-        Text(
-            modifier = Modifier.fillMaxWidth()
-                .padding(top = 16.dp, bottom = 4.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.LightGray)
-                .padding(16.dp),
-            text = user.nameState,
-            style = TextStyle(fontSize = 15.sp)
-        )
-        Text(
-            modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 4.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.LightGray)
-                .padding(16.dp),
-            text = "Test3@test.dk",
-            style = TextStyle(fontSize = 15.sp)
-        )
+        Column(
+            shadowModifier(MaterialTheme.colors.background)
+        ) {
+            Text(
+                text = user.nameState,
+                style = TextStyle(fontSize = 32.sp)
+            )
+            Divider(Modifier.padding(vertical = 16.dp, horizontal = 64.dp))
+            Text(
+                text = "Test3@test.dk",
+                style = TextStyle(fontSize = 20.sp)
+            )
+        }
     }
 }
 
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
-    ProfileHeader(user = Person(name = "Catra"))
+    ProfileHeader(user = Person("pokaspd123123psodak", name = "Catra"))
 }

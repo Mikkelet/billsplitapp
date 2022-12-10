@@ -5,14 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,6 +20,7 @@ import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.ProfilePageFriendView
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.ProfileHeader
 import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 
@@ -44,38 +43,26 @@ private fun _ProfileView(user: Person, friends: List<Friend>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ProfileHeader(user)
-        FriendsView(user = user, friends = friends)
+        FriendsView(friends)
     }
 }
 
 @Composable
-fun FriendsView(user: Person, friends: List<Friend>) {
-    Column {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.LightGray)
-                .padding(16.dp),
-        ) {
-            item {
-                Text(text = "Friends", style = TextStyle(fontSize = 30.sp))
-            }
-            item {
-                OutlinedTextField(modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .fillMaxWidth(), value = "Add friend", onValueChange = {
-                })
-            }
-            items(friends.size) { index ->
-                val friend = friends[index]
-                ProfilePageFriendView(user = user.uid, friend = friend)
-            }
+fun FriendsView(friends: List<Friend>) {
+    Column(
+        modifier = shadowModifier(MaterialTheme.colors.background),
+    ) {
+        Text(text = "Friends", style = TextStyle(fontSize = 30.sp))
+        OutlinedTextField(modifier = Modifier
+            .padding(vertical = 8.dp)
+            .fillMaxWidth(), value = "Add friend", onValueChange = {
+        })
+        friends.map {
+            ProfilePageFriendView(it)
         }
     }
 }
