@@ -27,7 +27,6 @@ fun GroupListItem(onClick: () -> Unit, group: Group) {
             Text(text = group.nameState)
             Icon(painter = painterResource(id = R.drawable.ic_money), contentDescription = "")
         }
-        Divider()
     }
 }
 

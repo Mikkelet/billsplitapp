@@ -50,6 +50,11 @@ private fun _ProfileView(user: Person, friends: List<Friend>) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ProfileHeader(user)
+        Text(
+            modifier = Modifier.padding(top = 16.dp),
+            text = "Friends",
+            style = MaterialTheme.typography.h5
+        )
         FriendsView(friends)
     }
 }
@@ -62,9 +67,6 @@ fun FriendsView(friends: List<Friend>) {
     Column(
         modifier = shadowModifier(MaterialTheme.colors.background),
     ) {
-
-
-        Text(text = "Friends", style = TextStyle(fontSize = 30.sp))
         AddFriendEmailTextField {
             friendsState = friendsState.plus(it)
         }

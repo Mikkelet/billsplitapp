@@ -34,6 +34,17 @@ class MainViewModel : BaseViewModel() {
         updateUiState(AddGroup)
     }
 
+    fun getNewGroup(): Group = checkAuthStatus {
+        Group(
+            id = "",
+            name = "My group",
+            people = listOf(it),
+            createdBy = it,
+            timeStamp = 0,
+            events = listOf()
+        )
+    }
+
     suspend fun getGroups(): List<Group> {
         return checkAuthStatusAsync {
             api.getGroups(it.uid)

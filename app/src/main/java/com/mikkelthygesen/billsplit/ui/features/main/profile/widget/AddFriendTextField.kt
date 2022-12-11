@@ -71,7 +71,7 @@ fun _AddFriendTextField(
                     onError = { errorMessage = it.message.toString() }
                 ) {
                     IconButton(
-                        iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_money,
+                        iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_add_plus,
                         onClick = it
                     )
                 }

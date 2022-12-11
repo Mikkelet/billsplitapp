@@ -1,47 +1,63 @@
 package com.mikkelthygesen.billsplit.ui.features.main.add_group
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.models.Friend
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.Group
-import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.ui.features.main.add_group.wigets.AddFriendToGroupDialog
+import com.mikkelthygesen.billsplit.ui.features.main.add_group.wigets.FutureAddFriendDialog
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
-import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.FlatButton
+import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
 @Composable
 fun AddGroupView(
     viewModel: MainViewModel = viewModel(),
 ) {
-    FutureComposable(
-        asyncCallback = {
-            Pair(viewModel.requireLoggedInUser, viewModel.getFriends())
-        },
-        onError = viewModel::handleError
+    val group by remember {
+        mutableStateOf(viewModel.getNewGroup())
+    }
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
-        val group = Group(
-            id = "",
-            name = "My group",
-            people = listOf(it.first),
-            createdBy = it.first,
-            timeStamp = 0,
-            events = listOf()
-        )
-        val acceptedFriends = it.second.filterIsInstance<Friend.FriendAccepted>()
-            .map { friendAccepted -> friendAccepted.person }
-        _AddGroupView(group = group, friends = acceptedFriends, onAddGroup = {
+        Box(modifier = Modifier) {
+            _AddGroupView(
+                group = group
+            )
+            FutureAddFriendDialog(
+                modifier = Modifier
+                    .padding(end = 32.dp, top = 16.dp)
+                    .align(BottomEnd),
+                group = group
+            )
+        }
+        ClickableFutureComposable(asyncCallback = {
             viewModel.saveGroup(group)
-        })
+        }) {
+            FlatButton(
+                modifier = Modifier.fillMaxWidth().padding(top = 64.dp, bottom = 32.dp),
+                text = "Add Group") {
+                if (group.nameState.isNotBlank() && group.peopleState.isNotEmpty())
+                    it.invoke()
+            }
+
+        }
     }
 }
 
@@ -49,46 +65,75 @@ fun AddGroupView(
 @SuppressLint("ComposableNaming")
 @Composable
 fun _AddGroupView(
+    modifier: Modifier = Modifier,
     group: Group,
-    onAddGroup: suspend () -> Unit,
-    friends: List<Person>
 ) {
-    var showAddFriendDialog by remember {
-        mutableStateOf(false)
-    }
-    if (showAddFriendDialog) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(top = 32.dp),
+            text = "Name your group",
+            style = MaterialTheme.typography.h5
+        )
+        OutlinedTextField(
+            modifier = shadowModifier(MaterialTheme.colors.background)
+                .fillMaxWidth(),
+            value = group.nameState,
+            onValueChange = { group.nameState = it },
+            placeholder = { Text(text = ("Going to that restaurant")) },
+            colors = TextFieldDefaults.textFieldColors(
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                backgroundColor = MaterialTheme.colors.background.copy(alpha = .7f),
+                textColor = MaterialTheme.colors.onBackground
+            )
+        )
+        Text(
+            modifier = Modifier.padding(top = 16.dp),
+            text = "Participants",
+            style = MaterialTheme.typography.h5
+        )
+        Column(
+            modifier = shadowModifier(MaterialTheme.colors.background)
+                .animateContentSize()
+        ) {
+            if (group.peopleState.isNotEmpty())
+                group.peopleState.mapIndexed { index, person ->
+                    val addExtraBottomPadding = group.peopleState.size > 1
+                            && index == group.peopleState.lastIndex
 
-        AddFriendToGroupDialog(friends = friends.minus(group.peopleState.toSet()),
-            onDismiss = {
-                showAddFriendDialog = false
-            },
-            onAddFriend = {
-                group.addPerson(it)
-            })
-    }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Group name, createdBy = ${group.createdBy.nameState}")
-        TextField(value = group.nameState, onValueChange = {
-            group.nameState = it
-        })
-        ClickableFutureComposable(asyncCallback = onAddGroup) {
-            Button(onClick = {
-                if (group.nameState.isNotBlank() && group.peopleState.isNotEmpty())
-                    it.invoke()
-            }) {
-                Text(text = "Add group")
-            }
-        }
-        Box(modifier = Modifier.height(20.dp))
-        Text(text = "People")
-        if (group.peopleState.isNotEmpty())
-            group.peopleState.map { person ->
-                Text(text = person.nameState)
-            }
-        Button(onClick = {
-            showAddFriendDialog = true
-        }) {
-            Text(text = "Add friend")
+                    Row(
+                        modifier = Modifier
+                            .padding(
+                                top = 8.dp,
+                                bottom = if (addExtraBottomPadding) 24.dp else 8.dp
+                            )
+                            .fillMaxWidth(),
+                        verticalAlignment = CenterVertically
+                    ) {
+                        CircularImageView(
+                            modifier = Modifier
+                                .size(48.dp),
+                            imageResId = person.pfpResId
+                        )
+                        Text(
+                            modifier = Modifier.padding(start = 16.dp),
+                            text = person.nameState,
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                        Box(modifier = Modifier.weight(1F))
+                        if (person != group.createdBy)
+                            IconButton(
+                                iconResId = R.drawable.ic_baseline_remove_24,
+                                color = MaterialTheme.colors.error
+                            ) {
+                                group.removePerson(person)
+                            }
+                    }
+                }
         }
     }
 }
@@ -98,8 +143,6 @@ fun _AddGroupView(
 @Composable
 private fun Preview() {
     _AddGroupView(
-        group = Group("asd", "My Group", samplePeopleShera, samplePeopleShera.first()),
-        friends = samplePeopleShera,
-        onAddGroup = {}
+        group = Group("asd", "", samplePeopleShera, samplePeopleShera.first()),
     )
 }
