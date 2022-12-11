@@ -45,6 +45,17 @@ class MainViewModel : BaseViewModel() {
         )
     }
 
+    suspend fun updateUser() {
+        checkAuthStatusAsync {
+            api.updateUser(it)
+            authProvider.updateUserName(
+                it.nameState,
+                onSuccess = ::println,
+                onFailure = ::println
+            )
+        }
+    }
+
     suspend fun getGroups(): List<Group> {
         return checkAuthStatusAsync {
             api.getGroups(it.uid)

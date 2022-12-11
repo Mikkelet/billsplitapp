@@ -7,6 +7,7 @@ import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.features.group.GroupActivity
@@ -64,7 +66,15 @@ class MainActivity : ComponentActivity() {
                 }
                 Scaffold(
                     backgroundColor = MaterialTheme.colors.background,
-                    bottomBar = { if (showNavigation(uiStateFlow.value)) BottomNavBar() }
+                    bottomBar = { if (showNavigation(uiStateFlow.value)) BottomNavBar() },
+                    topBar = {
+                        TopAppBar {
+                            Column {
+                                Text(text = "flavor=${BuildConfig.FLAVOR}")
+                                Text(text = "uid=${viewModel.loggedInUser?.uid}")
+                            }
+                        }
+                    }
                 ) { padding ->
                     Crossfade(
                         modifier = Modifier.padding(padding),

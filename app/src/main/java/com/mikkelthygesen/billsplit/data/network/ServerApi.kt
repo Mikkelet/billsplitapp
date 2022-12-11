@@ -41,4 +41,10 @@ object ServerApi {
             setBody(body)
         }.body()
     }
+
+    suspend fun updateUser(updateUserRequest: UpdateUser.Request) {
+        return KtorClient.client.post("updateUser") {
+            setBody(updateUserRequest)
+        }.body()
+    }
 }

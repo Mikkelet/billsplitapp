@@ -58,4 +58,9 @@ class ServerApiImpl {
         val request = GetFriends.Request(userId)
         return ServerApi.getFriends(request).friends.map { Friend.fromDTO(it) }
     }
+
+    suspend fun updateUser(user: Person) {
+        val dto = PersonDTO.fromPerson(user)
+        return ServerApi.updateUser(UpdateUser.Request(dto))
+    }
 }

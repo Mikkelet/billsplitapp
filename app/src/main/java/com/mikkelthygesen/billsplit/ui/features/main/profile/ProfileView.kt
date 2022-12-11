@@ -36,20 +36,21 @@ fun ProfileView(
         },
         onError = mainViewModel::handleError
     ) {
-        _ProfileView(user = it.first, friends = it.second)
+        _ProfileView(user = it.first, friends = it.second,
+            onUpdateUser = { mainViewModel.updateUser() })
     }
 }
 
 @Composable
 @SuppressLint("ComposableNaming")
-private fun _ProfileView(user: Person, friends: List<Friend>) {
+private fun _ProfileView(user: Person, friends: List<Friend>, onUpdateUser: suspend () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ProfileHeader(user)
+        ProfileHeader(user, onUpdateUser)
         Text(
             modifier = Modifier.padding(top = 16.dp),
             text = "Friends",
@@ -84,5 +85,5 @@ private fun Preview() {
         val person = Person("$it", "Person $it")
         Friend.FriendAccepted(person)
     }
-    _ProfileView(Person(name = "Catra"), friends)
+    _ProfileView(Person(name = "Catra"), friends, onUpdateUser = {})
 }

@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.R
-import java.util.UUID
 
 data class Person(
     val uid: String = "",
@@ -12,6 +11,14 @@ data class Person(
     val pfpResId: Int = R.drawable.catra_pfp,
 ) {
     var nameState by mutableStateOf(name)
+
+    fun isNameChanged(): Boolean {
+        return nameState != name
+    }
+
+    fun saveChanges() {
+        name = nameState
+    }
 
     override fun equals(other: Any?): Boolean {
         if (other is Person)
