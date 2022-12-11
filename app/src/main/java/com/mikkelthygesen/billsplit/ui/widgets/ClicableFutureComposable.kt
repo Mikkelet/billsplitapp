@@ -1,20 +1,15 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Composable
 fun <T> ClickableFutureComposable(
     asyncCallback: suspend () -> T,
+    onError: (Throwable) -> Unit = { Timber.e(it) },
+    onSuccess: (T?) -> Unit = {},
     loadingComposable: @Composable () -> Unit = { LoadingView() },
-    errorComposable: @Composable (Throwable) -> Unit = {
-        Timber.e(it)
-        Text(text = it.toString())
-    },
-    onSuccess: (T?) -> Unit,
     clickableComposable: @Composable (() -> Unit) -> Unit,
 ) {
     var asyncState: AsyncState<T> by remember {
@@ -27,21 +22,22 @@ fun <T> ClickableFutureComposable(
             asyncState = AsyncState.Loading()
             val response = runCatching { asyncCallback() }
             response.fold(
-                onSuccess = { asyncState = AsyncState.Success(it) },
-                onFailure = { asyncState = AsyncState.Failure(it) }
+                onSuccess = {
+                    onSuccess(it)
+                    asyncState = AsyncState.Success(it)
+                },
+                onFailure = {
+                    onError(it)
+                    asyncState = AsyncState.Ready()
+                }
             )
         }
     }
 
-    when (val state = asyncState) {
-        is AsyncState.Ready<T> -> clickableComposable(callback)
+    // Clickable state can only be ready or loading.
+    // Success and failure should be handled by the relevant callbacks
+    when (asyncState) {
         is AsyncState.Loading<T> -> loadingComposable()
-        is AsyncState.Failure<T> -> errorComposable(state.error)
-        is AsyncState.Success<T> -> when (state.data) {
-            else -> {
-                onSuccess(state.data)
-                clickableComposable(callback)
-            }
-        }
+        else -> clickableComposable(callback)
     }
 }

@@ -7,7 +7,6 @@ import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -20,10 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.firebase.FirebaseApp
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.base.BaseViewModel
-import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.ui.features.group.GroupActivity
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.AddGroupView
 import com.mikkelthygesen.billsplit.ui.features.main.groups.GroupsList
@@ -31,7 +28,6 @@ import com.mikkelthygesen.billsplit.ui.features.main.profile.ProfileView
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignInView
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
-import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 
 class MainActivity : ComponentActivity() {
@@ -68,7 +64,6 @@ class MainActivity : ComponentActivity() {
                 }
                 Scaffold(
                     backgroundColor = MaterialTheme.colors.background,
-                    topBar = { if (showNavigation(uiStateFlow.value)) MainTopBar() },
                     bottomBar = { if (showNavigation(uiStateFlow.value)) BottomNavBar() }
                 ) { padding ->
                     Crossfade(
@@ -76,8 +71,8 @@ class MainActivity : ComponentActivity() {
                         targetState = uiStateFlow.value
                     ) { uiState ->
                         when (uiState) {
-                            MainViewModel.SignIn -> SignInView()
-                            MainViewModel.SignUp -> SignUpView()
+                            BaseViewModel.UiState.SignIn -> SignInView()
+                            BaseViewModel.UiState.SignUp -> SignUpView()
                             else -> MainView(
                                 uiState = uiStateFlow.value,
                                 dialogState = dialogStateFlow.value
@@ -92,7 +87,7 @@ class MainActivity : ComponentActivity() {
 
 private fun showNavigation(uiState: BaseViewModel.UiState): Boolean {
     return when (uiState) {
-        is MainViewModel.SignUp, MainViewModel.SignIn -> false
+        is BaseViewModel.UiState.SignUp, BaseViewModel.UiState.SignIn -> false
         else -> true
     }
 }
@@ -108,7 +103,7 @@ fun MainView(
     }
 
     when (uiState) {
-        is MainViewModel.AddGroup -> AddGroupView(group = uiState.group, friends = emptyList())
+        is MainViewModel.AddGroup -> AddGroupView()
         is MainViewModel.MyGroups -> GroupsList()
         is MainViewModel.ShowProfile -> ProfileView()
         is BaseViewModel.UiState.Loading -> LoadingView()
@@ -145,7 +140,7 @@ private fun BottomNavBar(
         )
         BottomNavigationItem(
             selected = uiState is MainViewModel.AddGroup,
-            onClick = viewModel::addGroup,
+            onClick = viewModel::showAddGroup,
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = Color.Gray,
             icon = {
@@ -167,38 +162,11 @@ private fun BottomNavBar(
     }
 }
 
-
-@Composable
-private fun MainTopBar(
-    viewModel: MainViewModel = viewModel()
-) {
-    val uiStateFlow = viewModel.uiStateFlow.collectAsState()
-    val uiState = uiStateFlow.value
-    TopAppBar(
-        title = { Text("Main!") },
-        backgroundColor = MaterialTheme.colors.primary,
-        contentColor = MaterialTheme.colors.onPrimary,
-        actions = {
-            when (uiState) {
-                is MainViewModel.AddGroup -> {
-                    IconButton(
-                        iconResId = R.drawable.ic_check,
-                        color = MaterialTheme.colors.onPrimary
-                    ) {
-                        if (uiState.group.nameState.isNotBlank())
-                            viewModel.saveGroup(uiState.group)
-                    }
-                }
-            }
-        }
-    )
-}
-
 @Preview(showSystemUi = true)
 @Composable
 private fun PreviewMainView() {
     MainView(
         dialogState = BaseViewModel.DialogState.DismissDialogs,
-        uiState = MainViewModel.AddGroup(Group("id"))
+        uiState = MainViewModel.MyGroups
     )
 }

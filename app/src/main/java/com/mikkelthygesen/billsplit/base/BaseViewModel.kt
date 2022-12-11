@@ -3,13 +3,17 @@ package com.mikkelthygesen.billsplit.base
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikkelthygesen.billsplit.data.auth.NetworkExceptions
 import com.mikkelthygesen.billsplit.data.auth.authProvider
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.util.concurrent.CancellationException
 
 abstract class BaseViewModel : ViewModel() {
 
@@ -26,11 +30,17 @@ abstract class BaseViewModel : ViewModel() {
     interface UiState {
         object Loading : UiState
         class Error(val exception: Exception) : UiState
+        object SignIn : UiState
+        object SignUp : UiState
     }
 
     interface UiEvent {
         object OnBackPressed : UiEvent
     }
+
+    fun showSignIn() = updateUiState(UiState.SignIn)
+
+    fun showSignUp() = updateUiState(UiState.SignUp)
 
     protected abstract val _mutableUiStateFlow: MutableStateFlow<UiState>
     val uiStateFlow: StateFlow<UiState> by lazy { _mutableUiStateFlow }
@@ -65,9 +75,10 @@ abstract class BaseViewModel : ViewModel() {
     }
 
 
-    fun checkAuthStatus(successCallback: (Person) -> Unit) {
+    fun <T> checkAuthStatus(successCallback: (Person) -> T): T {
         if (authProvider.isUserLoggedIn())
-            successCallback(authProvider.loggedInUser!!)
+            return successCallback(authProvider.loggedInUser!!)
+        else throw Exception("User logged out")
     }
 
     @Composable
@@ -79,10 +90,16 @@ abstract class BaseViewModel : ViewModel() {
     suspend fun <T> checkAuthStatusAsync(successCallback: suspend (Person) -> T): T {
         if (authProvider.isUserLoggedIn())
             return successCallback(authProvider.loggedInUser!!)
-        else throw Exception("User logged out")
+        else throw NetworkExceptions.UserLoggedOut()
     }
 
-    fun handleError(exception: Throwable) {
-        println(exception)
+    open fun handleError(exception: Throwable) {
+        Timber.e(exception)
+        when (exception) {
+            is NetworkExceptions.UserLoggedOut -> showSignIn()
+            else -> {
+                Timber.e("qqq error=${exception.message}")
+            }
+        }
     }
 }

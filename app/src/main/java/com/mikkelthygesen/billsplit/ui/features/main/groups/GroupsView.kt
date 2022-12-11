@@ -9,7 +9,10 @@ import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 
 @Composable
 fun GroupsList(viewModel: MainViewModel = viewModel()) {
-    FutureComposable(asyncCallback = viewModel::getGroups) { groups ->
+    FutureComposable(
+        asyncCallback = viewModel::getGroups,
+        onError = viewModel::handleError
+    ) { groups ->
         LazyColumn {
             items(groups.size) { index ->
                 val group = groups[index]

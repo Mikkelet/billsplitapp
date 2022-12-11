@@ -23,6 +23,8 @@ import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -62,7 +64,7 @@ private fun _ViewExpenses(
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (it.second > 0)
-                        YourDebt(debt = it, user = user)
+                        YourDebt(debt = it)
                     else if (it.second < 0)
                         DebtToYou(debt = it)
                 }
@@ -81,14 +83,8 @@ private fun DebtToYou(debt: Pair<Person, Float>) {
 @Composable
 private fun YourDebt(
     viewModel: GroupViewModel = viewModel(),
-    user: Person,
     debt: Pair<Person, Float>
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    var isLoading by remember {
-        mutableStateOf(false)
-    }
-
     Row(
         modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -98,30 +94,22 @@ private fun YourDebt(
             text = "You owe $${debt.second} to ${debt.first.nameState}",
             style = TextStyle(color = Color.Red, fontSize = 20.sp)
         )
-        if (isLoading)
-            CircularProgressIndicator(
-                Modifier
-                    .weight(1f)
-                    .size(16.dp)
-                    .wrapContentSize()
-            )
-        else
+        ClickableFutureComposable(
+            asyncCallback = {
+                viewModel.addPayment(
+                    paidTo = debt.first,
+                    amount = debt.second
+                )
+            }) {
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentWidth(),
-                onClick = {
-                    isLoading = true
-                    coroutineScope.launch {
-                        viewModel.addPayment(
-                            user = user,
-                            paidTo = debt.first,
-                            amount = debt.second)
-                        isLoading = false
-                    }
-                }) {
+                onClick = it
+            ) {
                 Text(text = "PAY")
             }
+        }
     }
 }
 
@@ -138,5 +126,5 @@ private fun PreviewViewExpense() {
 @Preview
 @Composable
 private fun PreviewYourDebtView() {
-    YourDebt(debt = Pair(Person("ID0", "Mikkel"), 1000F), user = Person())
+    YourDebt(debt = Pair(Person("ID0", "Mikkel"), 1000F))
 }

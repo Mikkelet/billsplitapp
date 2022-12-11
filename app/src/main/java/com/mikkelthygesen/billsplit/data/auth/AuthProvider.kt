@@ -39,10 +39,10 @@ class AuthProvider {
         email: String,
         password: String,
         onSuccess: (Person) -> Unit,
-        onFailure: () -> Unit
+        onFailure: (Throwable) -> Unit
     ) {
         firebase.createUserWithEmailAndPassword(email, password)
-            .addOnFailureListener { onFailure() }
+            .addOnFailureListener { onFailure(it) }
             .addOnSuccessListener { onSignIn(it, onSuccess) }
     }
 
@@ -50,11 +50,11 @@ class AuthProvider {
         email: String,
         password: String,
         onSuccess: (Person) -> Unit,
-        onFailure: () -> Unit
+        onFailure: (Throwable) -> Unit
     ) {
         firebase.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { onSignIn(it, onSuccess) }
-            .addOnFailureListener { onFailure() }
+            .addOnFailureListener { onFailure(it) }
     }
 
     private fun onSignIn(authResult: AuthResult, onSuccess: (Person) -> Unit) {

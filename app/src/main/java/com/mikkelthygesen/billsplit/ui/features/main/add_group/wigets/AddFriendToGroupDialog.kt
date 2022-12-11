@@ -22,8 +22,8 @@ fun AddFriendToGroupDialog(
     onDismiss: () -> Unit,
     onAddFriend: (Person) -> Unit
 ) {
-    Dialog(onDismissRequest = onDismiss) {
 
+    Dialog(onDismissRequest = onDismiss) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()

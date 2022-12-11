@@ -1,18 +1,12 @@
 package com.mikkelthygesen.billsplit.ui.features.main
 
-import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.sampleGroup
-import com.mikkelthygesen.billsplit.samplePeopleShera
-import com.mikkelthygesen.billsplit.ui.features.main.profile.ProfileView
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class MainViewModel : BaseViewModel() {
 
@@ -20,9 +14,7 @@ class MainViewModel : BaseViewModel() {
     private val authProvider = AuthProvider()
 
     object Main : UiState
-    object SignIn : UiState
-    object SignUp : UiState
-    class AddGroup(val group: Group) : UiState
+    object AddGroup : UiState
     object MyGroups : UiState
     object ShowProfile : UiState
 
@@ -34,23 +26,12 @@ class MainViewModel : BaseViewModel() {
 
     fun showGroup(groupId: String) = emitUiEvent(ShowGroup(groupId))
 
-    fun showSignIn() = updateUiState(SignIn)
-
-    fun showSignUp() = updateUiState(SignUp)
-
     fun showMyGroups() = updateUiState(MyGroups)
 
     fun showProfile() = updateUiState(ShowProfile)
 
-    fun addGroup() {
-        checkAuthStatus {
-            val group = Group(
-                id = "",
-                createdBy = it,
-                people = listOf(it)
-            )
-            updateUiState(AddGroup(group))
-        }
+    fun showAddGroup() {
+        updateUiState(AddGroup)
     }
 
     suspend fun getGroups(): List<Group> {
@@ -59,19 +40,10 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    fun saveGroup(group: Group) {
-        updateUiState(UiState.Loading)
+    suspend fun saveGroup(group: Group) {
         group.applyChanges()
-        viewModelScope.launch {
-            val req = runCatching { api.addGroup(group) }
-            req.fold(
-                onSuccess = {
-                    if (uiStateFlow.value == UiState.Loading)
-                        emitUiEvent(ShowGroup(it.id))
-                },
-                onFailure = Timber::e
-            )
-        }
+        val groupResponse = api.addGroup(group)
+        emitUiEvent(ShowGroup(groupResponse.id))
     }
 
     suspend fun getFriends(): List<Friend> {
@@ -83,7 +55,6 @@ class MainViewModel : BaseViewModel() {
     suspend fun acceptFriendRequest(friend: Person): Friend {
         return checkAuthStatusAsync { user ->
             api.addFriendUserId(user.uid, friend)
-
         }
     }
 
@@ -95,17 +66,21 @@ class MainViewModel : BaseViewModel() {
 
     fun signUpEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
-        authProvider.signUpWithEmail(email, password,
+        authProvider.signUpWithEmail(
+            email, password,
             onSuccess = {
                 showProfile()
             },
-            onFailure = { updateUiState(SignUp) })
+            onFailure = this::handleError
+        )
     }
 
     fun signInEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
-        authProvider.signInWithEmail(email, password,
+        authProvider.signInWithEmail(
+            email, password,
             onSuccess = { updateUiState(Main) },
-            onFailure = { updateUiState(SignUp) })
+            onFailure = this::handleError
+        )
     }
 }

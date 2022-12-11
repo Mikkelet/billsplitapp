@@ -33,7 +33,9 @@ fun ProfileView(
         asyncCallback = {
             val friends = mainViewModel.getFriends()
             Pair(mainViewModel.requireLoggedInUser, friends)
-        }) {
+        },
+        onError = mainViewModel::handleError
+    ) {
         _ProfileView(user = it.first, friends = it.second)
     }
 }

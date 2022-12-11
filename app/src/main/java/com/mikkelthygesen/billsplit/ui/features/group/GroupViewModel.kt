@@ -20,9 +20,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     object Expenses : UiState
     class ShowDebt(val user: Person) : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
-    object Settings : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
-    object LoggedOut : DialogState
 
     private val _people = mutableListOf<Person>()
     val people: List<Person> = _people
@@ -63,22 +61,16 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         }
     }
 
-    suspend fun addPayment(user: Person, paidTo: Person, amount: Float) {
-        val payment = Payment(
-            createdBy = user,
-            paidTo = paidTo,
-            amount = amount
-        )
-        println("qqq $payment")
-        val response = runCatching {
-            api.addEvent(group.id, payment)
+    suspend fun addPayment(paidTo: Person, amount: Float) {
+        checkAuthStatusAsync {
+            val payment = Payment(
+                createdBy = it,
+                paidTo = paidTo,
+                amount = amount
+            )
+            val paymentResponse = api.addEvent(group.id, payment)
+            _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
         }
-        response.fold(
-            onSuccess = {
-                _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-            },
-            onFailure = ::println
-        )
     }
 
     fun addPerson(name: String) {

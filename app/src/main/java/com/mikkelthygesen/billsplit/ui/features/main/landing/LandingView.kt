@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 
 @Composable
@@ -25,8 +26,8 @@ fun LandingView(
             targetState = uiStateFlow.value
         ) { state ->
             when (state) {
-                MainViewModel.SignIn -> Unit
-                MainViewModel.SignUp -> Unit
+                BaseViewModel.UiState.SignIn -> Unit
+                BaseViewModel.UiState.SignUp -> Unit
                 else -> {
                     Box(contentAlignment = Alignment.Center) {
                         Column {

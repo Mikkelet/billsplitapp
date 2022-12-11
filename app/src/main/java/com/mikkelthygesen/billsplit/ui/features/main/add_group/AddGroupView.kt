@@ -10,19 +10,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.wigets.AddFriendToGroupDialog
+import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 
 @Composable
 fun AddGroupView(
     viewModel: MainViewModel = viewModel(),
-    group: Group,
-    friends: List<Person>
 ) {
-    _AddGroupView(group = group, friends = friends)
+    FutureComposable(
+        asyncCallback = {
+            Pair(viewModel.requireLoggedInUser, viewModel.getFriends())
+        },
+        onError = viewModel::handleError
+    ) {
+        val group = Group(
+            id = "",
+            name = "My group",
+            people = listOf(it.first),
+            createdBy = it.first,
+            timeStamp = 0,
+            events = listOf()
+        )
+        val acceptedFriends = it.second.filterIsInstance<Friend.FriendAccepted>()
+            .map { friendAccepted -> friendAccepted.person }
+        _AddGroupView(group = group, friends = acceptedFriends, onAddGroup = {
+            viewModel.saveGroup(group)
+        })
+    }
 }
 
 
@@ -30,13 +50,15 @@ fun AddGroupView(
 @Composable
 fun _AddGroupView(
     group: Group,
+    onAddGroup: suspend () -> Unit,
     friends: List<Person>
 ) {
     var showAddFriendDialog by remember {
         mutableStateOf(false)
     }
     if (showAddFriendDialog) {
-        AddFriendToGroupDialog(friends = samplePeopleShera.minus(group.peopleState.toSet()),
+
+        AddFriendToGroupDialog(friends = friends.minus(group.peopleState.toSet()),
             onDismiss = {
                 showAddFriendDialog = false
             },
@@ -49,6 +71,14 @@ fun _AddGroupView(
         TextField(value = group.nameState, onValueChange = {
             group.nameState = it
         })
+        ClickableFutureComposable(asyncCallback = onAddGroup) {
+            Button(onClick = {
+                if (group.nameState.isNotBlank() && group.peopleState.isNotEmpty())
+                    it.invoke()
+            }) {
+                Text(text = "Add group")
+            }
+        }
         Box(modifier = Modifier.height(20.dp))
         Text(text = "People")
         if (group.peopleState.isNotEmpty())
@@ -69,6 +99,7 @@ fun _AddGroupView(
 private fun Preview() {
     _AddGroupView(
         group = Group("asd", "My Group", samplePeopleShera, samplePeopleShera.first()),
-        friends = samplePeopleShera
+        friends = samplePeopleShera,
+        onAddGroup = {}
     )
 }

@@ -8,19 +8,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -43,6 +39,7 @@ fun ProfilePageFriendView(
                         if (it != null)
                             friendStatus = it
                     },
+                    onError = mainViewModel::handleError,
                     loadingComposable = {
                         Text(text = "Accepting...")
                     }) {
