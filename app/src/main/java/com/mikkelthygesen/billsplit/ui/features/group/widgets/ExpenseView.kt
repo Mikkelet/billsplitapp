@@ -27,6 +27,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseTextField
 
 data class PersonViewFlags(
@@ -172,7 +173,7 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: Individual
     val isPayee = groupExpense.payeeState == expenseHolder.person
     Box {
         if (!expenseHolder.isShared())
-            Image(
+            CircularUrlImageView(
                 modifier = Modifier
                     .width(64.dp)
                     .aspectRatio(1F)
@@ -180,9 +181,7 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: Individual
                     .clickable {
                         groupExpense.payeeState = expenseHolder.person
                     },
-                painter = painterResource(id = if (expenseHolder.person.pfpResId != 0) expenseHolder.person.pfpResId else R.drawable.ic_launcher_foreground),
-                contentDescription = "Person profile picture, click to mark as payee",
-                contentScale = ContentScale.Crop
+                imageUrl = expenseHolder.person.pfpUrlState
             )
         else
             Image(

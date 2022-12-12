@@ -9,8 +9,10 @@ data class Person(
     val uid: String = "",
     private var name: String = "",
     val pfpResId: Int = R.drawable.catra_pfp,
+    private val pfpUrl: String = ""
 ) {
     var nameState by mutableStateOf(name)
+    var pfpUrlState by mutableStateOf(pfpUrl)
 
     fun isNameChanged(): Boolean {
         return nameState != name

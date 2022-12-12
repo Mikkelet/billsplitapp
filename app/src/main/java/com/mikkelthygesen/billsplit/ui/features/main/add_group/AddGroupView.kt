@@ -21,10 +21,7 @@ import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.wigets.FutureAddFriendDialog
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
-import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
-import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
-import com.mikkelthygesen.billsplit.ui.widgets.FlatButton
-import com.mikkelthygesen.billsplit.ui.widgets.IconButton
+import com.mikkelthygesen.billsplit.ui.widgets.*
 
 @Composable
 fun AddGroupView(
@@ -51,8 +48,11 @@ fun AddGroupView(
             viewModel.saveGroup(group)
         }) {
             FlatButton(
-                modifier = Modifier.fillMaxWidth().padding(top = 64.dp, bottom = 32.dp),
-                text = "Add Group") {
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 64.dp, bottom = 32.dp),
+                text = "Add Group"
+            ) {
                 if (group.nameState.isNotBlank() && group.peopleState.isNotEmpty())
                     it.invoke()
             }
@@ -114,10 +114,9 @@ fun _AddGroupView(
                             .fillMaxWidth(),
                         verticalAlignment = CenterVertically
                     ) {
-                        CircularImageView(
-                            modifier = Modifier
-                                .size(48.dp),
-                            imageResId = person.pfpResId
+                        CircularUrlImageView(
+                            modifier = Modifier.size(48.dp),
+                            imageUrl = person.pfpUrlState
                         )
                         Text(
                             modifier = Modifier.padding(start = 16.dp),

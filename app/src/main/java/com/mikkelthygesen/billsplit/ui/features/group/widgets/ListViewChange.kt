@@ -20,6 +20,7 @@ import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
+import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.HorizontalDivider
 
 @Composable
@@ -96,11 +97,11 @@ fun ChangesListView(
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    CircularImageView(
-                                        Modifier
+                                    CircularUrlImageView(
+                                        modifier = Modifier
                                             .height(20.dp)
                                             .padding(horizontal = 16.dp),
-                                        imageResId = originalExpense.person.pfpResId
+                                        imageUrl = updatedExpense.person.pfpUrlState
                                     )
                                     TextStylePrimary(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
                                 }

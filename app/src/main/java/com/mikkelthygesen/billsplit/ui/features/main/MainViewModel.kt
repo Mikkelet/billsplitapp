@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.ui.features.main
 
+import android.net.Uri
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
@@ -37,7 +38,7 @@ class MainViewModel : BaseViewModel() {
     fun getNewGroup(): Group = checkAuthStatus {
         Group(
             id = "",
-            name = "My group",
+            name = "",
             people = listOf(it),
             createdBy = it,
             timeStamp = 0,
@@ -52,6 +53,17 @@ class MainViewModel : BaseViewModel() {
                 it.nameState,
                 onSuccess = ::println,
                 onFailure = ::println
+            )
+        }
+    }
+
+    fun uploadProfilePhoto(uri: Uri, onSuccess: () -> Unit) {
+        checkAuthStatus {
+            authProvider.updateProfilePicture(
+                user = it,
+                uri= uri,
+                onSuccess = onSuccess,
+                onFailure = this::handleError
             )
         }
     }

@@ -16,6 +16,7 @@ import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
+import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
 
 
@@ -92,9 +93,9 @@ private fun _FriendView(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImageView(
+            CircularUrlImageView(
                 modifier = Modifier.size(64.dp),
-                imageResId = person.pfpResId
+                imageUrl = person.pfpUrlState
             )
             Text(
                 modifier = Modifier.padding(start = 16.dp),

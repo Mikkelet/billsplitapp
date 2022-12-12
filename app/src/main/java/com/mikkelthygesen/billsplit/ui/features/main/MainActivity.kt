@@ -68,12 +68,13 @@ class MainActivity : ComponentActivity() {
                     backgroundColor = MaterialTheme.colors.background,
                     bottomBar = { if (showNavigation(uiStateFlow.value)) BottomNavBar() },
                     topBar = {
-                        TopAppBar {
-                            Column {
-                                Text(text = "flavor=${BuildConfig.FLAVOR}")
-                                Text(text = "uid=${viewModel.loggedInUser?.uid}")
+                        if (BuildConfig.DEBUG)
+                            TopAppBar {
+                                Column {
+                                    Text(text = "flavor=${BuildConfig.FLAVOR}")
+                                    Text(text = "uid=${viewModel.loggedInUser?.uid}")
+                                }
                             }
-                        }
                     }
                 ) { padding ->
                     Crossfade(

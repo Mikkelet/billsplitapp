@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
-import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
+import com.mikkelthygesen.billsplit.ui.features.main.widgets.widgets.ProfilePictureWithUpload
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 
@@ -28,12 +28,8 @@ fun ProfileHeader(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CircularImageView(
-            modifier = Modifier
-                .padding(top = 32.dp)
-                .size(100.dp),
-            imageResId = user.pfpResId
-        )
+
+        ProfilePictureWithUpload(user)
         val focusRequester = LocalFocusManager.current
         var showSaveNameButton by remember {
             mutableStateOf(false)
