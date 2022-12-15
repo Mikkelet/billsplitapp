@@ -28,7 +28,7 @@ import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ChangesListView
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewExpense
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewPayment
-import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
+import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -78,13 +78,14 @@ fun GroupEventsView(
                     }
                 if (event.createdBy != viewModel.loggedInUser && event !is Payment) {
                     if (latestIndex)
-                        CircularImageView(
-                            imageResId = event.createdBy.pfpResId,
+                        CircularUrlImageView(
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
-                                .padding(end = 8.dp)
-                        ) else Box(modifier = Modifier.weight(1f))
+                                .padding(end = 8.dp),
+                            imageUrl = event.createdBy.pfpUrlState
+                        )
+                    else Box(modifier = Modifier.weight(1f))
                 }
                 Box(
                     modifier = Modifier
@@ -116,12 +117,12 @@ fun GroupEventsView(
                 }
                 if (event.createdBy == viewModel.loggedInUser && event !is Payment) {
                     if (latestIndex)
-                        CircularImageView(
-                            imageResId = event.createdBy.pfpResId,
+                        CircularUrlImageView(
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
-                                .padding(start = 8.dp)
+                                .padding(start = 8.dp),
+                            imageUrl = event.createdBy.pfpUrlState
                         )
                     else Box(modifier = Modifier.weight(1f))
                 }

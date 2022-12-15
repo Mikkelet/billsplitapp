@@ -1,9 +1,9 @@
 package com.mikkelthygesen.billsplit.ui.features.main.groups
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -50,10 +50,10 @@ private fun _GroupsView(
         )
         Column(shadowModifier(MaterialTheme.colors.background)) {
             groups.mapIndexed { index, group ->
-                Column {
-                    GroupListItem(onClick = {
-                        onGroupClick(group)
-                    }, group = group)
+                Column(modifier = Modifier.clickable {
+                    onGroupClick(group)
+                }) {
+                    GroupListItem(group = group)
                     if (index != groups.lastIndex)
                         Divider()
                 }

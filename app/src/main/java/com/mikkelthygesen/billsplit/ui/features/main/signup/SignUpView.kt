@@ -137,14 +137,24 @@ private fun _SignUpView(
                                         password != repeatPassword -> "Passwords are not identical"
                                         else -> ""
                                     }
-                                    if (passwordError.isBlank()
-                                        && repeatPasswordError.isBlank()
-                                        && emailError.isBlank()
-                                    )
-                                        onSignUpWithCredentials(
-                                            email.trim().lowercase(),
-                                            password
+                                    if (isSignUp) {
+                                        if (passwordError.isBlank()
+                                            && repeatPassword.isBlank()
+                                            && emailError.isBlank()
                                         )
+                                            onSignUpWithCredentials(
+                                                email.trim().lowercase(),
+                                                password
+                                            )
+                                    } else {
+                                        if (passwordError.isBlank()
+                                            && emailError.isBlank()
+                                        )
+                                            onSignUpWithCredentials(
+                                                email.trim().lowercase(),
+                                                password
+                                            )
+                                    }
                                 })
                         }
                     }
