@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.sql.Time
 
 abstract class BaseViewModel : ViewModel() {
 
@@ -87,6 +88,7 @@ abstract class BaseViewModel : ViewModel() {
     open fun handleError(exception: Throwable) {
         Timber.e(exception)
         when (exception) {
+            is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
             is NetworkExceptions.UserLoggedOut -> showSignIn()
             else -> {
                 showDialog(DialogState.Error(exception as Exception))
