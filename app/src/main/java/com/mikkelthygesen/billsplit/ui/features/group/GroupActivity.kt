@@ -63,7 +63,7 @@ class GroupActivity : ComponentActivity() {
                 when (val state = viewModel.dialogState) {
                     is GroupViewModel.ConfirmChangesDialog -> ConfirmChangesDialog(groupExpense = state.groupExpense)
                     is BaseViewModel.DialogState.Error -> ErrorDialog(
-                        exception = state.exception,
+                        exception = state.exception as java.lang.Exception,
                         onDismiss = viewModel::dismissDialog
                     )
                     is BaseViewModel.DialogState.DismissDialogs -> Unit

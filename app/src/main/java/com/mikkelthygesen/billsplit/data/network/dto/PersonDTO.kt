@@ -13,7 +13,6 @@ data class PersonDTO(
     fun toPerson() = Person(
         uid = id,
         name = name,
-        pfpResId = R.drawable.catra_pfp,
         pfpUrl = pfpUrl
     )
 

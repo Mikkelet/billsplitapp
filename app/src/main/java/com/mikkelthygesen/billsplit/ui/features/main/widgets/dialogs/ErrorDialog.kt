@@ -16,7 +16,7 @@ import java.lang.Exception
 
 @Composable
 fun ErrorDialog(
-    exception: Exception,
+    exception: Throwable,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {

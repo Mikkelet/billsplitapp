@@ -4,9 +4,9 @@ import com.mikkelthygesen.billsplit.models.*
 import kotlin.math.absoluteValue
 
 val samplePeopleShera = listOf(
-    Person("0", "Aang", R.drawable.aang),
-    Person("1", "Toph", R.drawable.toph),
-    Person("2", "Katara", R.drawable.katara),
+    Person("0", "Aang"),
+    Person("1", "Toph"),
+    Person("2", "Katara"),
 )
 
 val sampleGroup = Group(

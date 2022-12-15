@@ -114,7 +114,6 @@ fun _AddGroupView(
                 group.peopleState.mapIndexed { index, person ->
                     val addExtraBottomPadding = group.peopleState.size > 1
                             && index == group.peopleState.lastIndex
-
                     Row(
                         modifier = Modifier
                             .padding(

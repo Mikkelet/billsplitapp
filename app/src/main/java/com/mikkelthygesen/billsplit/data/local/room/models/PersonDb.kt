@@ -14,6 +14,7 @@ data class PersonDb(
     fun toPerson() = Person(
         uid = uid,
         name = name,
-        pfpUrl = pfpUrl
+        pfpUrl = pfpUrl,
+        email = ""
     )
 }

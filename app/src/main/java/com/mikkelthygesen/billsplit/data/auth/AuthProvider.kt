@@ -35,7 +35,8 @@ class AuthProvider {
             val person = Person(
                 user.uid,
                 name = user.displayName ?: "No name",
-                pfpUrl = user.photoUrl?.toString() ?: ""
+                pfpUrl = user.photoUrl?.toString() ?: "",
+                email = user.email ?: ""
             )
             loggedInUser = person
         }

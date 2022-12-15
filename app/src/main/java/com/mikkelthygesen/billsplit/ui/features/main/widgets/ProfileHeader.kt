@@ -78,7 +78,7 @@ fun ProfileHeader(
             Divider(Modifier.padding(vertical = 16.dp, horizontal = 64.dp))
             Text(
                 modifier = Modifier.padding(16.dp),
-                text = "test email",
+                text = user.email,
                 style = MaterialTheme.typography.body1.copy(fontSize = 20.sp)
             )
         }

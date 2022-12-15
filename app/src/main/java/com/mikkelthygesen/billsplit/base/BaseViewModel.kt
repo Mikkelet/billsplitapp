@@ -25,7 +25,7 @@ abstract class BaseViewModel : ViewModel() {
 
     interface DialogState {
         object DismissDialogs : DialogState
-        class Error(val exception: Exception) : DialogState
+        class Error(val exception: Throwable) : DialogState
     }
 
     interface UiState {
@@ -89,12 +89,12 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     open fun handleError(exception: Throwable) {
-        Timber.e("qqq ERROR $exception")
+        Timber.e(exception)
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
             is NetworkExceptions.UserLoggedOut -> showSignIn()
             else -> {
-                showDialog(DialogState.Error(exception as Exception))
+                showDialog(DialogState.Error(exception))
             }
         }
     }

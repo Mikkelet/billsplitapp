@@ -8,8 +8,8 @@ import com.mikkelthygesen.billsplit.R
 data class Person(
     val uid: String = "",
     private var name: String = "",
-    val pfpResId: Int = R.drawable.catra_pfp,
-    private val pfpUrl: String = ""
+    private val pfpUrl: String = "",
+    val email: String = ""
 ) {
     var nameState by mutableStateOf(name)
     var pfpUrlState by mutableStateOf(pfpUrl)

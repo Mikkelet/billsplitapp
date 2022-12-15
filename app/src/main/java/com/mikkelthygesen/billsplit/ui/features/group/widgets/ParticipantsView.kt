@@ -28,6 +28,6 @@ fun ParticipantsView(list: List<Person>) {
 @Preview
 @Composable
 private fun Preview() {
-    val person = Person(name = "Mikkel", pfpResId = R.drawable.shera_pfp)
+    val person = Person(name = "Mikkel")
     ParticipantsView(list = listOf(person, person, person))
 }

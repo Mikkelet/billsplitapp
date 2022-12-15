@@ -155,7 +155,7 @@ private fun SmallRoundImage(resId: Int) {
 @Composable
 private fun Preview() {
     val createdBy = samplePeopleShera.first()
-    val people = (0..2).map { Person("Person$it", "Person$it", R.drawable.shera_pfp) }
+    val people = (0..2).map { Person("Person$it", "Person$it") }
 
     // original
     val payerOriginal = people.first()

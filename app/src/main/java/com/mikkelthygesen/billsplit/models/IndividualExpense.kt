@@ -35,7 +35,7 @@ data class IndividualExpense(
     companion object {
         private const val SHARED_ID = "-1"
         fun getSharedExpenseHolder(expense: Float = 0F) = IndividualExpense(
-            Person(SHARED_ID, "Shared", R.drawable.ic_baseline_groups_24),
+            Person(SHARED_ID, "Shared"),
             expense
         )
     }

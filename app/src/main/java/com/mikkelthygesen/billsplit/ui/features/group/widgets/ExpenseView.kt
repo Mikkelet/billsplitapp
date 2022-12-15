@@ -319,7 +319,7 @@ private fun PreviewPersonViewWithoutToggle() {
     val flags = PersonViewFlags(
         enableEditName = true, enableParticipationToggle = false, enableRemoval = false
     )
-    val person = Person("0", "Mikkel", 0)
+    val person = Person("0", "Mikkel")
     val individualExpense = IndividualExpense(person, 1000f, true)
     val sharedExpenseHolder = 1000f
     val groupExpense = GroupExpense(
