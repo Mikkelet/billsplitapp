@@ -74,23 +74,16 @@ abstract class BaseViewModel : ViewModel() {
         _mutableUiStateFlow.value = event
     }
 
-
-    fun <T> checkAuthStatus(successCallback: (Person) -> T): T {
-        if (authProvider.isUserLoggedIn())
-            return successCallback(authProvider.loggedInUser!!)
-        else throw Exception("User logged out")
-    }
-
-    @Composable
-    fun CheckAuthStatusComposable(successCallback: @Composable (Person) -> Unit) {
-        if (authProvider.isUserLoggedIn())
-            successCallback(authProvider.loggedInUser!!)
+    fun <T> checkAuthStatus(successCallback: (Person) -> T) {
+        if (authProvider.loggedInUser != null)
+            successCallback(requireLoggedInUser)
+        else handleError(NetworkExceptions.UserLoggedOut)
     }
 
     suspend fun <T> checkAuthStatusAsync(successCallback: suspend (Person) -> T): T {
         if (authProvider.isUserLoggedIn())
             return successCallback(authProvider.loggedInUser!!)
-        else throw NetworkExceptions.UserLoggedOut()
+        else throw NetworkExceptions.UserLoggedOut
     }
 
     open fun handleError(exception: Throwable) {

@@ -35,12 +35,12 @@ class MainViewModel : BaseViewModel() {
         updateUiState(AddGroup)
     }
 
-    fun getNewGroup(): Group = checkAuthStatus {
-        Group(
+    fun getNewGroup(user: Person): Group {
+        return Group(
             id = "",
             name = "",
-            people = listOf(it),
-            createdBy = it,
+            people = listOf(user),
+            createdBy = user,
             timeStamp = 0,
             events = listOf()
         )
@@ -61,7 +61,7 @@ class MainViewModel : BaseViewModel() {
         checkAuthStatus {
             authProvider.updateProfilePicture(
                 user = it,
-                uri= uri,
+                uri = uri,
                 onSuccess = onSuccess,
                 onFailure = this::handleError
             )

@@ -27,36 +27,37 @@ import com.mikkelthygesen.billsplit.ui.widgets.*
 fun AddGroupView(
     viewModel: MainViewModel = viewModel(),
 ) {
-    val group by remember {
-        mutableStateOf(viewModel.getNewGroup())
-    }
-    Column(
-        modifier = Modifier.verticalScroll(rememberScrollState())
-    ) {
-        Box(modifier = Modifier) {
-            _AddGroupView(
-                group = group
-            )
-            FutureAddFriendDialog(
-                modifier = Modifier
-                    .padding(end = 32.dp, top = 16.dp)
-                    .align(BottomEnd),
-                group = group
-            )
+    RequireUserView(viewModel) {
+        val group by remember {
+            mutableStateOf(viewModel.getNewGroup(it))
         }
-        ClickableFutureComposable(asyncCallback = {
-            viewModel.saveGroup(group)
-        }) {
-            FlatButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 64.dp, bottom = 32.dp),
-                text = "Add Group"
-            ) {
-                if (group.nameState.isNotBlank() && group.peopleState.isNotEmpty())
-                    it.invoke()
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            Box(modifier = Modifier) {
+                _AddGroupView(
+                    group = group
+                )
+                FutureAddFriendDialog(
+                    modifier = Modifier
+                        .padding(end = 32.dp, top = 16.dp)
+                        .align(BottomEnd),
+                    group = group
+                )
             }
-
+            ClickableFutureComposable(asyncCallback = {
+                viewModel.saveGroup(group)
+            }) {
+                FlatButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 64.dp, bottom = 32.dp),
+                    text = "Add Group"
+                ) {
+                    if (group.nameState.isNotBlank() && group.peopleState.isNotEmpty())
+                        it.invoke()
+                }
+            }
         }
     }
 }
