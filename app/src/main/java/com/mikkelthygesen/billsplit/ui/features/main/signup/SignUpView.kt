@@ -26,9 +26,7 @@ fun SignUpView(
     mainViewModel: MainViewModel = viewModel()
 ) {
     _SignUpView(
-        onSignUpWithCredentials = { email, password ->
-            mainViewModel.signUpEmail(email, password)
-        },
+        onSignUpWithCredentials = mainViewModel::signUpEmail,
         onSignUpWithGoogleClicked = { },
         onSignUpWithFacebookClicked = {},
         onAlreadySignedUpClicked = mainViewModel::showSignIn,
@@ -41,7 +39,7 @@ fun SignInView(
     mainViewModel: MainViewModel = viewModel()
 ) {
     _SignUpView(
-        onSignUpWithCredentials = { email, password -> mainViewModel.signInEmail(email, password) },
+        onSignUpWithCredentials = mainViewModel::signInEmail,
         onSignUpWithGoogleClicked = {},
         onSignUpWithFacebookClicked = {},
         onAlreadySignedUpClicked = mainViewModel::showSignUp
@@ -126,7 +124,7 @@ private fun _SignUpView(
                                 onClick = {
                                     emailError = when {
                                         email.isBlank() -> "Enter your email"
-                                        !email.matchesEmail() -> "Not a valid email"
+                                        !email.trim().matchesEmail() -> "Not a valid email"
                                         else -> ""
                                     }
                                     passwordError = when {

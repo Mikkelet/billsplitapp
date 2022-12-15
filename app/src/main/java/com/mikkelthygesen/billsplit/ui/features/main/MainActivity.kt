@@ -29,6 +29,7 @@ import com.mikkelthygesen.billsplit.ui.features.main.groups.GroupsList
 import com.mikkelthygesen.billsplit.ui.features.main.profile.ProfileView
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignInView
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
+import com.mikkelthygesen.billsplit.ui.features.main.widgets.dialogs.ErrorDialog
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 
@@ -49,7 +50,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val uiStateFlow = viewModel.uiStateFlow.collectAsState()
-            val dialogStateFlow = viewModel.dialogState.collectAsState()
+
+            when (val state = viewModel.dialogState) {
+                is BaseViewModel.DialogState.Error -> ErrorDialog(
+                    exception = state.exception,
+                    onDismiss = viewModel::dismissDialog
+                )
+                is BaseViewModel.DialogState.DismissDialogs -> Unit
+            }
 
             BillSplitTheme {
                 LaunchedEffect(Unit) {
@@ -85,8 +93,7 @@ class MainActivity : ComponentActivity() {
                             BaseViewModel.UiState.SignIn -> SignInView()
                             BaseViewModel.UiState.SignUp -> SignUpView()
                             else -> MainView(
-                                uiState = uiStateFlow.value,
-                                dialogState = dialogStateFlow.value
+                                uiState = uiStateFlow.value
                             )
                         }
                     }
@@ -105,13 +112,8 @@ private fun showNavigation(uiState: BaseViewModel.UiState): Boolean {
 
 @Composable
 fun MainView(
-    dialogState: BaseViewModel.DialogState,
-    uiState: BaseViewModel.UiState
+    uiState: BaseViewModel.UiState,
 ) {
-
-    when (dialogState) {
-        is BaseViewModel.DialogState.DismissDialogs -> Unit
-    }
 
     when (uiState) {
         is MainViewModel.AddGroup -> AddGroupView()
@@ -177,7 +179,6 @@ private fun BottomNavBar(
 @Composable
 private fun PreviewMainView() {
     MainView(
-        dialogState = BaseViewModel.DialogState.DismissDialogs,
-        uiState = MainViewModel.MyGroups
+        uiState = MainViewModel.MyGroups,
     )
 }

@@ -1,19 +1,19 @@
 package com.mikkelthygesen.billsplit.base
 
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.data.auth.NetworkExceptions
 import com.mikkelthygesen.billsplit.data.auth.authProvider
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.CancellationException
 
 abstract class BaseViewModel : ViewModel() {
 
@@ -25,11 +25,11 @@ abstract class BaseViewModel : ViewModel() {
 
     interface DialogState {
         object DismissDialogs : DialogState
+        class Error(val exception: Exception) : DialogState
     }
 
     interface UiState {
         object Loading : UiState
-        class Error(val exception: Exception) : UiState
         object SignIn : UiState
         object SignUp : UiState
     }
@@ -45,9 +45,7 @@ abstract class BaseViewModel : ViewModel() {
     protected abstract val _mutableUiStateFlow: MutableStateFlow<UiState>
     val uiStateFlow: StateFlow<UiState> by lazy { _mutableUiStateFlow }
 
-    protected val _mutableDialogStateFlow =
-        MutableStateFlow<DialogState>(DialogState.DismissDialogs)
-    val dialogState: StateFlow<DialogState> = _mutableDialogStateFlow
+    var dialogState by mutableStateOf<DialogState>(DialogState.DismissDialogs)
 
     private val _mutableUiEventsStateFlow = MutableSharedFlow<UiEvent>()
     val uiEventsState: SharedFlow<UiEvent> = _mutableUiEventsStateFlow
@@ -56,12 +54,12 @@ abstract class BaseViewModel : ViewModel() {
         emitUiEvent(UiEvent.OnBackPressed)
     }
 
-    fun showDialog(dialog: DialogState) {
-        _mutableDialogStateFlow.value = dialog
+    protected fun showDialog(dialog: DialogState) {
+        dialogState = dialog
     }
 
     fun dismissDialog() {
-        _mutableDialogStateFlow.value = DialogState.DismissDialogs
+        dialogState = DialogState.DismissDialogs
     }
 
     fun emitUiEvent(event: UiEvent) {
@@ -91,7 +89,7 @@ abstract class BaseViewModel : ViewModel() {
         when (exception) {
             is NetworkExceptions.UserLoggedOut -> showSignIn()
             else -> {
-                Timber.e("qqq error=${exception.message}")
+                showDialog(DialogState.Error(exception as Exception))
             }
         }
     }

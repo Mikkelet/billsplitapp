@@ -25,6 +25,7 @@ import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ConfirmChangesDialog
+import com.mikkelthygesen.billsplit.ui.features.main.widgets.dialogs.ErrorDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,10 +53,19 @@ class GroupActivity : ComponentActivity() {
         viewModel.getGroup(groupId)
 
         setContent {
+
             BillSplitTheme {
                 val groupUiState = viewModel.uiStateFlow.collectAsState()
-                val dialogState = viewModel.dialogState.collectAsState()
                 val uiState = groupUiState.value
+
+                when (val state = viewModel.dialogState) {
+                    is GroupViewModel.ConfirmChangesDialog -> ConfirmChangesDialog(groupExpense = state.groupExpense)
+                    is BaseViewModel.DialogState.Error -> ErrorDialog(
+                        exception = state.exception,
+                        onDismiss = viewModel::dismissDialog
+                    )
+                    is BaseViewModel.DialogState.DismissDialogs -> Unit
+                }
 
                 LaunchedEffect(Unit) {
                     viewModel.uiEventsState.collect { event ->
@@ -69,10 +79,6 @@ class GroupActivity : ComponentActivity() {
                     topBar = { TopBar() },
                     bottomBar = { BottomBar(uiState) }
                 ) {
-                    when (val state = dialogState.value) {
-                        is GroupViewModel.ConfirmChangesDialog -> ConfirmChangesDialog(groupExpense = state.groupExpense)
-                        is BaseViewModel.DialogState.DismissDialogs -> Unit
-                    }
                     Crossfade(targetState = uiState, modifier = Modifier.padding(it)) { state ->
                         when (state) {
                             is BaseViewModel.UiState.Loading -> LoadingView()

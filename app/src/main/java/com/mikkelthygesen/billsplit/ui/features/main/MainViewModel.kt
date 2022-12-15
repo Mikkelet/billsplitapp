@@ -105,7 +105,10 @@ class MainViewModel : BaseViewModel() {
             onSuccess = {
                 showProfile()
             },
-            onFailure = this::handleError
+            onFailure = {
+                handleError(it)
+                updateUiState(UiState.SignUp)
+            }
         )
     }
 
@@ -113,8 +116,11 @@ class MainViewModel : BaseViewModel() {
         updateUiState(UiState.Loading)
         authProvider.signInWithEmail(
             email, password,
-            onSuccess = { updateUiState(Main) },
-            onFailure = this::handleError
+            onSuccess = { updateUiState(AddGroup) },
+            onFailure = {
+                handleError(it)
+                updateUiState(UiState.SignIn)
+            }
         )
     }
 }

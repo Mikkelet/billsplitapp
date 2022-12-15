@@ -130,7 +130,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun showConfirmChangesDialog(groupExpense: GroupExpense) {
-        _mutableDialogStateFlow.value = ConfirmChangesDialog(groupExpense)
+        showDialog(ConfirmChangesDialog(groupExpense))
     }
 
     fun showDebt() {
