@@ -7,7 +7,8 @@ import com.mikkelthygesen.billsplit.models.*
 import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.toNewIndividualExpenses
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -80,42 +81,52 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun saveGroupExpense(groupExpense: GroupExpense) {
+        updateUiState(UiState.Loading)
         // save original in case of edit
         val originalCopy = groupExpense
             .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
-        // save expenses
+        // apply changes
         groupExpense.saveChanges()
         // if expense doesn't appear in list, add it, else assume it's an edit and log the change
         if (!eventStateFlow.value.contains(groupExpense)) {
-            viewModelScope.launch {
-                val response = kotlin.runCatching { api.addEvent(groupExpense.id, groupExpense) }
-                response.fold(
-                    onSuccess = {
-                        _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                    },
-                    onFailure = ::println
-                )
-            }
+            handleNewExpense(groupExpense)
         } else if (originalCopy != groupExpense) {
-            val updatedCopy = groupExpense
-                .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
-            val groupExpensesChanged = GroupExpensesChanged(
-                id = originalCopy.id,
-                createdBy = originalCopy.createdBy,
-                groupExpenseOriginal = originalCopy,
-                groupExpenseEdited = updatedCopy
-            )
-            viewModelScope.launch {
-                val response = runCatching { api.addEvent(group.id, groupExpensesChanged) }
-                response.fold(
-                    onSuccess = {
-                        _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                    },
-                    onFailure = ::println
-                )
-            }
+            handleEditExpense(originalCopy, groupExpense)
         }
-        showEvents()
+    }
+
+    private fun handleNewExpense(groupExpense: GroupExpense) {
+        viewModelScope.launch {
+            val response = runCatching { api.addEvent(groupExpense.id, groupExpense) }
+            response.fold(
+                onSuccess = {
+                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
+                    showEvents()
+                },
+                onFailure = ::println
+            )
+        }
+    }
+
+    private fun handleEditExpense(originalCopy: GroupExpense, groupExpense: GroupExpense) {
+        val updatedCopy = groupExpense
+            .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
+        val groupExpensesChanged = GroupExpensesChanged(
+            id = originalCopy.id,
+            createdBy = originalCopy.createdBy,
+            groupExpenseOriginal = originalCopy,
+            groupExpenseEdited = updatedCopy
+        )
+        viewModelScope.launch {
+            val response = runCatching { api.addEvent(group.id, groupExpensesChanged) }
+            response.fold(
+                onSuccess = {
+                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
+                    showEvents()
+                },
+                onFailure = ::println
+            )
+        }
     }
 
     fun showConfirmChangesDialog(groupExpense: GroupExpense) {
