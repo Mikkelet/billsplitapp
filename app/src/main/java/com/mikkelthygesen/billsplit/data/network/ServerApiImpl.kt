@@ -2,6 +2,7 @@ package com.mikkelthygesen.billsplit.data.network
 
 import com.mikkelthygesen.billsplit.data.network.dto.*
 import com.mikkelthygesen.billsplit.data.network.requests.*
+import com.mikkelthygesen.billsplit.db
 import com.mikkelthygesen.billsplit.models.*
 import com.mikkelthygesen.billsplit.models.interfaces.Event
 
@@ -11,7 +12,9 @@ class ServerApiImpl {
     suspend fun addGroup(group: Group): Group {
         val groupDTO = GroupDTO.fromGroup(group)
         val addGroupDTO = AddGroup.Request(groupDTO)
-        return ServerApi.addGroup(addGroupDTO).group.toGroup()
+        val response = ServerApi.addGroup(addGroupDTO).group
+        db.groupsDao().insert(response.toDB())
+        return response.toGroup()
     }
 
     suspend fun addEvent(groupId: String, event: Event): Event {
@@ -26,12 +29,18 @@ class ServerApiImpl {
 
     suspend fun getGroup(groupId: String): Group {
         val dto = ServerApi.getGroup(GetGroup.Request(groupId))
+        db.groupsDao().insert(dto.group.toDB())
         return dto.toGroup()
     }
 
-    suspend fun getGroups(userId: String): List<Group> {
-        val dtos = ServerApi.getGroups(GetGroups.Request(userId))
-        return dtos.groups.map { it.toGroup() }
+    suspend fun getGroups(userId: String, sync: Boolean = true): List<Group> {
+        return if (sync) {
+            val dtos = ServerApi.getGroups(GetGroups.Request(userId))
+            db.groupsDao().insert(dtos.groups.map { it.toDB() })
+            dtos.groups.map { it.toGroup() }
+        } else {
+            db.groupsDao().getGroups().map { it.toGroup() }
+        }
     }
 
     suspend fun addFriendUserId(loggedInUserId: String, user: Person): Friend {
@@ -41,6 +50,7 @@ class ServerApiImpl {
             PersonDTO.fromPerson(user),
         )
         val friendDTO = ServerApi.addFriend(request).friend
+        db.friendsDao().insert(friendDTO.toDB())
         return Friend.fromDTO(friendDTO)
     }
 
@@ -51,12 +61,20 @@ class ServerApiImpl {
             email,
         )
         val friendDTO = ServerApi.addFriend(request).friend
+        db.friendsDao().insert(friendDTO.toDB())
         return Friend.fromDTO(friendDTO)
     }
 
-    suspend fun getFriends(userId: String): List<Friend> {
-        val request = GetFriends.Request(userId)
-        return ServerApi.getFriends(request).friends.map { Friend.fromDTO(it) }
+    suspend fun getFriends(userId: String, sync: Boolean = true): List<Friend> {
+        return if (sync) {
+            val request = GetFriends.Request(userId)
+            val friends = ServerApi.getFriends(request).friends
+            val friendsDB = friends.map { it.toDB() }
+            db.friendsDao().insert(friendsDB)
+            friends.map { Friend.fromDTO(it) }
+        } else {
+            db.friendsDao().getFriends().map { it.toFriend() }
+        }
     }
 
     suspend fun updateUser(user: Person) {

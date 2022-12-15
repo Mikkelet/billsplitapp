@@ -139,7 +139,7 @@ private fun _SignUpView(
                                     }
                                     if (isSignUp) {
                                         if (passwordError.isBlank()
-                                            && repeatPassword.isBlank()
+                                            && repeatPasswordError.isBlank()
                                             && emailError.isBlank()
                                         )
                                             onSignUpWithCredentials(

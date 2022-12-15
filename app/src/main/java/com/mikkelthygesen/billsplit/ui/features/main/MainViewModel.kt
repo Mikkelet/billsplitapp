@@ -68,9 +68,9 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    suspend fun getGroups(): List<Group> {
+    suspend fun getGroups(sync: Boolean = true): List<Group> {
         return checkAuthStatusAsync {
-            api.getGroups(it.uid)
+            api.getGroups(it.uid, sync)
         }
     }
 
@@ -80,9 +80,9 @@ class MainViewModel : BaseViewModel() {
         emitUiEvent(ShowGroup(groupResponse.id))
     }
 
-    suspend fun getFriends(): List<Friend> {
+    suspend fun getFriends(sync: Boolean = true): List<Friend> {
         return checkAuthStatusAsync { user ->
-            api.getFriends(user.uid)
+            api.getFriends(user.uid, sync)
         }
     }
 

@@ -1,0 +1,20 @@
+package com.mikkelthygesen.billsplit.data.local.room.models
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.mikkelthygesen.billsplit.models.Group
+
+@Entity(tableName = "groups")
+data class GroupDb(
+    @PrimaryKey
+    val id: String,
+    val name: String,
+    val timestamp: Long,
+) {
+
+    fun toGroup() = Group(
+        id = id,
+        name = name,
+        timeStamp = timestamp
+    )
+}

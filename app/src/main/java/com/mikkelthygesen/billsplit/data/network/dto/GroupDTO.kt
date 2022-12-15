@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.data.network.dto
 
+import com.mikkelthygesen.billsplit.data.local.room.models.GroupDb
 import com.mikkelthygesen.billsplit.models.Group
 
 @kotlinx.serialization.Serializable
@@ -17,6 +18,12 @@ data class GroupDTO(
         timeStamp = timeStamp,
         events = emptyList(),
         people = people.map { it.toPerson() }
+    )
+
+    fun toDB() = GroupDb(
+        id = id,
+        name = name,
+        timestamp = timeStamp
     )
 
     companion object {

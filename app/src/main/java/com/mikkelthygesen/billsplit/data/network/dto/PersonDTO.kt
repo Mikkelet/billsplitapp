@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.data.network.dto
 
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.data.local.room.models.PersonDb
 import com.mikkelthygesen.billsplit.models.Person
 
 @kotlinx.serialization.Serializable
@@ -13,6 +14,12 @@ data class PersonDTO(
         uid = id,
         name = name,
         pfpResId = R.drawable.catra_pfp,
+        pfpUrl = pfpUrl
+    )
+
+    fun toDB() = PersonDb(
+        uid = id,
+        name = name,
         pfpUrl = pfpUrl
     )
 
