@@ -21,7 +21,7 @@ class MainViewModel : BaseViewModel() {
 
     class ShowGroup(val groupId: String) : UiEvent
 
-    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Main)
+    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(MyGroups)
 
     fun showMain() = updateUiState(UiState.Loading)
 

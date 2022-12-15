@@ -25,6 +25,8 @@ import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.IconButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ConfirmChangesDialog
+import com.mikkelthygesen.billsplit.ui.features.main.signup.SignInView
+import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.dialogs.ErrorDialog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -82,6 +84,8 @@ class GroupActivity : ComponentActivity() {
                     Crossfade(targetState = uiState, modifier = Modifier.padding(it)) { state ->
                         when (state) {
                             is BaseViewModel.UiState.Loading -> LoadingView()
+                            is BaseViewModel.UiState.SignIn -> SignInView()
+                            is BaseViewModel.UiState.SignUp -> SignUpView()
                             is GroupViewModel.Expenses -> GroupEventsView()
                             is GroupViewModel.ShowDebt -> ViewExpenses(user = state.user)
                             is GroupViewModel.EditExpense -> ExpenseView(groupExpense = state.groupExpense)

@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.sql.Time
 
 abstract class BaseViewModel : ViewModel() {
 
@@ -39,9 +38,13 @@ abstract class BaseViewModel : ViewModel() {
         object OnBackPressed : UiEvent
     }
 
-    fun showSignIn() = updateUiState(UiState.SignIn)
+    fun showSignIn() {
+        updateUiState(UiState.SignIn)
+    }
 
-    fun showSignUp() = updateUiState(UiState.SignUp)
+    fun showSignUp() {
+        updateUiState(UiState.SignUp)
+    }
 
     protected abstract val _mutableUiStateFlow: MutableStateFlow<UiState>
     val uiStateFlow: StateFlow<UiState> by lazy { _mutableUiStateFlow }
@@ -86,7 +89,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     open fun handleError(exception: Throwable) {
-        Timber.e(exception)
+        Timber.e("qqq ERROR $exception")
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
             is NetworkExceptions.UserLoggedOut -> showSignIn()

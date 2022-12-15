@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
     init {
         onBackPressedDispatcher.addCallback(this) {
             when (viewModel.uiStateFlow.value) {
-                !is MainViewModel.Main -> viewModel.showMain()
+                !is MainViewModel.Main -> viewModel.showMyGroups()
                 else -> finish()
             }
         }
@@ -90,11 +90,13 @@ class MainActivity : ComponentActivity() {
                         targetState = uiStateFlow.value
                     ) { uiState ->
                         when (uiState) {
-                            BaseViewModel.UiState.SignIn -> SignInView()
-                            BaseViewModel.UiState.SignUp -> SignUpView()
-                            else -> MainView(
-                                uiState = uiStateFlow.value
-                            )
+                            is BaseViewModel.UiState.Loading -> LoadingView()
+                            is BaseViewModel.UiState.SignIn -> SignInView()
+                            is BaseViewModel.UiState.SignUp -> SignUpView()
+                            is MainViewModel.AddGroup -> AddGroupView()
+                            is MainViewModel.MyGroups -> GroupsList()
+                            is MainViewModel.ShowProfile -> ProfileView()
+                            else -> Unit
                         }
                     }
                 }
@@ -105,22 +107,9 @@ class MainActivity : ComponentActivity() {
 
 private fun showNavigation(uiState: BaseViewModel.UiState): Boolean {
     return when (uiState) {
-        is BaseViewModel.UiState.SignUp, BaseViewModel.UiState.SignIn -> false
+        is BaseViewModel.UiState.SignUp,
+        BaseViewModel.UiState.SignIn -> false
         else -> true
-    }
-}
-
-@Composable
-fun MainView(
-    uiState: BaseViewModel.UiState,
-) {
-
-    when (uiState) {
-        is MainViewModel.AddGroup -> AddGroupView()
-        is MainViewModel.MyGroups -> GroupsList()
-        is MainViewModel.ShowProfile -> ProfileView()
-        is BaseViewModel.UiState.Loading -> LoadingView()
-        else -> Unit
     }
 }
 
@@ -173,12 +162,4 @@ private fun BottomNavBar(
             }
         )
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-private fun PreviewMainView() {
-    MainView(
-        uiState = MainViewModel.MyGroups,
-    )
 }
