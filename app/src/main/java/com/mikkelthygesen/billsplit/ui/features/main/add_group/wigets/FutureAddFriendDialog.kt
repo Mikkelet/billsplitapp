@@ -28,7 +28,7 @@ fun FutureAddFriendDialog(
     if (showAddFriendDialog) {
         FutureComposable(
             asyncCallback = {
-                mainViewModel.getFriends(sync = false)
+                mainViewModel.getFriends()
             },
             loadingComposable = {
                 Dialog(onDismissRequest = {

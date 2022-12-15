@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.ClickableFriendView
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 
 
 @Composable
@@ -25,12 +27,7 @@ fun AddFriendToGroupDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.LightGray)
-                .padding(16.dp)
+            modifier = shadowModifier(MaterialTheme.colors.background)
         ) {
             if (friends.isEmpty())
                 item {

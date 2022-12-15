@@ -33,13 +33,16 @@ class ServerApiImpl {
         return dto.toGroup()
     }
 
-    suspend fun getGroups(userId: String, sync: Boolean = true): List<Group> {
+    suspend fun getGroups(userId: String, sync: Boolean = false): List<Group> {
         return if (sync) {
             val dtos = ServerApi.getGroups(GetGroups.Request(userId))
             db.groupsDao().insert(dtos.groups.map { it.toDB() })
             dtos.groups.map { it.toGroup() }
         } else {
-            db.groupsDao().getGroups().map { it.toGroup() }
+            val groupsDb = db.groupsDao().getGroups()
+            if (groupsDb.isEmpty())
+                getGroups(userId, true)
+            else groupsDb.map { it.toGroup() }
         }
     }
 
@@ -65,7 +68,7 @@ class ServerApiImpl {
         return Friend.fromDTO(friendDTO)
     }
 
-    suspend fun getFriends(userId: String, sync: Boolean = true): List<Friend> {
+    suspend fun getFriends(userId: String, sync: Boolean = false): List<Friend> {
         return if (sync) {
             val request = GetFriends.Request(userId)
             val friends = ServerApi.getFriends(request).friends
@@ -73,7 +76,10 @@ class ServerApiImpl {
             db.friendsDao().insert(friendsDB)
             friends.map { Friend.fromDTO(it) }
         } else {
-            db.friendsDao().getFriends().map { it.toFriend() }
+            val friendsDb = db.friendsDao().getFriends()
+            if (friendsDb.isEmpty())
+                getFriends(userId, true)
+            else friendsDb.map { it.toFriend() }
         }
     }
 
