@@ -1,6 +1,8 @@
 package com.mikkelthygesen.billsplit.ui.features.main.profile.widget
 
 import android.annotation.SuppressLint
+import android.text.TextUtils
+import android.util.Patterns
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
@@ -14,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.matchesEmail
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
@@ -65,7 +68,11 @@ fun _AddFriendTextField(
                 addFriendTextFieldValue = it
             }, trailingIcon = {
                 ClickableFutureComposable(
-                    asyncCallback = { onAddFriend(addFriendTextFieldValue) },
+                    onClickAsync = {
+                        if(addFriendTextFieldValue.trim().lowercase().matchesEmail())
+                            onAddFriend(addFriendTextFieldValue.trim().lowercase())
+                        else throw Exception("Not a valid email")
+                    },
                     loadingComposable = { CircularProgressIndicator() },
                     onSuccess = { addFriendTextFieldValue = "" },
                     onError = { errorMessage = it.message.toString() }

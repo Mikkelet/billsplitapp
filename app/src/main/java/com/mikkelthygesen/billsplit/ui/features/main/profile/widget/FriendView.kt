@@ -15,7 +15,6 @@ import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
 import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
 
@@ -33,7 +32,7 @@ fun ProfilePageFriendView(
         when (friendStatus) {
             is Friend.FriendRequestReceived -> {
                 ClickableFutureComposable(
-                    asyncCallback = {
+                    onClickAsync = {
                         mainViewModel.acceptFriendRequest(friend.person)
                     },
                     onSuccess = {

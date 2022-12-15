@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit
 
+import android.util.Patterns
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
 
@@ -22,3 +23,5 @@ fun List<Float>.reduceOrZero() = if (isEmpty()) 0F else reduce { acc, fl -> acc 
 fun Float.fmt2dec() = if (rem(1F) != 0f) String.format("%,.2f", this) else "${this.toInt()}"
 
 fun List<Person>.toNewIndividualExpenses() = map { IndividualExpense(it, 0F, true) }
+
+fun String.matchesEmail(): Boolean = this.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(this).matches()

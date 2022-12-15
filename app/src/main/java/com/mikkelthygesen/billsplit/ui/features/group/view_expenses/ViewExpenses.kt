@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,8 +23,6 @@ import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
-import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
-import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
@@ -95,7 +92,7 @@ private fun YourDebt(
             style = TextStyle(color = Color.Red, fontSize = 20.sp)
         )
         ClickableFutureComposable(
-            asyncCallback = {
+            onClickAsync = {
                 viewModel.addPayment(
                     paidTo = debt.first,
                     amount = debt.second

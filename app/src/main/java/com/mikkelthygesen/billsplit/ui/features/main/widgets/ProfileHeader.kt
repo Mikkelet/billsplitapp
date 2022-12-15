@@ -64,7 +64,7 @@ fun ProfileHeader(
                 )
                 if (showSaveNameButton)
                     ClickableFutureComposable(
-                        asyncCallback = { onUpdateUser() },
+                        onClickAsync = { onUpdateUser() },
                         onSuccess = {
                             user.saveChanges()
                             showSaveNameButton = false

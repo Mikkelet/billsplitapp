@@ -2,8 +2,6 @@ package com.mikkelthygesen.billsplit.ui.features.main.signup
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.matchesEmail
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.signup.widgets.EmailTextField
 import com.mikkelthygesen.billsplit.ui.features.main.signup.widgets.PasswordTextField
@@ -62,6 +61,9 @@ private fun _SignUpView(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
+    var repeatPasswordError by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
     val title = if (isSignUp) "Create your new account" else "Sign in!"
@@ -100,27 +102,52 @@ private fun _SignUpView(
                             .wrapContentWidth(),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        EmailTextField(value = email, onChange = {
-                            email = it
-                        })
+                        EmailTextField(value = email, onChange = { value ->
+                            email = value
+                        }, hasError = emailError)
                         PasswordTextField(
                             value = password,
-                            onChange = { password = it })
+                            onChange = { value -> password = value },
+                            hasError = passwordError
+                        )
                         if (isSignUp)
                             RepeatPasswordTextField(
                                 value = repeatPassword,
-                                enteredPassword = password,
                                 onAction = { onSignUpWithCredentials(email, password) },
-                                onChange = {
-                                    repeatPassword = it
-                                })
+                                onChange = { value -> repeatPassword = value },
+                                hasError = repeatPasswordError
+                            )
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.CenterEnd
                         ) {
                             FlatButton(modifier = Modifier.padding(end = 16.dp),
-                                text = "Sign up",
-                                onClick = { onSignUpWithCredentials(email, password) })
+                                text = if (isSignUp) "Sign up" else "Sign in",
+                                onClick = {
+                                    emailError = when {
+                                        email.isBlank() -> "Enter your email"
+                                        !email.matchesEmail() -> "Not a valid email"
+                                        else -> ""
+                                    }
+                                    passwordError = when {
+                                        password.isBlank() -> "Enter password"
+                                        password.length < 6 -> "Password must be at least 6 characters long"
+                                        else -> ""
+                                    }
+                                    repeatPasswordError = when {
+                                        repeatPassword.isBlank() -> "Repeat your password"
+                                        password != repeatPassword -> "Passwords are not identical"
+                                        else -> ""
+                                    }
+                                    if (passwordError.isBlank()
+                                        && repeatPasswordError.isBlank()
+                                        && emailError.isBlank()
+                                    )
+                                        onSignUpWithCredentials(
+                                            email.trim().lowercase(),
+                                            password
+                                        )
+                                })
                         }
                     }
                     Text(modifier = Modifier.padding(vertical = 16.dp), text = "⸺ OR  ⸺")

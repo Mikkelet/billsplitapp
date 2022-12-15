@@ -6,7 +6,7 @@ import timber.log.Timber
 
 @Composable
 fun <T> ClickableFutureComposable(
-    asyncCallback: suspend () -> T,
+    onClickAsync: suspend () -> T,
     onError: (Throwable) -> Unit = { Timber.e(it) },
     onSuccess: (T?) -> Unit = {},
     loadingComposable: @Composable () -> Unit = { LoadingView() },
@@ -20,7 +20,7 @@ fun <T> ClickableFutureComposable(
     val callback: () -> Unit = {
         coroutineScope.launch {
             asyncState = AsyncState.Loading()
-            val response = runCatching { asyncCallback() }
+            val response = runCatching { onClickAsync() }
             response.fold(
                 onSuccess = {
                     onSuccess(it)

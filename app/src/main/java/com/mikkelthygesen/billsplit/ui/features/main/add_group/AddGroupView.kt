@@ -45,7 +45,7 @@ fun AddGroupView(
                     group = group
                 )
             }
-            ClickableFutureComposable(asyncCallback = {
+            ClickableFutureComposable(onClickAsync = {
                 viewModel.saveGroup(group)
             }) {
                 FlatButton(
