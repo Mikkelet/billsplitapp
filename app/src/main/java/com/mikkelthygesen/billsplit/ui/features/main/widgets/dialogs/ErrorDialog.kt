@@ -21,7 +21,7 @@ fun ErrorDialog(
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
-            modifier = shadowModifier(MaterialTheme.colors.background),
+            modifier = Modifier.shadowModifier(MaterialTheme.colors.background),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

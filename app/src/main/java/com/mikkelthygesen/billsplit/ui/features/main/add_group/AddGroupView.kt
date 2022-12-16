@@ -84,7 +84,8 @@ fun _AddGroupView(
             style = MaterialTheme.typography.h5
         )
         OutlinedTextField(
-            modifier = shadowModifier(MaterialTheme.colors.background)
+            modifier = Modifier
+                .shadowModifier(MaterialTheme.colors.background)
                 .fillMaxWidth(),
             value = group.nameState,
             singleLine = true,
@@ -107,7 +108,8 @@ fun _AddGroupView(
             style = MaterialTheme.typography.h5
         )
         Column(
-            modifier = shadowModifier(MaterialTheme.colors.background)
+            modifier = Modifier
+                .shadowModifier(MaterialTheme.colors.background)
                 .animateContentSize()
         ) {
             if (group.peopleState.isNotEmpty())

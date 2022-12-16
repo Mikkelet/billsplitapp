@@ -35,7 +35,7 @@ fun ProfileHeader(
             mutableStateOf(false)
         }
         Column(
-            shadowModifier(MaterialTheme.colors.background)
+            Modifier.shadowModifier(MaterialTheme.colors.background)
         ) {
             Row(
                 modifier = Modifier,

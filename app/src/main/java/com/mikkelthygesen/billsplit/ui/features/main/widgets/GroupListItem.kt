@@ -1,26 +1,32 @@
 package com.mikkelthygesen.billsplit.ui.features.main.widgets
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mikkelthygesen.billsplit.R
+import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 
 @Composable
-fun GroupListItem(group: Group) {
+fun GroupListItem(group: Group, onClick: (Group) -> Unit) {
     Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 16.dp),
-        Arrangement.SpaceBetween
+        modifier = Modifier
+            .shadowModifier(
+                backgroundColor = MaterialTheme.colors.background,
+                onClick = { onClick(group) },
+                innerPadding = PaddingValues(32.dp)
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = group.nameState)
-        Icon(painter = painterResource(id = R.drawable.ic_money), contentDescription = "")
+        Text(
+            text = group.nameState,
+            style = MaterialTheme.typography.body2.copy(fontSize = 18.sp))
     }
 }
 
@@ -30,6 +36,6 @@ private fun Preview() {
     Box(
         Modifier.padding(8.dp)
     ) {
-        GroupListItem(group = Group("", "My Group"))
+        GroupListItem(group = Group("", "My Group")) {}
     }
 }

@@ -83,7 +83,7 @@ private fun ConfirmPictureDialog(uri: Uri, onDismiss: () -> Unit, onConfirm: () 
 
     Dialog(onDismissRequest = onDismiss) {
         Column(
-            shadowModifier(MaterialTheme.colors.background),
+            Modifier.shadowModifier(MaterialTheme.colors.background),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircularUrlImageView(imageUrl = uri.toString())

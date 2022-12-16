@@ -2,11 +2,8 @@ package com.mikkelthygesen.billsplit.ui.features.main.groups
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.*
@@ -19,7 +16,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.GroupListItem
 import com.mikkelthygesen.billsplit.ui.widgets.PullToRefreshComposable
 
@@ -36,9 +32,13 @@ fun GroupsList(viewModel: MainViewModel = viewModel()) {
         onError = viewModel::handleError
     ) { groups ->
         if (groups.isEmpty())
-            Text(text = "You are not part of any groups yet!")
+            Text(
+                text = "You are not part of any groups yet!",
+                style = MaterialTheme.typography.h6
+            )
         else
-            _GroupsView(groups = groups, onGroupClick = { viewModel.showGroup(it.id) })
+            _GroupsView(groups = groups,
+                onGroupClick = { viewModel.showGroup(it.id) })
     }
 }
 
@@ -49,8 +49,6 @@ private fun _GroupsView(
     groups: List<Group>,
     onGroupClick: (Group) -> Unit
 ) {
-
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -59,16 +57,13 @@ private fun _GroupsView(
             text = "Groups",
             style = MaterialTheme.typography.h5
         )
-        Column(shadowModifier(MaterialTheme.colors.background)) {
-            groups.mapIndexed { index, group ->
+        Column {
+            groups.map { group ->
                 Column(modifier = Modifier.clickable {
                     onGroupClick(group)
                 }) {
-                    GroupListItem(group = group)
-                    if (index != groups.lastIndex)
-                        Divider()
+                    GroupListItem(group = group, onGroupClick)
                 }
-
             }
         }
     }

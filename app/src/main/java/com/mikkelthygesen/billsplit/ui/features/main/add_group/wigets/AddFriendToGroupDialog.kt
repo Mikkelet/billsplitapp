@@ -27,7 +27,7 @@ fun AddFriendToGroupDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         LazyColumn(
-            modifier = shadowModifier(MaterialTheme.colors.background)
+            modifier = Modifier.shadowModifier(MaterialTheme.colors.background)
         ) {
             if (friends.isEmpty())
                 item {

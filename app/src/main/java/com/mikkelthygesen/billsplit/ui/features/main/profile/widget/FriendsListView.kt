@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.Friend
@@ -34,7 +35,7 @@ private fun _FriendsListView(friends: List<Friend>, showLoading: Boolean = false
         mutableStateOf(friends)
     }
     Column(
-        modifier = shadowModifier(MaterialTheme.colors.background),
+        modifier = Modifier.shadowModifier(MaterialTheme.colors.background),
     ) {
         AddFriendEmailTextField {
             friendsState = friendsState.plus(it)
