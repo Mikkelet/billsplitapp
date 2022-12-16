@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun <T> PullToRefreshComposable(
     initialCallback: suspend () -> T,
-    onPullCallback: suspend () -> T,
+    onRefresh: suspend () -> T,
     loadingComposable: @Composable () -> Unit = { LoadingView() },
     onError: (Throwable) -> Unit = {},
     errorComposable: @Composable (Throwable) -> Unit = {
@@ -37,7 +37,7 @@ fun <T> PullToRefreshComposable(
         onRefresh = {
             asyncState = AsyncState.Loading()
             coroutineScope.launch {
-                val response = runCatching { onPullCallback() }
+                val response = runCatching { onRefresh() }
                 response.fold(
                     onSuccess = {
                         asyncState = AsyncState.Success(it)
@@ -91,7 +91,7 @@ fun <T> PullToRefreshComposable(
 private fun Preview() {
     PullToRefreshComposable(initialCallback = {
         delay(2000L)
-    }, onPullCallback = {
+    }, onRefresh = {
         delay(2000L)
     }) {
         Text("success!")

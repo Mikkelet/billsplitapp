@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.widgets.dialogs
+package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 
 @Composable
 fun GenericDialog(
@@ -22,35 +23,24 @@ fun GenericDialog(
     secondaryAction: () -> Unit
 ) {
     Dialog(onDismissRequest = primaryAction) {
-        Card(
-            modifier = Modifier
+
+        Column(
+            Modifier.shadowModifier(MaterialTheme.colors.background),
+            Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                Modifier.padding(16.dp),
-                Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    modifier = Modifier.padding(bottom = 12.dp),
-                    text = dialogText,
-                    style = TextStyle(fontSize = 20.sp)
-                )
-                Button(onClick = primaryAction) {
-                    Text(text = primaryText)
-                }
-                Button(
-                    onClick = secondaryAction,
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colors.primary,
-                        backgroundColor = MaterialTheme.colors.background
-                    ),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 0.dp
-                    )
-                ) {
-                    Text(text = secondaryText)
-                }
+            Text(
+                modifier = Modifier.padding(bottom = 12.dp),
+                text = dialogText,
+                style = TextStyle(fontSize = 16.sp)
+            )
+            Button(onClick = primaryAction) {
+                Text(text = primaryText)
             }
+            FlatButton(
+                text = secondaryText,
+                onClick = secondaryAction,
+            )
         }
     }
 }

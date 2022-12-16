@@ -50,12 +50,23 @@ fun AddGroupView(
                     group = group
                 )
             }
-            ClickableFutureComposable(onClickAsync = {
-                viewModel.saveGroup(group)
-            }) { addGroup ->
+            ClickableFutureComposable(
+                onClickAsync = { viewModel.saveGroup(group) },
+                loadingComposable = {
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(
+                                top = 64.dp,
+                                bottom = 64.dp
+                            )
+                        )
+                    }
+                }
+            ) { addGroup ->
                 Row(
                     Modifier
-                        .padding(top = 64.dp)
+                        .padding(top = 64.dp, bottom = 64.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {

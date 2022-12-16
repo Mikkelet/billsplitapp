@@ -39,11 +39,6 @@ private fun _ProfileView(user: Person, onUpdateUser: suspend () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ProfileHeader(user, onUpdateUser)
-        Text(
-            modifier = Modifier.padding(top = 16.dp),
-            text = "Friends",
-            style = MaterialTheme.typography.h5
-        )
         FriendsListView()
     }
 }

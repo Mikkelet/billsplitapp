@@ -29,7 +29,6 @@ fun AddFriendEmailTextField(
     onFriendAdded: (Friend) -> Unit
 ) {
     _AddFriendTextField {
-        delay(2000L)
         val friend = viewModel.addFriend(it.trim().lowercase())
         onFriendAdded(friend)
         friend

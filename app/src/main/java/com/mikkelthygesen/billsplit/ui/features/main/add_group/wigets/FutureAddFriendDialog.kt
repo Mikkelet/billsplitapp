@@ -35,7 +35,7 @@ fun FutureAddFriendDialog(
                     CircularProgressIndicator()
                 }
             }
-        ) { friends ->
+        ) { friends, refreshCallback ->
             val acceptedFriends =
                 friends.filterIsInstance<Friend.FriendAccepted>()
             val addableFriends = acceptedFriends.let { list ->
@@ -47,6 +47,9 @@ fun FutureAddFriendDialog(
                 totalFriends = acceptedFriends.size,
                 onDismiss = {
                     showAddFriendDialog = false
+                },
+                onRefresh = {
+                    refreshCallback { mainViewModel.getFriends(true) }
                 },
                 onAddFriend = group::addPerson,
                 onGoToProfilePage = {

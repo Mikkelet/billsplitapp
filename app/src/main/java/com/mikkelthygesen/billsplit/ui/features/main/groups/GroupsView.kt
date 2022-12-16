@@ -26,7 +26,7 @@ fun GroupsList(viewModel: MainViewModel = viewModel()) {
         initialCallback = {
             viewModel.getGroups(false)
         },
-        onPullCallback = {
+        onRefresh = {
             viewModel.getGroups(true)
         },
         onError = viewModel::handleError
