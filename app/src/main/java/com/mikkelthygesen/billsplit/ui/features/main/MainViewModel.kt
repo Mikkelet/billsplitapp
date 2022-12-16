@@ -68,7 +68,7 @@ class MainViewModel : BaseViewModel() {
         }
     }
 
-    suspend fun getGroups(sync: Boolean = false): List<Group> {
+    suspend fun getGroups(sync: Boolean = true): List<Group> {
         return checkAuthStatusAsync {
             api.getGroups(it.uid, sync)
         }

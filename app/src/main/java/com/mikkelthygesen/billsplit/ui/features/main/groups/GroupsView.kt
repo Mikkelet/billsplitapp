@@ -2,11 +2,14 @@ package com.mikkelthygesen.billsplit.ui.features.main.groups
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,12 +21,18 @@ import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.GroupListItem
-import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.PullToRefreshComposable
 
 @Composable
 fun GroupsList(viewModel: MainViewModel = viewModel()) {
-    FutureComposable(
-        asyncCallback = viewModel::getGroups,
+
+    PullToRefreshComposable(
+        initialCallback = {
+            viewModel.getGroups(false)
+        },
+        onPullCallback = {
+            viewModel.getGroups(true)
+        },
         onError = viewModel::handleError
     ) { groups ->
         if (groups.isEmpty())
@@ -40,6 +49,8 @@ private fun _GroupsView(
     groups: List<Group>,
     onGroupClick: (Group) -> Unit
 ) {
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

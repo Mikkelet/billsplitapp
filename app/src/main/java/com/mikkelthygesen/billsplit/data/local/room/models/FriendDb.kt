@@ -15,7 +15,7 @@ data class FriendDb(
     val timeStamp: Long,
     val status: String,
     val createdBy: String,
-    @Embedded(prefix = "friend_")
+    @Embedded
     val friend: PersonDb,
 ) {
     fun toFriend(): Friend = when (status) {
