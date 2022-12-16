@@ -24,8 +24,7 @@ fun Modifier.shadowModifier(
         end = 16.dp
     )
 ) =
-    fillMaxWidth()
-        .clip(RoundedCornerShape(3.dp))
+    clip(RoundedCornerShape(3.dp))
         .padding(outerPadding)
         .shadow(10.dp, RoundedCornerShape(10.dp))
         .background(backgroundColor)

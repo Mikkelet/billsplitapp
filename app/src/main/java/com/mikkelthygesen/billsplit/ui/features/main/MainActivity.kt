@@ -146,7 +146,7 @@ private fun BottomNavBar(
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = Color.Gray,
             icon = {
-                Icon(painter = painterResource(id = R.drawable.ic_money), contentDescription = "")
+                Icon(painter = painterResource(id = R.drawable.ic_add_plus), contentDescription = "")
             }
         )
         BottomNavigationItem(

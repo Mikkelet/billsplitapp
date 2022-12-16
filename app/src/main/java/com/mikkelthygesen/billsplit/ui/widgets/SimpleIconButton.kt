@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 
 @Composable
-fun IconButton(
+fun SimpleIconButton(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.primary,
     iconResId: Int,
@@ -19,6 +19,12 @@ fun IconButton(
         modifier = modifier,
         onClick = onClick
     ) {
-        Icon(painter = painterResource(id = iconResId), contentDescription = "", tint = color)
+        Icon(
+            painter = painterResource(
+                id = iconResId
+            ),
+            contentDescription = "",
+            tint = color
+        )
     }
 }

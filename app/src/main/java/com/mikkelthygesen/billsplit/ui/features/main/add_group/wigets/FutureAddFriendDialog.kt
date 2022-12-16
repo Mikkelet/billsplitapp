@@ -12,10 +12,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
-import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
-import com.mikkelthygesen.billsplit.ui.widgets.IconButton
+import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
 @Composable
 fun FutureAddFriendDialog(
@@ -28,9 +27,7 @@ fun FutureAddFriendDialog(
     }
     if (showAddFriendDialog) {
         FutureComposable(
-            asyncCallback = {
-                mainViewModel.getFriends()
-            },
+            asyncCallback = mainViewModel::getFriends,
             loadingComposable = {
                 Dialog(onDismissRequest = {
                     showAddFriendDialog = false
@@ -40,20 +37,26 @@ fun FutureAddFriendDialog(
             }
         ) { friends ->
             val acceptedFriends =
-                friends.filterIsInstance<Friend.FriendAccepted>().let { list ->
-                    if (list.isEmpty()) emptyList()
-                    else list.map { it.person }
-                }
-            AddFriendToGroupDialog(friends = acceptedFriends,
+                friends.filterIsInstance<Friend.FriendAccepted>()
+            val addableFriends = acceptedFriends.let { list ->
+                if (list.isEmpty()) emptyList()
+                else list.map { it.person }
+            }
+            AddFriendToGroupDialog(
+                friendsToAdd = addableFriends,
+                totalFriends = acceptedFriends.size,
                 onDismiss = {
                     showAddFriendDialog = false
                 },
-                onAddFriend = {
-                    group.addPerson(it)
-                })
+                onAddFriend = group::addPerson,
+                onGoToProfilePage = {
+                    showAddFriendDialog = false
+                    mainViewModel.showProfile()
+                }
+            )
         }
     }
-    IconButton(
+    SimpleIconButton(
         modifier = modifier
             .clip(RoundedCornerShape(45.dp))
             .background(MaterialTheme.colors.primary),

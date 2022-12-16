@@ -1,8 +1,6 @@
 package com.mikkelthygesen.billsplit.ui.features.main.profile.widget
 
 import android.annotation.SuppressLint
-import android.text.TextUtils
-import android.util.Patterns
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
@@ -21,7 +19,7 @@ import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
-import com.mikkelthygesen.billsplit.ui.widgets.IconButton
+import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.delay
 
@@ -77,7 +75,7 @@ fun _AddFriendTextField(
                     onSuccess = { addFriendTextFieldValue = "" },
                     onError = { errorMessage = it.message.toString() }
                 ) {
-                    IconButton(
+                    SimpleIconButton(
                         iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_add_plus,
                         onClick = it
                     )

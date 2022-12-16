@@ -16,7 +16,7 @@ import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.widgets.ProfilePictureWithUpload
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
-import com.mikkelthygesen.billsplit.ui.widgets.IconButton
+import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
 
 @Composable
@@ -31,24 +31,27 @@ fun ProfileHeader(
 
         ProfilePictureWithUpload(user)
         val focusRequester = LocalFocusManager.current
-        var showSaveNameButton by remember {
+        var showSaveNameOptions by remember {
             mutableStateOf(false)
         }
         Column(
             Modifier.shadowModifier(MaterialTheme.colors.background)
         ) {
             Row(
-                modifier = Modifier,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
+                    modifier = Modifier.weight(1f),
                     value = user.nameState,
                     singleLine = true,
                     textStyle = MaterialTheme.typography.body1.copy(fontSize = 20.sp),
                     onValueChange = {
                         user.nameState = it
-                        showSaveNameButton = user.isNameChanged()
+                        showSaveNameOptions = user.isNameChanged()
+                    },
+                    placeholder = {
+                        Text(text = "Click here to change your name :)")
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         unfocusedIndicatorColor = Color.Transparent,
@@ -62,18 +65,41 @@ fun ProfileHeader(
                         }
                     )
                 )
-                if (showSaveNameButton)
+                if (showSaveNameOptions)
                     ClickableFutureComposable(
-                        onClickAsync = { onUpdateUser() },
+                        onClickAsync = {
+                            onUpdateUser()
+                            focusRequester.clearFocus()
+                        },
                         onSuccess = {
                             user.saveChanges()
-                            showSaveNameButton = false
+                            focusRequester.clearFocus()
+                            showSaveNameOptions = false
                         },
-                    ) {
-                        IconButton(iconResId = R.drawable.ic_check) {
-                            it.invoke()
+                    ) { saveName ->
+                        Row {
+                            SimpleIconButton(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .padding(end = 4.dp),
+                                iconResId = R.drawable.ic_check
+                            ) {
+                                saveName()
+                            }
+                            SimpleIconButton(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .padding(end = 4.dp),
+                                iconResId = R.drawable.ic_outline_cancel_24,
+                                color = MaterialTheme.colors.error
+                            ) {
+                                user.resetState()
+                                focusRequester.clearFocus()
+                                showSaveNameOptions = false
+                            }
                         }
                     }
+
             }
             Divider(Modifier.padding(vertical = 16.dp, horizontal = 64.dp))
             Text(

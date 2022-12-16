@@ -16,6 +16,7 @@ import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifi
 fun GroupListItem(group: Group, onClick: (Group) -> Unit) {
     Row(
         modifier = Modifier
+            .fillMaxWidth()
             .shadowModifier(
                 backgroundColor = MaterialTheme.colors.background,
                 onClick = { onClick(group) },

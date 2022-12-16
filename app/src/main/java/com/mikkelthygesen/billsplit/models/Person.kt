@@ -22,6 +22,10 @@ data class Person(
         name = nameState
     }
 
+    fun resetState(){
+        nameState = name
+    }
+
     override fun equals(other: Any?): Boolean {
         if (other is Person)
             return uid == other.uid

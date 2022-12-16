@@ -22,7 +22,7 @@ import com.mikkelthygesen.billsplit.ui.features.group.add_expense.ExpenseView
 import com.mikkelthygesen.billsplit.ui.features.group.group_view.GroupEventsView
 import com.mikkelthygesen.billsplit.ui.features.group.view_expenses.ViewExpenses
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
-import com.mikkelthygesen.billsplit.ui.widgets.IconButton
+import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ConfirmChangesDialog
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignInView
@@ -118,24 +118,24 @@ private fun TopBar(
         actions = {
             when (uiState) {
                 is GroupViewModel.Expenses -> {
-                    IconButton(iconResId = R.drawable.ic_baseline_settings_24) {
+                    SimpleIconButton(iconResId = R.drawable.ic_baseline_settings_24) {
                         // show settings
                     }
-                    IconButton(
+                    SimpleIconButton(
                         iconResId = R.drawable.ic_money,
                         onClick = viewModel::showDebt
                     )
                 }
                 is GroupViewModel.EditExpense ->
                     if (uiState.groupExpense.total > 0)
-                        IconButton(iconResId = R.drawable.ic_check) {
+                        SimpleIconButton(iconResId = R.drawable.ic_check) {
                             viewModel.saveGroupExpense(uiState.groupExpense)
                         }
                 else -> {}
             }
         },
         navigationIcon = {
-            IconButton(iconResId = R.drawable.ic_back) {
+            SimpleIconButton(iconResId = R.drawable.ic_back) {
                 when (uiState) {
                     is GroupViewModel.EditExpense -> {
                         val groupExpense = uiState.groupExpense

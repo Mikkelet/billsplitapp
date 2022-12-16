@@ -2,8 +2,10 @@ package com.mikkelthygesen.billsplit.ui.features.main.add_group
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -13,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,13 +37,12 @@ fun AddGroupView(
         val group by remember {
             mutableStateOf(viewModel.getNewGroup(it))
         }
+
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Box(modifier = Modifier) {
-                _AddGroupView(
-                    group = group
-                )
+                _AddGroupView(group = group)
                 FutureAddFriendDialog(
                     modifier = Modifier
                         .padding(end = 32.dp, top = 16.dp)
@@ -50,15 +52,28 @@ fun AddGroupView(
             }
             ClickableFutureComposable(onClickAsync = {
                 viewModel.saveGroup(group)
-            }) {
-                FlatButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 64.dp, bottom = 32.dp),
-                    text = "Add Group"
+            }) { addGroup ->
+                Row(
+                    Modifier
+                        .padding(top = 64.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    if (group.nameState.isNotBlank() && group.peopleState.isNotEmpty())
-                        it.invoke()
+                    val enabled = group.nameState.isNotBlank()
+                            && group.peopleState.isNotEmpty()
+                    SimpleIconButton(
+                        modifier = Modifier
+                            .size(92.dp)
+                            .clip(RoundedCornerShape(90.dp))
+                            .background(
+                                if (enabled) MaterialTheme.colors.primary else Color.Gray
+                            ),
+                        iconResId = R.drawable.ic_check,
+                        color = MaterialTheme.colors.onPrimary
+                    ) {
+                        if (enabled)
+                            addGroup()
+                    }
                 }
             }
         }
@@ -90,7 +105,7 @@ fun _AddGroupView(
             value = group.nameState,
             singleLine = true,
             onValueChange = { group.nameState = it },
-            placeholder = { Text(text = ("Going to that restaurant")) },
+            placeholder = { Text(text = ("fx. Trip to Madrid")) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = { focusRequester.clearFocus() }
@@ -104,7 +119,7 @@ fun _AddGroupView(
         )
         Text(
             modifier = Modifier.padding(top = 16.dp),
-            text = "Participants",
+            text = "Add Participants",
             style = MaterialTheme.typography.h5
         )
         Column(
@@ -136,7 +151,7 @@ fun _AddGroupView(
                         )
                         Box(modifier = Modifier.weight(1F))
                         if (person != group.createdBy)
-                            IconButton(
+                            SimpleIconButton(
                                 iconResId = R.drawable.ic_baseline_remove_24,
                                 color = MaterialTheme.colors.error
                             ) {

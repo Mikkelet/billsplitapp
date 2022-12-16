@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 fun <T> PullToRefreshComposable(
     initialCallback: suspend () -> T,
     onPullCallback: suspend () -> T,
-    loadingComposable: @Composable () -> Unit = { Text(text = "loading")},
+    loadingComposable: @Composable () -> Unit = { LoadingView() },
     onError: (Throwable) -> Unit = {},
     errorComposable: @Composable (Throwable) -> Unit = {
         Text(text = it.toString())
@@ -69,13 +70,17 @@ fun <T> PullToRefreshComposable(
                 modifier = Modifier
                     .pullRefresh(pullRefreshState)
             ) {
+                LazyColumn {
+                    item {
+                        successComposable(state.data)
+                    }
+                }
                 PullRefreshIndicator(
                     refreshing = asyncState is AsyncState.Loading,
                     state = pullRefreshState,
                     modifier = Modifier
                         .align(Alignment.TopCenter),
                 )
-                successComposable(state.data)
             }
         else -> loadingComposable()
     }
