@@ -38,10 +38,13 @@ fun FutureAddFriendDialog(
         ) { friends, refreshCallback ->
             val acceptedFriends =
                 friends.filterIsInstance<Friend.FriendAccepted>()
-            val addableFriends = acceptedFriends.let { list ->
-                if (list.isEmpty()) emptyList()
-                else list.map { it.person }
-            }
+            val addableFriends = acceptedFriends
+                .let { list ->
+                    if (list.isEmpty()) emptyList()
+                    else list.map { it.person }
+                        .minus(group.peopleState.toSet())
+
+                }
             AddFriendToGroupDialog(
                 friendsToAdd = addableFriends,
                 totalFriends = acceptedFriends.size,
