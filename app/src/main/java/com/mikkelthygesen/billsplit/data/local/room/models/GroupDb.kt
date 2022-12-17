@@ -10,11 +10,13 @@ data class GroupDb(
     val id: String,
     val name: String,
     val timestamp: Long,
+    val debts: List<DebtDb>
 ) {
 
     fun toGroup() = Group(
         id = id,
         name = name,
-        timeStamp = timestamp
+        timeStamp = timestamp,
+        debts = debts.map { it.toDebt() }
     )
 }

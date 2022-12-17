@@ -42,7 +42,8 @@ class MainViewModel : BaseViewModel() {
             people = listOf(user),
             createdBy = user,
             timeStamp = 0,
-            events = listOf()
+            events = listOf(),
+            debts = emptyList()
         )
     }
 

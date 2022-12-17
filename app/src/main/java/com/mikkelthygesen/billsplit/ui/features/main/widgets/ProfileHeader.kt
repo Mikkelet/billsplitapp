@@ -91,7 +91,7 @@ fun ProfileHeader(
                                     .size(32.dp)
                                     .padding(end = 4.dp),
                                 iconResId = R.drawable.ic_outline_cancel_24,
-                                color = MaterialTheme.colors.error
+                                tint = MaterialTheme.colors.error
                             ) {
                                 user.resetState()
                                 focusRequester.clearFocus()

@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
 fun Modifier.shadowModifier(
     backgroundColor: Color,
     onClick: (() -> Unit)? = null,
-    innerPadding: PaddingValues = PaddingValues(16.dp),
+    cornerShape: RoundedCornerShape = RoundedCornerShape(10.dp),
+    innerPadding: PaddingValues = PaddingValues(12.dp),
     outerPadding: PaddingValues = PaddingValues(
         top = 8.dp,
         bottom = 16.dp,
@@ -24,9 +25,9 @@ fun Modifier.shadowModifier(
         end = 16.dp
     )
 ) =
-    clip(RoundedCornerShape(3.dp))
+    clip(cornerShape)
         .padding(outerPadding)
-        .shadow(10.dp, RoundedCornerShape(10.dp))
+        .shadow(10.dp, cornerShape)
         .background(backgroundColor)
         .let {
             if (onClick != null)

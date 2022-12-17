@@ -1,7 +1,6 @@
 package com.mikkelthygesen.billsplit
 
 import com.mikkelthygesen.billsplit.models.*
-import java.util.*
 
 class DebtCalculator(
     private val people: List<Person>,
@@ -18,6 +17,14 @@ class DebtCalculator(
 
     fun calculateEffectiveDebtOfPerson(person: Person): List<Pair<Person, Float>> =
         calculateEffectiveDebt(person, people, groupExpenses)
+
+    fun calculateEffectiveDebtForGroup(): List<Pair<String, Float>> {
+        return people.map { person ->
+            person.uid to calculateEffectiveDebtOfPerson(person)
+                .map { it.second }
+                .reduceOrZero()
+        }
+    }
 
     fun logDebt(person: Person) {
         println("==== DEBT ====")

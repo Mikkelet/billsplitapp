@@ -6,14 +6,20 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
+import kotlin.math.absoluteValue
 
 @Composable
-fun GroupListItem(group: Group, onClick: (Group) -> Unit) {
+fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
+    val debt = group.debtsState.find { it.first == user.uid } ?: Pair(user.uid, 0F)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -27,7 +33,19 @@ fun GroupListItem(group: Group, onClick: (Group) -> Unit) {
     ) {
         Text(
             text = group.nameState,
-            style = MaterialTheme.typography.body2.copy(fontSize = 18.sp))
+            style = MaterialTheme.typography.body2.copy(fontSize = 18.sp)
+        )
+        when {
+            debt.second > 0F -> Text(
+                text = "$${debt.second}",
+                style = TextStyle(color = Color.Red)
+            )
+            debt.second < 0F -> Text(
+                text = "$${debt.second.absoluteValue}",
+                style = TextStyle(color = Color(0xFF0B9D3A))
+            )
+        }
+
     }
 }
 
@@ -37,6 +55,6 @@ private fun Preview() {
     Box(
         Modifier.padding(8.dp)
     ) {
-        GroupListItem(group = Group("", "My Group")) {}
+        GroupListItem(sampleGroup.createdBy, group = sampleGroup) {}
     }
 }

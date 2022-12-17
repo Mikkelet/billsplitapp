@@ -8,10 +8,12 @@ import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -25,9 +27,11 @@ import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ConfirmChangesDialog
+import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignInView
 import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.dialogs.ErrorDialog
+import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,9 +46,9 @@ class GroupActivity : ComponentActivity() {
                 is GroupViewModel.EditExpense -> {
                     if (state.groupExpense.isChanged())
                         viewModel.showConfirmChangesDialog(state.groupExpense)
-                    else viewModel.showEvents()
+                    else viewModel.showChat()
                 }
-                is GroupViewModel.ShowDebt -> viewModel.showEvents()
+                is GroupViewModel.ShowDebt -> viewModel.showChat()
                 else -> finish()
             }
         }
@@ -78,17 +82,23 @@ class GroupActivity : ComponentActivity() {
                 }
 
                 Scaffold(
-                    topBar = { TopBar() },
                     bottomBar = { BottomBar(uiState) }
                 ) {
-                    Crossfade(targetState = uiState, modifier = Modifier.padding(it)) { state ->
-                        when (state) {
-                            is BaseViewModel.UiState.Loading -> LoadingView()
-                            is BaseViewModel.UiState.SignIn -> SignInView()
-                            is BaseViewModel.UiState.SignUp -> SignUpView()
-                            is GroupViewModel.Expenses -> GroupEventsView()
-                            is GroupViewModel.ShowDebt -> ViewExpenses(user = state.user)
-                            is GroupViewModel.EditExpense -> ExpenseView(groupExpense = state.groupExpense)
+                    Box {
+                        Crossfade(targetState = uiState, modifier = Modifier.padding(it)) { state ->
+                            when (state) {
+                                is BaseViewModel.UiState.Loading -> LoadingView()
+                                is BaseViewModel.UiState.SignIn -> SignInView()
+                                is BaseViewModel.UiState.SignUp -> SignUpView()
+                                is GroupViewModel.Chat -> GroupEventsView()
+                                is GroupViewModel.ShowDebt -> ViewExpenses(user = state.user)
+                                is GroupViewModel.EditExpense -> ExpenseView(groupExpense = state.groupExpense)
+                            }
+                        }
+                        TopBar(
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        ) {
+                            onBackPressedDispatcher.onBackPressed()
                         }
                     }
                 }
@@ -99,58 +109,47 @@ class GroupActivity : ComponentActivity() {
 
 @Composable
 private fun TopBar(
-    viewModel: GroupViewModel = viewModel()
+    modifier: Modifier = Modifier,
+    groupViewModel: GroupViewModel = viewModel(),
+    onBackPressed: () -> Unit
 ) {
-    val uiStateFlow = viewModel.uiStateFlow.collectAsState()
-    val uiState = uiStateFlow.value
-    TopAppBar(
-        title = {
-            val text = when (uiState) {
-                is GroupViewModel.Expenses -> ""
-                is GroupViewModel.EditExpense -> "Expenses for LOGGED IN"
-                is GroupViewModel.ShowDebt -> "Add new expense"
-                else -> ""
-            }
-            Text(text)
-        },
-        backgroundColor = MaterialTheme.colors.background,
-        contentColor = MaterialTheme.colors.onBackground,
-        actions = {
-            when (uiState) {
-                is GroupViewModel.Expenses -> {
+    val uiState = groupViewModel.uiStateFlow.collectAsState()
+
+    Crossfade(targetState = uiState.value) {
+        Row(
+            modifier = modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            BackButton(onClick = onBackPressed)
+            Row(
+                Modifier.shadowModifier(
+                    MaterialTheme.colors.background,
+                    innerPadding = PaddingValues(0.dp),
+                    cornerShape = RoundedCornerShape(90),
+                    outerPadding = PaddingValues(0.dp)
+                )
+            ) {
+                if (it is GroupViewModel.EditExpense)
+                    SimpleIconButton(iconResId = R.drawable.ic_check) {
+                        groupViewModel.saveGroupExpense(it.groupExpense)
+                    }
+                if (it is GroupViewModel.Chat)
                     SimpleIconButton(iconResId = R.drawable.ic_baseline_settings_24) {
                         // show settings
                     }
+                if (it is GroupViewModel.Chat)
                     SimpleIconButton(
                         iconResId = R.drawable.ic_money,
-                        onClick = viewModel::showDebt
+                        onClick = groupViewModel::showDebt
                     )
-                }
-                is GroupViewModel.EditExpense ->
-                    if (uiState.groupExpense.total > 0)
-                        SimpleIconButton(iconResId = R.drawable.ic_check) {
-                            viewModel.saveGroupExpense(uiState.groupExpense)
-                        }
-                else -> {}
             }
-        },
-        navigationIcon = {
-            SimpleIconButton(iconResId = R.drawable.ic_back) {
-                when (uiState) {
-                    is GroupViewModel.EditExpense -> {
-                        val groupExpense = uiState.groupExpense
-                        if (!groupExpense.isChanged())
-                            viewModel.onBackButtonPressed()
-                        else {
-                            viewModel.showConfirmChangesDialog(uiState.groupExpense)
-                        }
-                    }
-                    else -> viewModel.onBackButtonPressed()
-                }
-            }
-        })
-}
+        }
+    }
 
+
+}
 
 @Composable
 private fun BottomBar(
@@ -176,6 +175,5 @@ private fun BottomBar(
                 )
             }
         }
-        else -> Unit
     }
 }

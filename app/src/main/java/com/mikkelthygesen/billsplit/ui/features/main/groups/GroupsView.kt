@@ -13,11 +13,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.GroupListItem
 import com.mikkelthygesen.billsplit.ui.widgets.Center
 import com.mikkelthygesen.billsplit.ui.widgets.PullToRefreshComposable
+import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 
 @Composable
 fun GroupsList(viewModel: MainViewModel = viewModel()) {
@@ -45,8 +47,12 @@ fun GroupsList(viewModel: MainViewModel = viewModel()) {
                 }
             }
         else
-            _GroupsView(groups = groups,
-                onGroupClick = { viewModel.showGroup(it.id) })
+            RequireUserView(baseViewModel = viewModel) {
+                _GroupsView(
+                    user = it,
+                    groups = groups,
+                    onGroupClick = { viewModel.showGroup(it.id) })
+            }
     }
 }
 
@@ -54,6 +60,7 @@ fun GroupsList(viewModel: MainViewModel = viewModel()) {
 @Composable
 @SuppressLint("ComposableNaming")
 private fun _GroupsView(
+    user: Person,
     groups: List<Group>,
     onGroupClick: (Group) -> Unit
 ) {
@@ -67,7 +74,7 @@ private fun _GroupsView(
             Column(modifier = Modifier.clickable {
                 onGroupClick(group)
             }) {
-                GroupListItem(group = group, onGroupClick)
+                GroupListItem(user, group = group, onGroupClick)
             }
         }
     }
@@ -77,5 +84,8 @@ private fun _GroupsView(
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
-    _GroupsView(groups = (0..5).map { sampleGroup }, onGroupClick = {})
+    _GroupsView(
+        user = sampleGroup.createdBy,
+        groups = (0..5).map { sampleGroup },
+        onGroupClick = {})
 }

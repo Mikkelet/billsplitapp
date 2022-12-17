@@ -26,7 +26,7 @@ private val SCROLL_OFFSET = 200.dp.value
 
 @Composable
 fun ExpenseView(
-    groupExpense: GroupExpense
+    groupExpense: GroupExpense,
 ) {
     val sharedExpense = groupExpense.sharedExpenseState
     val expenseHolders = groupExpense.individualExpenses

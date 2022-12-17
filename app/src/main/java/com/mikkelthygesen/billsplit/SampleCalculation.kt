@@ -15,7 +15,14 @@ val sampleGroup = Group(
     people = samplePeopleShera,
     createdBy = samplePeopleShera.first(),
     timeStamp = 0,
-    events = listOf()
+    events = listOf(),
+    debts = emptyList()
+)
+
+val sampleFriends = listOf(
+    Friend.FriendAccepted(samplePeopleShera.first()),
+    Friend.FriendRequestSent(samplePeopleShera.first()),
+    Friend.FriendRequestReceived(samplePeopleShera.first()),
 )
 
 val sampleIndividualExpenses = samplePeopleShera.mapIndexed { i, p ->
@@ -177,6 +184,10 @@ fun calculateEffectiveDebt(
         val effectDebt = payeeDebtToOtherPayee - otherPayeeDebtToPayee
         Pair(otherPayee.first, effectDebt)
     }
+}
+
+fun calculateCumultiveDebt(debts: List<Pair<Person, Float>>): Float {
+    return debts.map { it.second }.reduceOrZero()
 }
 
 fun calculateDebtsAfterPayments(

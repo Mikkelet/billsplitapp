@@ -17,14 +17,29 @@ class ServerApiImpl {
         return response.toGroup()
     }
 
-    suspend fun addEvent(groupId: String, event: Event): Event {
+    suspend fun addEvent(
+        group: Group,
+        event: Event,
+    ): Event {
         val eventDto: EventDTO = when (event) {
             is GroupExpense -> EventDTO.fromExpense(event)
             is Payment -> EventDTO.fromPayment(event)
             is GroupExpensesChanged -> EventDTO.fromChange(event)
             else -> throw Exception("Invalid event")
         }
-        return ServerApi.addEvent(AddEvent.Request(groupId, eventDto)).event.toEvent()
+        val debtsDto = group.debtsState.map {
+            DebtDTO(
+                userId = it.first,
+                owes = it.second
+            )
+        }
+        return ServerApi.addEvent(
+            AddEvent.Request(
+                group.id,
+                eventDto,
+                debtsDto
+            )
+        ).event.toEvent()
     }
 
     suspend fun getGroup(groupId: String): Group {

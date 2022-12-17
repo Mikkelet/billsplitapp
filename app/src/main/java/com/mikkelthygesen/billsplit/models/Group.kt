@@ -12,10 +12,12 @@ data class Group(
     private var people: List<Person> = emptyList(),
     val createdBy: Person = Person(),
     val timeStamp: Long = System.currentTimeMillis(),
-    val events: List<Event> = emptyList()
+    val events: List<Event> = emptyList(),
+    private var debts: List<Pair<String, Float>>
 ) {
     var nameState by mutableStateOf(name)
     var peopleState by mutableStateOf(people)
+    var debtsState by mutableStateOf(debts)
 
     fun addPerson(person: Person) {
         peopleState = peopleState.plus(person)

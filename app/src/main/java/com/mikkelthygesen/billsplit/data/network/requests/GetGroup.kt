@@ -23,7 +23,8 @@ object GetGroup {
                 people = group.people.map { it.toPerson() },
                 createdBy = group.createdBy.toPerson(),
                 timeStamp = group.timeStamp,
-                events = events.map { it.toEvent() }
+                events = events.map { it.toEvent() },
+                debts = group.debts.map { it.toDebt() }
             )
         }
     }

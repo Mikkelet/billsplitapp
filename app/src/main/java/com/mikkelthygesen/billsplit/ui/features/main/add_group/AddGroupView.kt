@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.Group
-import com.mikkelthygesen.billsplit.samplePeopleShera
+import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.wigets.FutureAddFriendDialog
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
@@ -41,7 +41,7 @@ fun AddGroupView(
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            Box(modifier = Modifier) {
+            Box {
                 _AddGroupView(group = group)
                 FutureAddFriendDialog(
                     modifier = Modifier
@@ -53,8 +53,10 @@ fun AddGroupView(
             ClickableFutureComposable(
                 onClickAsync = { viewModel.saveGroup(group) },
                 loadingComposable = {
-                    Row(modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
                         CircularProgressIndicator(
                             modifier = Modifier.padding(
                                 top = 64.dp,
@@ -80,7 +82,7 @@ fun AddGroupView(
                                 if (enabled) MaterialTheme.colors.primary else Color.Gray
                             ),
                         iconResId = R.drawable.ic_check,
-                        color = MaterialTheme.colors.onPrimary
+                        tint = MaterialTheme.colors.onPrimary
                     ) {
                         if (enabled)
                             addGroup()
@@ -164,7 +166,7 @@ fun _AddGroupView(
                         if (person != group.createdBy)
                             SimpleIconButton(
                                 iconResId = R.drawable.ic_baseline_remove_24,
-                                color = MaterialTheme.colors.error
+                                tint = MaterialTheme.colors.error
                             ) {
                                 group.removePerson(person)
                             }
@@ -179,6 +181,6 @@ fun _AddGroupView(
 @Composable
 private fun Preview() {
     _AddGroupView(
-        group = Group("asd", "", samplePeopleShera, samplePeopleShera.first()),
+        group = sampleGroup,
     )
 }

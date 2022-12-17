@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.features.group
 
 import androidx.lifecycle.viewModelScope
+import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.*
@@ -18,17 +19,18 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
 
     private val api = ServerApiImpl()
 
-    object Expenses : UiState
+    object Chat : UiState
     class ShowDebt(val user: Person) : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
+
 
     private val _people = mutableListOf<Person>()
     val people: List<Person> = _people
     lateinit var group: Group
         private set
 
-    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Expenses)
+    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Chat)
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
 
@@ -41,7 +43,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                     this@GroupViewModel.group = group
                     _people.addAll(group.peopleState)
                     _mutableEventsStateFlow.value = group.events
-                    updateUiState(Expenses)
+                    updateUiState(Chat)
                 },
                 onFailure = Timber::e
             )
@@ -69,7 +71,8 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 paidTo = paidTo,
                 amount = amount
             )
-            val paymentResponse = api.addEvent(group.id, payment)
+            group.debtsState = getCalculator(payment).calculateEffectiveDebtForGroup()
+            val paymentResponse = api.addEvent(group, payment)
             _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
         }
     }
@@ -97,11 +100,14 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
 
     private fun handleNewExpense(groupExpense: GroupExpense) {
         viewModelScope.launch {
-            val response = runCatching { api.addEvent(groupExpense.id, groupExpense) }
+            val response = runCatching {
+                group.debtsState = getCalculator(groupExpense).calculateEffectiveDebtForGroup()
+                api.addEvent(group, groupExpense)
+            }
             response.fold(
                 onSuccess = {
                     _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                    showEvents()
+                    showChat()
                 },
                 onFailure = ::println
             )
@@ -118,11 +124,14 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
             groupExpenseEdited = updatedCopy
         )
         viewModelScope.launch {
-            val response = runCatching { api.addEvent(group.id, groupExpensesChanged) }
+            val response = runCatching {
+                group.debtsState = getCalculator().calculateEffectiveDebtForGroup()
+                api.addEvent(group, groupExpensesChanged)
+            }
             response.fold(
                 onSuccess = {
                     _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                    showEvents()
+                    showChat()
                 },
                 onFailure = ::println
             )
@@ -143,7 +152,22 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         updateUiState(EditExpense(sharedExpense))
     }
 
-    fun showEvents() {
-        updateUiState(Expenses)
+    fun showChat() {
+        updateUiState(Chat)
+    }
+
+    private fun getCalculator(withEvent: Event? = null): DebtCalculator {
+        val events = eventStateFlow.value
+        val payments: List<Payment> = events.filterIsInstance<Payment>().let {
+            if (withEvent is Payment)
+                it.plus(withEvent)
+            else it
+        }
+        val groupExpenses: List<GroupExpense> = events.filterIsInstance<GroupExpense>().let {
+            if (withEvent is GroupExpense)
+                it.plus(withEvent)
+            else it
+        }
+        return DebtCalculator(group.peopleState, groupExpenses, payments)
     }
 }
