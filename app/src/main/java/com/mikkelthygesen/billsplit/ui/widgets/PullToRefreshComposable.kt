@@ -47,7 +47,6 @@ fun <T> PullToRefreshComposable(
                         asyncState = AsyncState.Failure(it)
                     }
                 )
-
             }
         })
 

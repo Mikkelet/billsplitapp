@@ -26,7 +26,6 @@ val sampleSharedExpense = sampleIndividualExpenses.size * 200F
 
 val sampleSharedExpenses: List<GroupExpense>
     get() {
-        val individualExpenses = sampleIndividualExpenses
         val shared = sampleSharedExpense
         return listOf(
             GroupExpense(
