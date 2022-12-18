@@ -9,6 +9,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.models.Person
 import kotlinx.coroutines.tasks.await
+import kotlin.math.log
 
 
 val authProvider = AuthProvider()
@@ -58,24 +59,27 @@ class AuthProvider {
         loggedInUser = null
     }
 
-    suspend fun updateUserName(name: String) {
-        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOut
+    suspend fun updateUserName() {
+        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
+        val loggedInUser = loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
         val request = UserProfileChangeRequest.Builder()
-        request.displayName = name
+        request.displayName = loggedInUser.nameState
         currentUser.updateProfile(request.build()).await()
+        loggedInUser.saveChanges()
     }
 
     @Suppress("KotlinConstantConditions")
-    suspend fun updateProfilePicture(user: Person, uri: Uri) {
-        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOut
+    suspend fun updateProfilePicture(uri: Uri) {
+        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
+        val loggedInUser = loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
         val snapshot = firebaseStorage
-            .getReference("${user.uid}/${uri.lastPathSegment}")
+            .getReference("${loggedInUser.uid}/${uri.lastPathSegment}")
             .putFile(uri).await()
         val downloadUrl = snapshot.storage.downloadUrl.await()
         val updateRequest = UserProfileChangeRequest.Builder()
         updateRequest.photoUri = downloadUrl
         currentUser.updateProfile(updateRequest.build()).await()
-        user.pfpUrlState = downloadUrl.toString()
+        loggedInUser.pfpUrlState = downloadUrl.toString()
     }
 
     suspend fun signUpWithEmail(email: String, password: String) {
@@ -97,8 +101,8 @@ class AuthProvider {
     }
 
     suspend fun getAuthToken(force: Boolean): String {
-        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOut
+        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
         val result = currentUser.getIdToken(force).await()
-        return result.token ?: throw NetworkExceptions.UserLoggedOut
+        return result.token ?: throw NetworkExceptions.UserLoggedOutException
     }
 }

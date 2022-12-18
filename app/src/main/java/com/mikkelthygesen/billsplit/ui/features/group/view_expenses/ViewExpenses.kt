@@ -107,7 +107,9 @@ private fun YourDebt(
                     paidTo = debt.first,
                     amount = debt.second
                 )
-            }) {
+            },
+            onError = viewModel::handleError
+        ) {
             Button(
                 modifier = Modifier
                     .weight(1f)

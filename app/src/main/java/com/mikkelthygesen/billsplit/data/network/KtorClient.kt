@@ -1,10 +1,13 @@
 package com.mikkelthygesen.billsplit.data.network
 
 import com.mikkelthygesen.billsplit.BuildConfig
+import com.mikkelthygesen.billsplit.data.auth.NetworkExceptions
+import com.mikkelthygesen.billsplit.data.auth.authProvider
 import com.mikkelthygesen.billsplit.data.network.dto.EventDTO
 import com.mikkelthygesen.billsplit.data.network.dto.FriendStatusDTO
 import com.mikkelthygesen.billsplit.data.network.requests.AddFriend
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
@@ -63,6 +66,21 @@ object KtorClient {
             url(BuildConfig.HOST_NAME)
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
+        }
+    }.apply {
+        plugin(HttpSend).intercept { req ->
+            val authToken = authProvider.getAuthToken(false)
+            req.header(HttpHeaders.Authorization, authToken)
+            val call = execute(req)
+            if (!call.response.status.isSuccess()) {
+                val content = call.response.body<String>()
+                throw when (call.response.status.value) {
+                    403 -> NetworkExceptions.ForbiddenException
+                    404 -> NetworkExceptions.NotFoundException
+                    else -> NetworkExceptions.GenericException(Throwable("${call.response.status}: $content"))
+                }
+            }
+            call
         }
     }
 }

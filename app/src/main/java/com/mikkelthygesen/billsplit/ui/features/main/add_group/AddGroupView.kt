@@ -52,6 +52,7 @@ fun AddGroupView(
             }
             ClickableFutureComposable(
                 onClickAsync = { viewModel.saveGroup(group) },
+                onError = viewModel::handleError,
                 loadingComposable = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),

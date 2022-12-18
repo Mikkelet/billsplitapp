@@ -24,21 +24,28 @@ fun ProfileView(
     mainViewModel: MainViewModel = viewModel(),
 ) {
     RequireUserView(mainViewModel) {
-        _ProfileView(user = it,
-            onUpdateUser = { mainViewModel.updateUser() })
+        _ProfileView(
+            user = it,
+            onUpdateUser = { mainViewModel.updateUser() },
+            onError = mainViewModel::handleError
+        )
     }
 }
 
 @Composable
 @SuppressLint("ComposableNaming")
-private fun _ProfileView(user: Person, onUpdateUser: suspend () -> Unit) {
+private fun _ProfileView(
+    user: Person,
+    onUpdateUser: suspend () -> Unit,
+    onError: (Throwable) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ProfileHeader(user, onUpdateUser)
+        ProfileHeader(user, onUpdateUser, onError)
         FriendsListView()
     }
 }
@@ -47,5 +54,5 @@ private fun _ProfileView(user: Person, onUpdateUser: suspend () -> Unit) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview() {
-    _ProfileView(Person(name = "Catra"), onUpdateUser = {})
+    _ProfileView(Person(name = "Catra"), onUpdateUser = {}, onError = {})
 }

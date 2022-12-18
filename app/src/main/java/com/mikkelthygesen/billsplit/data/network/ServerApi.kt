@@ -18,10 +18,8 @@ object ServerApi {
         }.body()
     }
 
-    suspend fun getGroups(body: GetGroups.Request): GetGroups.Response {
-        return KtorClient.client.post("getGroups") {
-            setBody(body)
-        }.body()
+    suspend fun getGroups(): GetGroups.Response {
+        return KtorClient.client.post("getGroups").body()
     }
 
     suspend fun addGroup(body: AddGroup.Request): AddGroup.Response {
@@ -36,10 +34,8 @@ object ServerApi {
         }.body()
     }
 
-    suspend fun getFriends(body: GetFriends.Request): GetFriends.Response {
-        return KtorClient.client.post("getFriends") {
-            setBody(body)
-        }.body()
+    suspend fun getFriends(): GetFriends.Response {
+        return KtorClient.client.post("getFriends").body()
     }
 
     suspend fun updateUser(updateUserRequest: UpdateUser.Request) {

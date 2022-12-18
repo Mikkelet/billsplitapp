@@ -46,29 +46,17 @@ class MainViewModel : BaseViewModel() {
     }
 
     suspend fun updateUser() {
-        checkAuthStatusAsync { user ->
-            val result = runCatching { authProvider.updateUserName(user.nameState) }
-            result.fold(
-                onSuccess = { user.saveChanges() },
-                onFailure = this::handleError
-            )
-        }
+        val result = runCatching { authProvider.updateUserName() }
+        result.foldEmptySucces()
     }
 
     suspend fun uploadProfilePhoto(uri: Uri, onSuccess: () -> Unit) {
-        checkAuthStatusAsync {
-            val result = runCatching { authProvider.updateProfilePicture(it, uri) }
-            result.fold(
-                onSuccess = { onSuccess() },
-                onFailure = ::handleError
-            )
-        }
+        val result = runCatching { authProvider.updateProfilePicture(uri) }
+        result.foldOrHandleError { onSuccess() }
     }
 
     suspend fun getGroups(sync: Boolean = true): List<Group> {
-        return checkAuthStatusAsync {
-            api.getGroups(it.uid, sync)
-        }
+        return api.getGroups(sync)
     }
 
     suspend fun saveGroup(group: Group) {
@@ -78,9 +66,7 @@ class MainViewModel : BaseViewModel() {
     }
 
     suspend fun getFriends(sync: Boolean = false): List<Friend> {
-        return checkAuthStatusAsync { user ->
-            api.getFriends(user.uid, sync)
-        }
+        return api.getFriends(sync)
     }
 
     suspend fun acceptFriendRequest(friend: Person): Friend {
@@ -99,13 +85,7 @@ class MainViewModel : BaseViewModel() {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val result = kotlin.runCatching { authProvider.signUpWithEmail(email, password) }
-            result.fold(
-                onSuccess = { showProfile() },
-                onFailure = {
-                    handleError(it)
-                    updateUiState(UiState.SignIn)
-                }
-            )
+            result.foldOrHandleError { showProfile() }
         }
     }
 
@@ -113,13 +93,7 @@ class MainViewModel : BaseViewModel() {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val result = runCatching { authProvider.signInWithEmail(email, password) }
-            result.fold(
-                onSuccess = { showProfile() },
-                onFailure = {
-                    showProfile()
-                    updateUiState(AddGroup)
-                },
-            )
+            result.foldOrHandleError { showProfile() }
         }
     }
 }

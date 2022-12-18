@@ -12,5 +12,5 @@ fun RequireUserView(
 ) {
     if (baseViewModel.loggedInUser != null)
         content(baseViewModel.requireLoggedInUser)
-    else baseViewModel.handleError(NetworkExceptions.UserLoggedOut)
+    else baseViewModel.handleError(NetworkExceptions.UserLoggedOutException)
 }

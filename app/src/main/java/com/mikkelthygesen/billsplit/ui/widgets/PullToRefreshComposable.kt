@@ -21,14 +21,15 @@ fun <T> PullToRefreshComposable(
     onRefresh: suspend () -> T,
     loadingComposable: @Composable () -> Unit = { LoadingView() },
     onError: (Throwable) -> Unit = {},
-    errorComposable: @Composable (Throwable) -> Unit = {
-        Text(text = it.toString())
-    },
+    errorComposable: @Composable ((Throwable) -> Unit)? = { Text(text = "$it") },
     successComposable: @Composable (T) -> Unit,
 ) {
 
     var asyncState: AsyncState<T> by remember {
         mutableStateOf(AsyncState.Loading())
+    }
+    var prevSuccessData: T? by remember {
+        mutableStateOf(null)
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -40,11 +41,14 @@ fun <T> PullToRefreshComposable(
                 val response = runCatching { onRefresh() }
                 response.fold(
                     onSuccess = {
+                        prevSuccessData = it
                         asyncState = AsyncState.Success(it)
                     },
                     onFailure = {
                         onError(it)
-                        asyncState = AsyncState.Failure(it)
+                        asyncState = if (errorComposable == null && prevSuccessData != null)
+                            AsyncState.Success(prevSuccessData!!)
+                        else AsyncState.Failure(it)
                     }
                 )
             }
@@ -54,16 +58,23 @@ fun <T> PullToRefreshComposable(
         asyncState = AsyncState.Loading()
         val response = runCatching { initialCallback() }
         response.fold(
-            onSuccess = { asyncState = AsyncState.Success(it) },
+            onSuccess = {
+                prevSuccessData = it
+                asyncState = AsyncState.Success(it)
+            },
             onFailure = {
                 onError(it)
-                asyncState = AsyncState.Failure(it)
+                asyncState = if (errorComposable == null && prevSuccessData != null)
+                    AsyncState.Success(prevSuccessData!!)
+                else AsyncState.Failure(it)
             }
         )
     }
 
     when (val state = asyncState) {
-        is AsyncState.Failure<T> -> errorComposable(state.error)
+        is AsyncState.Failure<T> ->
+            if (errorComposable != null)
+                errorComposable(state.error)
         is AsyncState.Success<T> ->
             Box(
                 modifier = Modifier

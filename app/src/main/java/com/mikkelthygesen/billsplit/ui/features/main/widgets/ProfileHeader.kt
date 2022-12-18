@@ -22,7 +22,8 @@ import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 @Composable
 fun ProfileHeader(
     user: Person,
-    onUpdateUser: suspend () -> Unit
+    onUpdateUser: suspend () -> Unit,
+    onError: (Throwable) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -71,6 +72,7 @@ fun ProfileHeader(
                             onUpdateUser()
                             focusRequester.clearFocus()
                         },
+                        onError = onError,
                         onSuccess = {
                             user.saveChanges()
                             focusRequester.clearFocus()
@@ -114,5 +116,5 @@ fun ProfileHeader(
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
-    ProfileHeader(user = Person("pokaspd123123psodak", name = "Catra"), onUpdateUser = {})
+    ProfileHeader(user = Person("pokaspd123123psodak", name = "Catra"), onUpdateUser = {}, onError = {})
 }

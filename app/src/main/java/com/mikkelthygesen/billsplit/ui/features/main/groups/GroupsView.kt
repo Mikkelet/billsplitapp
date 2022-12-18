@@ -31,6 +31,7 @@ fun GroupsList(viewModel: MainViewModel = viewModel()) {
         onRefresh = {
             viewModel.getGroups(true)
         },
+        errorComposable = null,
         onError = viewModel::handleError
     ) { groups ->
         if (groups.isEmpty())

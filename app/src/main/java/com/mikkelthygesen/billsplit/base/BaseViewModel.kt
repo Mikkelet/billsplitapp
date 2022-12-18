@@ -79,23 +79,33 @@ abstract class BaseViewModel : ViewModel() {
     fun <T> checkAuthStatus(successCallback: (Person) -> T) {
         if (authProvider.loggedInUser != null)
             successCallback(requireLoggedInUser)
-        else handleError(NetworkExceptions.UserLoggedOut)
+        else handleError(NetworkExceptions.UserLoggedOutException)
     }
 
     suspend fun <T> checkAuthStatusAsync(successCallback: suspend (Person) -> T): T {
         if (authProvider.isUserLoggedIn())
             return successCallback(authProvider.loggedInUser!!)
-        else throw NetworkExceptions.UserLoggedOut
+        else throw NetworkExceptions.UserLoggedOutException
     }
 
-    open fun handleError(exception: Throwable) {
+    fun handleError(exception: Throwable) {
         Timber.e(exception)
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
-            is NetworkExceptions.UserLoggedOut -> showSignIn()
+            is NetworkExceptions.UserLoggedOutException -> showSignIn()
             else -> {
                 showDialog(DialogState.Error(exception))
             }
         }
     }
+
+    protected fun <T> Result<T>.foldOrHandleError(onSuccess:(T)->Unit) = fold(
+        onSuccess = onSuccess,
+        onFailure = ::handleError
+    )
+
+    protected fun <T> Result<T>.foldEmptySucces() = fold(
+        onSuccess = {},
+        onFailure = ::handleError
+    )
 }

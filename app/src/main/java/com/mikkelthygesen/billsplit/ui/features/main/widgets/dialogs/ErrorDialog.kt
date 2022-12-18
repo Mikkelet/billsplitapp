@@ -15,8 +15,8 @@ import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifi
 import java.lang.Exception
 
 @Composable
-fun ErrorDialog(
-    exception: Throwable,
+fun <T : Throwable> ErrorDialog(
+    exception: T,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -26,10 +26,12 @@ fun ErrorDialog(
         ) {
             Text(
                 modifier = Modifier.padding(bottom = 16.dp),
-                text = "An error occurred", style = MaterialTheme.typography.h6
+                text = "An error occurred",
+                style = MaterialTheme.typography.h6
+                    .copy(color = MaterialTheme.colors.onBackground)
             )
             Text(
-                text = "$exception",
+                text = "(${exception.javaClass.simpleName}) ${exception.message}",
                 style = MaterialTheme.typography.body1
                     .copy(color = MaterialTheme.colors.error)
             )

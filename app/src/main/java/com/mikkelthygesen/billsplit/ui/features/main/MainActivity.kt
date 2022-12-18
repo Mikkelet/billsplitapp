@@ -51,15 +51,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiStateFlow = viewModel.uiStateFlow.collectAsState()
 
-            when (val state = viewModel.dialogState) {
-                is BaseViewModel.DialogState.Error -> ErrorDialog(
-                    exception = state.exception,
-                    onDismiss = viewModel::dismissDialog
-                )
-                is BaseViewModel.DialogState.DismissDialogs -> Unit
-            }
-
             BillSplitTheme {
+
+                when (val state = viewModel.dialogState) {
+                    is BaseViewModel.DialogState.Error -> ErrorDialog(
+                        exception = state.exception,
+                        onDismiss = viewModel::dismissDialog
+                    )
+                    is BaseViewModel.DialogState.DismissDialogs -> Unit
+                }
+
                 LaunchedEffect(Unit) {
                     viewModel.uiEventsState.collect { event ->
                         when (event) {

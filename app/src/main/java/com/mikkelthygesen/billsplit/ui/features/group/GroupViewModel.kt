@@ -11,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,15 +37,12 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val response = kotlin.runCatching { api.getGroup(groupId) }
-            response.fold(
-                onSuccess = { group ->
-                    this@GroupViewModel.group = group
-                    _people.addAll(group.peopleState)
-                    _mutableEventsStateFlow.value = group.events
-                    updateUiState(Chat)
-                },
-                onFailure = Timber::e
-            )
+            response.foldOrHandleError { group ->
+                this@GroupViewModel.group = group
+                _people.addAll(group.peopleState)
+                _mutableEventsStateFlow.value = group.events
+                updateUiState(Chat)
+            }
         }
     }
 
@@ -104,13 +100,10 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 group.debtsState = getCalculator(groupExpense).calculateEffectiveDebtForGroup()
                 api.addEvent(group, groupExpense)
             }
-            response.fold(
-                onSuccess = {
-                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                    showChat()
-                },
-                onFailure = ::println
-            )
+            response.foldOrHandleError {
+                _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
+                showChat()
+            }
         }
     }
 
@@ -128,13 +121,10 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 group.debtsState = getCalculator().calculateEffectiveDebtForGroup()
                 api.addEvent(group, groupExpensesChanged)
             }
-            response.fold(
-                onSuccess = {
-                    _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                    showChat()
-                },
-                onFailure = ::println
-            )
+            response.foldOrHandleError {
+                _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
+                showChat()
+            }
         }
     }
 
