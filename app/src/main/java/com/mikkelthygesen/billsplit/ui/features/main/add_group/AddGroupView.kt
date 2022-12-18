@@ -148,7 +148,7 @@ fun _AddGroupView(
                         modifier = Modifier
                             .padding(
                                 top = 8.dp,
-                                bottom = if (addExtraBottomPadding) 24.dp else 8.dp
+                                bottom = if (addExtraBottomPadding) 40.dp else 8.dp
                             )
                             .fillMaxWidth(),
                         verticalAlignment = CenterVertically
@@ -165,6 +165,7 @@ fun _AddGroupView(
                         Box(modifier = Modifier.weight(1F))
                         if (person != group.createdBy)
                             SimpleIconButton(
+                                modifier.padding(end = 4.dp),
                                 iconResId = R.drawable.ic_baseline_remove_24,
                                 tint = MaterialTheme.colors.error
                             ) {

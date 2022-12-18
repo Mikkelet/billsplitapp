@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.features.main
 
 import android.net.Uri
+import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.base.BaseViewModel
 import com.mikkelthygesen.billsplit.data.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
@@ -8,6 +9,7 @@ import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.models.Person
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel : BaseViewModel() {
 
@@ -23,17 +25,13 @@ class MainViewModel : BaseViewModel() {
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(MyGroups)
 
-    fun showMain() = updateUiState(UiState.Loading)
-
     fun showGroup(groupId: String) = emitUiEvent(ShowGroup(groupId))
 
     fun showMyGroups() = updateUiState(MyGroups)
 
     fun showProfile() = updateUiState(ShowProfile)
 
-    fun showAddGroup() {
-        updateUiState(AddGroup)
-    }
+    fun showAddGroup() = updateUiState(AddGroup)
 
     fun getNewGroup(user: Person): Group {
         return Group(
@@ -48,23 +46,21 @@ class MainViewModel : BaseViewModel() {
     }
 
     suspend fun updateUser() {
-        checkAuthStatusAsync {
-            api.updateUser(it)
-            authProvider.updateUserName(
-                it.nameState,
-                onSuccess = ::println,
-                onFailure = ::println
+        checkAuthStatusAsync { user ->
+            val result = runCatching { authProvider.updateUserName(user.nameState) }
+            result.fold(
+                onSuccess = { user.saveChanges() },
+                onFailure = this::handleError
             )
         }
     }
 
-    fun uploadProfilePhoto(uri: Uri, onSuccess: () -> Unit) {
-        checkAuthStatus {
-            authProvider.updateProfilePicture(
-                user = it,
-                uri = uri,
-                onSuccess = onSuccess,
-                onFailure = this::handleError
+    suspend fun uploadProfilePhoto(uri: Uri, onSuccess: () -> Unit) {
+        checkAuthStatusAsync {
+            val result = runCatching { authProvider.updateProfilePicture(it, uri) }
+            result.fold(
+                onSuccess = { onSuccess() },
+                onFailure = ::handleError
             )
         }
     }
@@ -101,27 +97,29 @@ class MainViewModel : BaseViewModel() {
 
     fun signUpEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
-        authProvider.signUpWithEmail(
-            email, password,
-            onSuccess = {
-                showProfile()
-            },
-            onFailure = {
-                handleError(it)
-                updateUiState(UiState.SignUp)
-            }
-        )
+        viewModelScope.launch {
+            val result = kotlin.runCatching { authProvider.signUpWithEmail(email, password) }
+            result.fold(
+                onSuccess = { showProfile() },
+                onFailure = {
+                    handleError(it)
+                    updateUiState(UiState.SignIn)
+                }
+            )
+        }
     }
 
     fun signInEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
-        authProvider.signInWithEmail(
-            email, password,
-            onSuccess = { updateUiState(AddGroup) },
-            onFailure = {
-                handleError(it)
-                updateUiState(UiState.SignIn)
-            }
-        )
+        viewModelScope.launch {
+            val result = runCatching { authProvider.signInWithEmail(email, password) }
+            result.fold(
+                onSuccess = { showProfile() },
+                onFailure = {
+                    showProfile()
+                    updateUiState(AddGroup)
+                },
+            )
+        }
     }
 }

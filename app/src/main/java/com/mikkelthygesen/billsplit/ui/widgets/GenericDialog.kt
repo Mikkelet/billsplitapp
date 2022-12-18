@@ -32,7 +32,7 @@ fun GenericDialog(
             Text(
                 modifier = Modifier.padding(bottom = 12.dp),
                 text = dialogText,
-                style = TextStyle(fontSize = 16.sp)
+                style = TextStyle(fontSize = 16.sp, color = MaterialTheme.colors.onBackground)
             )
             Button(onClick = primaryAction) {
                 Text(text = primaryText)

@@ -16,7 +16,6 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
-import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 
 
 @Composable
@@ -43,11 +42,6 @@ private fun _ExpenseViewHeader(
             painter = painterResource(id = R.drawable.best_restraunts),
             contentDescription = "",
         )
-        BackButton(
-            Modifier.padding(16.dp)
-        ) {
-            onBackPressed()
-        }
         DescriptionTextField(
             Modifier.align(Alignment.BottomStart),
             initialValue = groupExpense.descriptionState

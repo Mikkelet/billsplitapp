@@ -6,9 +6,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask.TaskSnapshot
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.models.Person
+import kotlinx.coroutines.tasks.await
 
 
 val authProvider = AuthProvider()
@@ -17,6 +17,13 @@ class AuthProvider {
 
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
+            if (BuildConfig.FLAVOR == "emulator")
+                useEmulator("10.0.2.2", 9099)
+        }
+    }
+
+    private val firebaseStorage by lazy {
+        FirebaseStorage.getInstance().apply {
             if (BuildConfig.FLAVOR == "emulator")
                 useEmulator("10.0.2.2", 9099)
         }
@@ -34,7 +41,7 @@ class AuthProvider {
         if (user != null) {
             val person = Person(
                 user.uid,
-                name = user.displayName ?: "No name",
+                name = user.displayName ?: "Splittsby User",
                 pfpUrl = user.photoUrl?.toString() ?: "",
                 email = user.email ?: ""
             )
@@ -51,88 +58,47 @@ class AuthProvider {
         loggedInUser = null
     }
 
-    fun updateUserName(name: String, onSuccess: (Void) -> Unit, onFailure: (Throwable) -> Unit) {
-        firebase.currentUser?.updateProfile(UserProfileChangeRequest.Builder().apply {
-            displayName = name
-        }.build())
-            ?.addOnFailureListener(onFailure)
-            ?.addOnSuccessListener(onSuccess)
+    suspend fun updateUserName(name: String) {
+        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOut
+        val request = UserProfileChangeRequest.Builder()
+        request.displayName = name
+        currentUser.updateProfile(request.build()).await()
     }
 
-    private fun updateUserProfilePicture(
-        user: Person,
-        pictureUrl: Uri,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        firebase.currentUser?.updateProfile(UserProfileChangeRequest.Builder().apply {
-            photoUri = pictureUrl
-        }.build())
-            ?.addOnFailureListener(onFailure)
-            ?.addOnSuccessListener {
-                user.pfpUrlState = pictureUrl.toString()
-                onSuccess()
-            }
-            ?: onFailure(Exception("Current user is missing"))
+    @Suppress("KotlinConstantConditions")
+    suspend fun updateProfilePicture(user: Person, uri: Uri) {
+        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOut
+        val snapshot = firebaseStorage
+            .getReference("${user.uid}/${uri.lastPathSegment}")
+            .putFile(uri).await()
+        val downloadUrl = snapshot.storage.downloadUrl.await()
+        val updateRequest = UserProfileChangeRequest.Builder()
+        updateRequest.photoUri = downloadUrl
+        currentUser.updateProfile(updateRequest.build()).await()
+        user.pfpUrlState = downloadUrl.toString()
     }
 
-    private fun handleUploadPictureSuccess(
-        user: Person,
-        snapshot: TaskSnapshot,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        snapshot.storage.downloadUrl
-            .addOnSuccessListener { updateUserProfilePicture(user, it, onSuccess, onFailure) }
-            .addOnFailureListener(onFailure)
+    suspend fun signUpWithEmail(email: String, password: String) {
+        val result = firebase.createUserWithEmailAndPassword(email, password).await()
+        onSignIn(result)
     }
 
-    fun updateProfilePicture(
-        user: Person,
-        uri: Uri,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        FirebaseStorage.getInstance().apply {
-            if (BuildConfig.FLAVOR == "emulator")
-                useEmulator("10.0.2.2", 9199)
-
-        }.getReference("${user.uid}/${uri.lastPathSegment}").putFile(uri)
-            .addOnSuccessListener {
-                handleUploadPictureSuccess(user, it, onSuccess, onFailure)
-            }
-            .addOnProgressListener { println("${it.bytesTransferred}/${it.totalByteCount}") }
-            .addOnFailureListener(onFailure)
+    suspend fun signInWithEmail(email: String, password: String) {
+        val result = firebase.signInWithEmailAndPassword(email, password).await()
+        onSignIn(result)
     }
 
-    fun signUpWithEmail(
-        email: String,
-        password: String,
-        onSuccess: (Person) -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        firebase.createUserWithEmailAndPassword(email, password)
-            .addOnFailureListener { onFailure(it) }
-            .addOnSuccessListener { onSignIn(it, onSuccess) }
-    }
-
-    fun signInWithEmail(
-        email: String,
-        password: String,
-        onSuccess: (Person) -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        firebase.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener { onSignIn(it, onSuccess) }
-            .addOnFailureListener { onFailure(it) }
-    }
-
-    private fun onSignIn(authResult: AuthResult, onSuccess: (Person) -> Unit) {
+    private fun onSignIn(authResult: AuthResult) {
         val user = authResult.user
         if (user != null) {
             val person = Person(user.uid, name = user.displayName ?: "Unknown user")
             loggedInUser = person
-            onSuccess(person)
         }
+    }
+
+    suspend fun getAuthToken(force: Boolean): String {
+        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOut
+        val result = currentUser.getIdToken(force).await()
+        return result.token ?: throw NetworkExceptions.UserLoggedOut
     }
 }

@@ -16,11 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.main
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfilePictureWithUpload(
@@ -36,6 +38,7 @@ fun ProfilePictureWithUpload(
     var showConfirmDialog by remember {
         mutableStateOf(false)
     }
+    val coroutineScope = rememberCoroutineScope()
 
     if (showConfirmDialog) {
         ConfirmPictureDialog(
@@ -45,13 +48,12 @@ fun ProfilePictureWithUpload(
             }) {
             uploadingImage = true
             showConfirmDialog = false
-            mainViewModel.uploadProfilePhoto(
-                selectedImage!!,
-                onSuccess = {
+            coroutineScope.launch {
+                mainViewModel.uploadProfilePhoto(selectedImage!!) {
                     selectedImage = null
                     uploadingImage = false
-                },
-            )
+                }
+            }
         }
     }
 
