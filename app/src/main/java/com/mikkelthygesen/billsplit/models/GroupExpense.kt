@@ -59,4 +59,14 @@ data class GroupExpense(
         sharedExpense = sharedExpenseState
         individualExpenses.forEach { it.saveChanges() }
     }
+
+    fun copy():GroupExpense = GroupExpense(
+        id,
+        createdBy.copy(),
+        descriptionState,
+        payeeState.copy(),
+        sharedExpense,
+        individualExpenses.map { it.copy() },
+        timeStamp
+    )
 }

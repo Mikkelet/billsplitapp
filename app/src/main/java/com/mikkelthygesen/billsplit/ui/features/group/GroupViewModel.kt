@@ -37,7 +37,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val response = kotlin.runCatching { api.getGroup(groupId) }
-            response.foldOrHandleError { group ->
+            response.foldSuccess { group ->
                 this@GroupViewModel.group = group
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events
@@ -47,30 +47,26 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun addExpense() {
-        checkAuthStatus {
-            val groupExpense = GroupExpense(
-                id = group.id,
-                createdBy = it,
-                description = "",
-                payee = it,
-                sharedExpense = 0F,
-                individualExpenses = people.toNewIndividualExpenses(),
-            )
-            _mutableUiStateFlow.value = EditExpense(groupExpense)
-        }
+        val groupExpense = GroupExpense(
+            id = group.id,
+            createdBy = loggedInUser,
+            description = "",
+            payee = loggedInUser,
+            sharedExpense = 0F,
+            individualExpenses = people.toNewIndividualExpenses(),
+        )
+        _mutableUiStateFlow.value = EditExpense(groupExpense)
     }
 
     suspend fun addPayment(paidTo: Person, amount: Float) {
-        checkAuthStatusAsync {
-            val payment = Payment(
-                createdBy = it,
-                paidTo = paidTo,
-                amount = amount
-            )
-            group.debtsState = getCalculator(payment).calculateEffectiveDebtForGroup()
-            val paymentResponse = api.addEvent(group, payment)
-            _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
-        }
+        val payment = Payment(
+            createdBy = loggedInUser,
+            paidTo = paidTo,
+            amount = amount
+        )
+        group.debtsState = getCalculator(payment).calculateEffectiveDebtForGroup()
+        val paymentResponse = api.addEvent(group, payment)
+        _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
     }
 
     fun addPerson(name: String) {
@@ -82,8 +78,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     fun saveGroupExpense(groupExpense: GroupExpense) {
         updateUiState(UiState.Loading)
         // save original in case of edit
-        val originalCopy = groupExpense
-            .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
+        val originalCopy = groupExpense.copy()
         // apply changes
         groupExpense.saveChanges()
         // if expense doesn't appear in list, add it, else assume it's an edit and log the change
@@ -100,16 +95,14 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 group.debtsState = getCalculator(groupExpense).calculateEffectiveDebtForGroup()
                 api.addEvent(group, groupExpense)
             }
-            response.foldOrHandleError {
+            response.foldSuccess {
                 _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
                 showChat()
             }
         }
     }
 
-    private fun handleEditExpense(originalCopy: GroupExpense, groupExpense: GroupExpense) {
-        val updatedCopy = groupExpense
-            .copy(individualExpenses = groupExpense.individualExpenses.map { it.copy() })
+    private fun handleEditExpense(originalCopy: GroupExpense, updatedCopy: GroupExpense) {
         val groupExpensesChanged = GroupExpensesChanged(
             id = originalCopy.id,
             createdBy = originalCopy.createdBy,
@@ -121,7 +114,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
                 group.debtsState = getCalculator().calculateEffectiveDebtForGroup()
                 api.addEvent(group, groupExpensesChanged)
             }
-            response.foldOrHandleError {
+            response.foldSuccess {
                 _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
                 showChat()
             }
@@ -133,9 +126,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun showDebt() {
-        checkAuthStatus {
-            updateUiState(ShowDebt(it))
-        }
+        updateUiState(ShowDebt(loggedInUser))
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {

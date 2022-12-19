@@ -45,14 +45,11 @@ class MainViewModel : BaseViewModel() {
         )
     }
 
-    suspend fun updateUser() {
-        val result = runCatching { authProvider.updateUserName() }
-        result.foldEmptySucces()
-    }
+    suspend fun updateUser() = authProvider.updateUserName()
 
     suspend fun uploadProfilePhoto(uri: Uri, onSuccess: () -> Unit) {
         val result = runCatching { authProvider.updateProfilePicture(uri) }
-        result.foldOrHandleError { onSuccess() }
+        result.foldSuccess { onSuccess() }
     }
 
     suspend fun getGroups(sync: Boolean = true): List<Group> {
@@ -70,22 +67,18 @@ class MainViewModel : BaseViewModel() {
     }
 
     suspend fun acceptFriendRequest(friend: Person): Friend {
-        return checkAuthStatusAsync { user ->
-            api.addFriendUserId(user.uid, friend)
-        }
+        return api.addFriendUserId(loggedInUser.uid, friend)
     }
 
     suspend fun addFriend(email: String): Friend {
-        return checkAuthStatusAsync {
-            api.addFriendEmail(it.uid, email)
-        }
+        return api.addFriendEmail(loggedInUser.uid, email)
     }
 
     fun signUpEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val result = kotlin.runCatching { authProvider.signUpWithEmail(email, password) }
-            result.foldOrHandleError { showProfile() }
+            result.foldSuccess { showProfile() }
         }
     }
 
@@ -93,7 +86,7 @@ class MainViewModel : BaseViewModel() {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val result = runCatching { authProvider.signInWithEmail(email, password) }
-            result.foldOrHandleError { showProfile() }
+            result.foldSuccess { showProfile() }
         }
     }
 }

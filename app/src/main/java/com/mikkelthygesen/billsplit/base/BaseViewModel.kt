@@ -17,11 +17,8 @@ import timber.log.Timber
 
 abstract class BaseViewModel : ViewModel() {
 
-    val loggedInUser: Person?
-        get() = authProvider.loggedInUser
-
-    val requireLoggedInUser: Person
-        get() = loggedInUser!!
+    val loggedInUser: Person
+        get() = authProvider.loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
 
     interface DialogState {
         object DismissDialogs : DialogState
@@ -76,18 +73,6 @@ abstract class BaseViewModel : ViewModel() {
         _mutableUiStateFlow.value = event
     }
 
-    fun <T> checkAuthStatus(successCallback: (Person) -> T) {
-        if (authProvider.loggedInUser != null)
-            successCallback(requireLoggedInUser)
-        else handleError(NetworkExceptions.UserLoggedOutException)
-    }
-
-    suspend fun <T> checkAuthStatusAsync(successCallback: suspend (Person) -> T): T {
-        if (authProvider.isUserLoggedIn())
-            return successCallback(authProvider.loggedInUser!!)
-        else throw NetworkExceptions.UserLoggedOutException
-    }
-
     fun handleError(exception: Throwable) {
         Timber.e(exception)
         when (exception) {
@@ -99,13 +84,8 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    protected fun <T> Result<T>.foldOrHandleError(onSuccess:(T)->Unit) = fold(
+    protected fun <T> Result<T>.foldSuccess(onSuccess:(T)->Unit) = fold(
         onSuccess = onSuccess,
-        onFailure = ::handleError
-    )
-
-    protected fun <T> Result<T>.foldEmptySucces() = fold(
-        onSuccess = {},
         onFailure = ::handleError
     )
 }

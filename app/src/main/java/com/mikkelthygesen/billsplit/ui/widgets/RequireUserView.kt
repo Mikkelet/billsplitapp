@@ -11,6 +11,6 @@ fun RequireUserView(
     content: @Composable (Person) -> Unit
 ) {
     if (baseViewModel.loggedInUser != null)
-        content(baseViewModel.requireLoggedInUser)
+        content(baseViewModel.loggedInUser)
     else baseViewModel.handleError(NetworkExceptions.UserLoggedOutException)
 }
