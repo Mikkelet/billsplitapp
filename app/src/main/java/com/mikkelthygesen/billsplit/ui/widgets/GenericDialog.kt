@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 
 @Composable
 fun GenericDialog(

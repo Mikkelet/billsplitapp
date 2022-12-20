@@ -16,10 +16,9 @@ object DatabaseModules {
 
     @Provides
     @Singleton
-    fun bindDatabase(@ApplicationContext context: Context) : BillSplitDb = Room.databaseBuilder(
+    fun bindDatabase(@ApplicationContext context: Context): BillSplitDb = Room.databaseBuilder(
         context,
         BillSplitDb::class.java, "splittsby-db"
-    )
-        .fallbackToDestructiveMigration()
+    ).fallbackToDestructiveMigration()
         .build()
 }
