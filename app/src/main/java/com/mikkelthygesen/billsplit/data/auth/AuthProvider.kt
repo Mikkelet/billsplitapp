@@ -33,10 +33,6 @@ class AuthProvider {
     var loggedInUser: Person? = null
         private set
 
-    fun isUserLoggedIn(): Boolean {
-        return loggedInUser != null
-    }
-
     private val authListener = AuthStateListener {
         val user = it.currentUser
         if (user != null) {

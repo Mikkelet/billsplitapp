@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.data.network
 
+import com.mikkelthygesen.billsplit.data.local.room.models.GroupDb
 import com.mikkelthygesen.billsplit.data.network.dto.*
 import com.mikkelthygesen.billsplit.data.network.requests.*
 import com.mikkelthygesen.billsplit.db
@@ -33,13 +34,15 @@ class ServerApiImpl {
                 owes = it.second
             )
         }
-        return ServerApi.addEvent(
+        val result = ServerApi.addEvent(
             AddEvent.Request(
                 group.id,
                 eventDto,
                 debtsDto
             )
-        ).event.toEvent()
+        )
+        db.groupsDao().insert(group.toDb())
+        return result.event.toEvent()
     }
 
     suspend fun getGroup(groupId: String): Group {

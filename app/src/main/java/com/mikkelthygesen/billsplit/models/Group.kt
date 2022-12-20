@@ -3,6 +3,8 @@ package com.mikkelthygesen.billsplit.models
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.mikkelthygesen.billsplit.data.local.room.models.DebtDb
+import com.mikkelthygesen.billsplit.data.local.room.models.GroupDb
 import com.mikkelthygesen.billsplit.models.interfaces.Event
 import java.util.UUID
 
@@ -31,4 +33,11 @@ data class Group(
         name = nameState
         people = listOf(*peopleState.toTypedArray())
     }
+
+    fun toDb() = GroupDb(
+        id,
+        nameState,
+        timeStamp,
+        debts.map { DebtDb(it.first, it.second) }
+    )
 }

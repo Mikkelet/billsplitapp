@@ -67,11 +67,11 @@ class MainViewModel : BaseViewModel() {
     }
 
     suspend fun acceptFriendRequest(friend: Person): Friend {
-        return api.addFriendUserId(loggedInUser.uid, friend)
+        return api.addFriendUserId(requireLoggedInUser.uid, friend)
     }
 
     suspend fun addFriend(email: String): Friend {
-        return api.addFriendEmail(loggedInUser.uid, email)
+        return api.addFriendEmail(requireLoggedInUser.uid, email)
     }
 
     fun signUpEmail(email: String, password: String) {

@@ -49,9 +49,9 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     fun addExpense() {
         val groupExpense = GroupExpense(
             id = group.id,
-            createdBy = loggedInUser,
+            createdBy = requireLoggedInUser,
             description = "",
-            payee = loggedInUser,
+            payee = requireLoggedInUser,
             sharedExpense = 0F,
             individualExpenses = people.toNewIndividualExpenses(),
         )
@@ -60,7 +60,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
 
     suspend fun addPayment(paidTo: Person, amount: Float) {
         val payment = Payment(
-            createdBy = loggedInUser,
+            createdBy = requireLoggedInUser,
             paidTo = paidTo,
             amount = amount
         )
@@ -126,7 +126,7 @@ class GroupViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun showDebt() {
-        updateUiState(ShowDebt(loggedInUser))
+        updateUiState(ShowDebt(requireLoggedInUser))
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {

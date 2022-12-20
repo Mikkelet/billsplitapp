@@ -32,6 +32,7 @@ import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.dialogs.ErrorDialog
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 
 class MainActivity : ComponentActivity() {
 
@@ -81,7 +82,7 @@ class MainActivity : ComponentActivity() {
                             TopAppBar {
                                 Column {
                                     Text(text = "flavor=${BuildConfig.FLAVOR}")
-                                    Text(text = "uid=${viewModel.loggedInUser?.uid}")
+                                    Text(text = "uid=${viewModel.loggedIdUser}")
                                 }
                             }
                     }
@@ -147,7 +148,10 @@ private fun BottomNavBar(
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = Color.Gray,
             icon = {
-                Icon(painter = painterResource(id = R.drawable.ic_add_plus), contentDescription = "")
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add_plus),
+                    contentDescription = ""
+                )
             }
         )
         BottomNavigationItem(

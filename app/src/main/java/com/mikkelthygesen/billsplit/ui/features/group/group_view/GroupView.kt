@@ -76,7 +76,7 @@ fun GroupEventsView(
                         eventsState[index - 1].createdBy != event.createdBy
                                 || eventsState[index - 1] is Payment
                     }
-                if (event.createdBy != viewModel.loggedInUser && event !is Payment) {
+                if (event.createdBy != viewModel.requireLoggedInUser && event !is Payment) {
                     if (latestIndex)
                         CircularUrlImageView(
                             modifier = Modifier
@@ -115,7 +115,7 @@ fun GroupEventsView(
                         )
                     }
                 }
-                if (event.createdBy == viewModel.loggedInUser && event !is Payment) {
+                if (event.createdBy == viewModel.requireLoggedInUser && event !is Payment) {
                     if (latestIndex)
                         CircularUrlImageView(
                             modifier = Modifier
@@ -128,6 +128,7 @@ fun GroupEventsView(
                 }
             }
         }
+        item { Box(modifier = Modifier.padding(top = 80.dp)) }
     }
 }
 

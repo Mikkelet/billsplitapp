@@ -68,14 +68,23 @@ object KtorClient {
             accept(ContentType.Application.Json)
         }
     }.apply {
+
         plugin(HttpSend).intercept { req ->
             val authToken = authProvider.getAuthToken(false)
             req.header(HttpHeaders.Authorization, authToken)
             val call = execute(req)
+
             if (!call.response.status.isSuccess()) {
+                if (call.response.status.value == 408) {
+                    println("qqq getting new authtoken")
+                    val refreshAuthToken = authProvider.getAuthToken(true)
+                    req.header(HttpHeaders.Authorization, refreshAuthToken)
+                    return@intercept execute(req)
+                }
+
                 val content = call.response.body<String>()
                 throw when (call.response.status.value) {
-                    403 -> NetworkExceptions.ForbiddenException
+                    403, 401 -> NetworkExceptions.ForbiddenException
                     404 -> NetworkExceptions.NotFoundException
                     else -> NetworkExceptions.GenericException(Throwable("${call.response.status}: $content"))
                 }

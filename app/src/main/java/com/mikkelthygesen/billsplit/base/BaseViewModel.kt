@@ -17,7 +17,10 @@ import timber.log.Timber
 
 abstract class BaseViewModel : ViewModel() {
 
-    val loggedInUser: Person
+    val loggedIdUser: Person?
+        get() = authProvider.loggedInUser
+
+    val requireLoggedInUser: Person
         get() = authProvider.loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
 
     interface DialogState {
@@ -84,7 +87,7 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    protected fun <T> Result<T>.foldSuccess(onSuccess:(T)->Unit) = fold(
+    protected fun <T> Result<T>.foldSuccess(onSuccess: (T) -> Unit) = fold(
         onSuccess = onSuccess,
         onFailure = ::handleError
     )

@@ -59,7 +59,6 @@ class GroupActivity : ComponentActivity() {
         viewModel.getGroup(groupId)
 
         setContent {
-
             BillSplitTheme {
                 val groupUiState = viewModel.uiStateFlow.collectAsState()
                 val uiState = groupUiState.value
