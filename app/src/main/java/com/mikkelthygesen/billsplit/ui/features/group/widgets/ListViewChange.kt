@@ -13,15 +13,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mikkelthygesen.billsplit.*
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.fmt2dec
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
-import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.HorizontalDivider
+import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 
 @Composable
 fun ChangesListView(
@@ -97,12 +98,16 @@ fun ChangesListView(
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    CircularUrlImageView(
+                                    Box(
                                         modifier = Modifier
-                                            .height(20.dp)
-                                            .padding(horizontal = 16.dp),
-                                        imageUrl = updatedExpense.person.pfpUrlState
-                                    )
+                                            .padding(horizontal = 16.dp)
+                                    ) {
+                                        ProfilePicture(
+                                            modifier = Modifier
+                                                .size(20.dp),
+                                            person = updatedExpense.person
+                                        )
+                                    }
                                     TextStylePrimary(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
                                 }
                                 if (index != original.individualExpenses.lastIndex)
@@ -138,16 +143,6 @@ private fun SmallRoundIcon(resId: Int) {
         painter = painterResource(id = resId),
         tint = MaterialTheme.colors.onPrimary,
         contentDescription = ""
-    )
-}
-
-@Composable
-private fun SmallRoundImage(resId: Int) {
-    CircularImageView(
-        Modifier
-            .height(20.dp)
-            .padding(horizontal = 16.dp),
-        imageResId = resId,
     )
 }
 

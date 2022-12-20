@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -78,7 +79,7 @@ fun AddGroupView(
                     SimpleIconButton(
                         modifier = Modifier
                             .size(92.dp)
-                            .clip(RoundedCornerShape(90.dp))
+                            .clip(CircleShape)
                             .background(
                                 if (enabled) MaterialTheme.colors.primary else Color.Gray
                             ),
@@ -154,9 +155,9 @@ fun _AddGroupView(
                             .fillMaxWidth(),
                         verticalAlignment = CenterVertically
                     ) {
-                        CircularUrlImageView(
+                        ProfilePicture(
                             modifier = Modifier.size(48.dp),
-                            imageUrl = person.pfpUrlState
+                            person = person
                         )
                         Text(
                             modifier = Modifier.padding(start = 16.dp),

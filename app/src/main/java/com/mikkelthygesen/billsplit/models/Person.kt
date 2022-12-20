@@ -11,7 +11,7 @@ data class Person(
     private val pfpUrl: String = "",
     val email: String = ""
 ) {
-    var nameState by mutableStateOf(name)
+    var nameState by mutableStateOf(name.ifBlank { "Splitsby User" })
     var pfpUrlState by mutableStateOf(pfpUrl)
 
     fun isNameChanged(): Boolean {

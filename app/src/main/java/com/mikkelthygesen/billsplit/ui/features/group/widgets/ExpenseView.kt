@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.*
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.models.IndividualExpense
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseTextField
+import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 
 data class PersonViewFlags(
     val enableEditName: Boolean,
@@ -85,7 +85,7 @@ fun PersonView(
             Arrangement.Top,
             Alignment.CenterHorizontally
         ) {
-            ProfilePicture(groupExpense = groupExpense, expenseHolder = expenseHolder)
+            ProfileView(groupExpense = groupExpense, expenseHolder = expenseHolder)
             if (flags.enableRemoval)
                 IconButton(
                     onClick = {
@@ -169,11 +169,11 @@ fun PersonView(
 }
 
 @Composable
-private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: IndividualExpense) {
+private fun ProfileView(groupExpense: GroupExpense, expenseHolder: IndividualExpense) {
     val isPayee = groupExpense.payeeState == expenseHolder.person
     Box {
         if (!expenseHolder.isShared())
-            CircularUrlImageView(
+            ProfilePicture(
                 modifier = Modifier
                     .width(64.dp)
                     .aspectRatio(1F)
@@ -181,7 +181,7 @@ private fun ProfilePicture(groupExpense: GroupExpense, expenseHolder: Individual
                     .clickable {
                         groupExpense.payeeState = expenseHolder.person
                     },
-                imageUrl = expenseHolder.person.pfpUrlState
+                person = expenseHolder.person
             )
         else
             Image(

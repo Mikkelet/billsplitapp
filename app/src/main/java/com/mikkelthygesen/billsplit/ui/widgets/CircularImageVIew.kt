@@ -8,12 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.mikkelthygesen.billsplit.R
 
 @Composable
-fun CircularImageView(modifier: Modifier = Modifier,  imageResId: Int) {
+fun CircularImageView(modifier: Modifier = Modifier, imageResId: Int) {
     Image(
         modifier = modifier
             .aspectRatio(1f)
@@ -25,7 +24,7 @@ fun CircularImageView(modifier: Modifier = Modifier,  imageResId: Int) {
 }
 
 @Composable
-fun CircularUrlImageView(modifier: Modifier = Modifier,  imageUrl: String) {
+fun CircularUrlImageView(modifier: Modifier = Modifier, imageUrl: String) {
     Image(
         modifier = modifier
             .aspectRatio(1f)

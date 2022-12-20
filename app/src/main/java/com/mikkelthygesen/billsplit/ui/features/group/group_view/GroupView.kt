@@ -28,7 +28,7 @@ import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ChangesListView
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewExpense
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewPayment
-import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
+import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -78,12 +78,12 @@ fun GroupEventsView(
                     }
                 if (event.createdBy != viewModel.requireLoggedInUser && event !is Payment) {
                     if (latestIndex)
-                        CircularUrlImageView(
+                        ProfilePicture(
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
                                 .padding(end = 8.dp),
-                            imageUrl = event.createdBy.pfpUrlState
+                            person = event.createdBy
                         )
                     else Box(modifier = Modifier.weight(1f))
                 }
@@ -117,12 +117,12 @@ fun GroupEventsView(
                 }
                 if (event.createdBy == viewModel.requireLoggedInUser && event !is Payment) {
                     if (latestIndex)
-                        CircularUrlImageView(
+                        ProfilePicture(
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.Bottom)
                                 .padding(start = 8.dp),
-                            imageUrl = event.createdBy.pfpUrlState
+                            person = event.createdBy
                         )
                     else Box(modifier = Modifier.weight(1f))
                 }

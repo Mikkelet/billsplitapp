@@ -2,6 +2,7 @@ package com.mikkelthygesen.billsplit.ui.features.main.add_group.wigets
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -85,7 +86,7 @@ fun _FutureAddFriendDialog(
     }
     SimpleIconButton(
         modifier = modifier
-            .clip(RoundedCornerShape(45.dp))
+            .clip(CircleShape)
             .background(MaterialTheme.colors.primary),
         iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_add_plus,
         tint = MaterialTheme.colors.onPrimary

@@ -7,21 +7,23 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.main
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,14 +71,15 @@ fun ProfilePictureWithUpload(
     if (uploadingImage)
         LoadingView()
     else
-        CircularUrlImageView(
+        ProfilePicture(
             modifier = Modifier
+                .padding(top = 32.dp)
+                .size(100.dp)
+                .clip(CircleShape)
                 .clickable {
                     launcher.launch("image/*")
-                }
-                .padding(top = 32.dp)
-                .size(100.dp),
-            imageUrl = user.pfpUrlState
+                },
+            person = user
         )
 }
 
