@@ -1,7 +1,7 @@
 package com.mikkelthygesen.billsplit.models
 
-import com.mikkelthygesen.billsplit.data.network.dto.FriendDTO
-import com.mikkelthygesen.billsplit.data.network.dto.FriendStatusDTO
+import com.mikkelthygesen.billsplit.data.remote.dto.FriendDTO
+import com.mikkelthygesen.billsplit.data.remote.dto.FriendStatusDTO
 
 sealed class Friend {
     abstract val person: Person

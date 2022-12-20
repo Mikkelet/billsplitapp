@@ -3,10 +3,9 @@ package com.mikkelthygesen.billsplit.models
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.mikkelthygesen.billsplit.data.local.room.models.DebtDb
-import com.mikkelthygesen.billsplit.data.local.room.models.GroupDb
+import com.mikkelthygesen.billsplit.data.local.database.model.DebtDb
+import com.mikkelthygesen.billsplit.data.local.database.model.GroupDb
 import com.mikkelthygesen.billsplit.models.interfaces.Event
-import java.util.UUID
 
 data class Group(
     val id: String,

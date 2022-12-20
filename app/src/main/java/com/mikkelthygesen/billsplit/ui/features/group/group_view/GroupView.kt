@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.ui.features.group.group_view
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,14 +23,20 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
+import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.tryCatchDefault
+import com.mikkelthygesen.billsplit.ui.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.ui.features.group.group_view.widgets.Menu
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ChangesListView
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewExpense
 import com.mikkelthygesen.billsplit.ui.features.group.widgets.ListViewPayment
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
@@ -39,6 +46,22 @@ fun GroupEventsView(
     viewModel: GroupViewModel = viewModel()
 ) {
     val eventsFlow = viewModel.eventStateFlow.collectAsState()
+
+    _ListViewExpense(
+        modifier = modifier,
+        eventsFlow = eventsFlow,
+        loggedInUser = viewModel.requireLoggedInUser,
+    )
+}
+
+
+@Composable
+@SuppressLint("ComposableNaming")
+private fun _ListViewExpense(
+    modifier: Modifier = Modifier,
+    loggedInUser: Person,
+    eventsFlow: State<List<Event>>
+) {
     val eventsState = eventsFlow.value.sortedBy { it.timeStamp }.reversed()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -76,7 +99,7 @@ fun GroupEventsView(
                         eventsState[index - 1].createdBy != event.createdBy
                                 || eventsState[index - 1] is Payment
                     }
-                if (event.createdBy != viewModel.requireLoggedInUser && event !is Payment) {
+                if (event.createdBy != loggedInUser && event !is Payment) {
                     if (latestIndex)
                         ProfilePicture(
                             modifier = Modifier
@@ -115,7 +138,7 @@ fun GroupEventsView(
                         )
                     }
                 }
-                if (event.createdBy == viewModel.requireLoggedInUser && event !is Payment) {
+                if (event.createdBy == loggedInUser && event !is Payment) {
                     if (latestIndex)
                         ProfilePicture(
                             modifier = Modifier
@@ -132,37 +155,6 @@ fun GroupEventsView(
     }
 }
 
-@Composable
-private fun Menu(
-    viewModel: GroupViewModel = viewModel()
-) {
-    Row(
-        Modifier
-            .padding(bottom = 24.dp, top = 8.dp)
-            .wrapContentWidth()
-            .clip(CircleShape)
-            .background(MaterialTheme.colors.primary)
-            .clickable { viewModel.addExpense() }
-            .padding(vertical = 12.dp, horizontal = 12.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_add_plus),
-            contentDescription = "Add expense",
-            tint = MaterialTheme.colors.onPrimary
-        )
-        Box(Modifier.width(8.dp))
-        Text(text = "New Expense", color = MaterialTheme.colors.onPrimary)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewMenu() {
-    Menu()
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun PreviewSharedExpenseListItem() {
@@ -172,11 +164,10 @@ private fun PreviewSharedExpenseListItem() {
             .height(200.dp)
             .padding(20.dp)
     ) {
-        ListViewExpense(
-            viewModel = GroupViewModel(),
-            groupExpense = groupExpense,
-            isLastMessage = true,
-            isFocused = true
+        _ListViewExpense(
+            modifier = Modifier,
+            loggedInUser = Person("Mikkel"),
+            eventsFlow = MutableStateFlow<List<Event>>(emptyList()) as State<List<Event>>
         )
     }
 }

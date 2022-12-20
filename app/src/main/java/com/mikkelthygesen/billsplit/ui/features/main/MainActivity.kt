@@ -16,13 +16,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.base.BaseViewModel
+import com.mikkelthygesen.billsplit.ui.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.features.group.GroupActivity
 import com.mikkelthygesen.billsplit.ui.features.main.add_group.AddGroupView
 import com.mikkelthygesen.billsplit.ui.features.main.groups.GroupsList
@@ -32,8 +31,9 @@ import com.mikkelthygesen.billsplit.ui.features.main.signup.SignUpView
 import com.mikkelthygesen.billsplit.ui.features.main.widgets.dialogs.ErrorDialog
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
-import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()

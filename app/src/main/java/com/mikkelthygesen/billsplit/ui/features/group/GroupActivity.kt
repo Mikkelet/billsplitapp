@@ -19,7 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.base.BaseViewModel
+import com.mikkelthygesen.billsplit.ui.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.features.group.add_expense.ExpenseView
 import com.mikkelthygesen.billsplit.ui.features.group.group_view.GroupEventsView
 import com.mikkelthygesen.billsplit.ui.features.group.view_expenses.ViewExpenses

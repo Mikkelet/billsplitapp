@@ -2,19 +2,21 @@ package com.mikkelthygesen.billsplit.ui.features.main
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
-import com.mikkelthygesen.billsplit.base.BaseViewModel
-import com.mikkelthygesen.billsplit.data.auth.AuthProvider
-import com.mikkelthygesen.billsplit.data.network.ServerApiImpl
+import com.mikkelthygesen.billsplit.ui.features.base.BaseViewModel
+import com.mikkelthygesen.billsplit.data.remote.auth.AuthProvider
+import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.models.Person
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel : BaseViewModel() {
-
-    private val api = ServerApiImpl()
-    private val authProvider = AuthProvider()
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val api: ServerApiImpl,
+) : BaseViewModel() {
 
     object Main : UiState
     object AddGroup : UiState

@@ -12,7 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.base.BaseViewModel
+import com.mikkelthygesen.billsplit.ui.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.features.main.MainViewModel
 
 @Composable

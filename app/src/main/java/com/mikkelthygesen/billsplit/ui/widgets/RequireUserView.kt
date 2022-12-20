@@ -1,8 +1,8 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.runtime.Composable
-import com.mikkelthygesen.billsplit.base.BaseViewModel
-import com.mikkelthygesen.billsplit.data.auth.NetworkExceptions
+import com.mikkelthygesen.billsplit.ui.features.base.BaseViewModel
+import com.mikkelthygesen.billsplit.data.remote.exceptions.NetworkExceptions
 import com.mikkelthygesen.billsplit.models.Person
 
 @Composable
