@@ -13,11 +13,12 @@ import com.mikkelthygesen.billsplit.data.local.database.model.PersonDb
 
 @Database(
     entities = [FriendDb::class, PersonDb::class, GroupDb::class],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
-abstract class BillSplitDb : RoomDatabase() {
+abstract class
+BillSplitDb : RoomDatabase() {
 
     abstract fun friendsDao(): FriendsDao
     abstract fun groupsDao(): GroupsDao

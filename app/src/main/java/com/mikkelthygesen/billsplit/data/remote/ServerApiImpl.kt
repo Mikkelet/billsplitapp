@@ -53,21 +53,13 @@ class ServerApiImpl @Inject constructor(
 
     suspend fun getGroups(): List<GroupDTO> = serverApi.getGroups().groups
 
-    suspend fun addFriendEmail(loggedInUserId: String, email: String): FriendDTO {
-        val request = AddFriend.Request.Email(
-            loggedInUserId,
-            System.currentTimeMillis(),
-            email,
-        )
+    suspend fun addFriendEmail(email: String): FriendDTO {
+        val request = AddFriend.Request.Email(email)
         return serverApi.addFriend(request).friend
     }
 
-    suspend fun acceptFriendRequest(loggedInUserId: String, user: Person): FriendDTO {
-        val request = AddFriend.Request.UserId(
-            loggedInUserId,
-            System.currentTimeMillis(),
-            PersonDTO.fromPerson(user),
-        )
+    suspend fun acceptFriendRequest(friendId: String): FriendDTO {
+        val request = AddFriend.Request.UserId(friendId)
         return serverApi.addFriend(request).friend
     }
 

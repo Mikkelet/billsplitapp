@@ -23,18 +23,20 @@ class AuthProvider @Inject constructor() {
     }
 
     var loggedInUser: Person? = null
-        private set
+        private set(value) {
+            println("qqq value=$value")
+            field = value
+        }
 
     private val authListener = AuthStateListener {
         val user = it.currentUser
-        if (user != null) {
-            val person = Person(
-                user.uid,
-                name = user.displayName ?: "Splittsby User",
-                pfpUrl = user.photoUrl?.toString() ?: "",
-                email = user.email ?: ""
+        loggedInUser = user?.let {
+            Person(
+                it.uid,
+                name = it.displayName ?: "Splittsby User",
+                pfpUrl = it.photoUrl?.toString() ?: "",
+                email = it.email ?: ""
             )
-            loggedInUser = person
         }
     }
 

@@ -53,9 +53,9 @@ class GroupViewModel @Inject constructor(
         requireLoggedInUser {
             val groupExpense = GroupExpense(
                 id = group.id,
-                createdBy = requireLoggedInUser,
+                createdBy = it,
                 description = "",
-                payee = requireLoggedInUser,
+                payee = it,
                 sharedExpense = 0F,
                 individualExpenses = people.toNewIndividualExpenses(),
             )

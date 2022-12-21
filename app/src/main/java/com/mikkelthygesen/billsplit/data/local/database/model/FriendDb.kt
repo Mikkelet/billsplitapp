@@ -12,7 +12,6 @@ import com.mikkelthygesen.billsplit.models.Friend
 data class FriendDb(
     @PrimaryKey
     val id: String,
-    val timeStamp: Long,
     val status: String,
     val createdBy: String,
     @Embedded

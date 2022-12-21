@@ -9,14 +9,12 @@ import com.mikkelthygesen.billsplit.models.Person
 import javax.inject.Inject
 
 class AcceptFriendRequestUseCase @Inject constructor(
-    private val authProvider: AuthProvider,
     private val serverApiImpl: ServerApiImpl,
     private val database: BillSplitDb,
 ) {
 
     suspend fun execute(friend: Person): Friend {
-        val user = authProvider.loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
-        val dto = serverApiImpl.acceptFriendRequest(user.uid, friend)
+        val dto = serverApiImpl.acceptFriendRequest(friend.uid)
         database.friendsDao().insert(dto.toDB())
         return Friend.fromDTO(dto)
     }
