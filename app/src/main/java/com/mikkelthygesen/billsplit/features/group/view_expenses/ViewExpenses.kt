@@ -34,7 +34,7 @@ fun ViewDebt(
 ) {
     val eventsFlow = groupViewModel.eventStateFlow.collectAsState()
     RequireUserView(baseViewModel = groupViewModel) {
-        _ViewExpenses(
+        _ViewDebt(
             events = eventsFlow.value,
             user = it,
             people = groupViewModel.people
@@ -45,7 +45,7 @@ fun ViewDebt(
 
 @Composable
 @SuppressLint("ComposableNaming")
-private fun _ViewExpenses(
+private fun _ViewDebt(
     events: List<Event>,
     user: Person,
     people: List<Person>
@@ -131,7 +131,7 @@ private fun YourDebt(
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewViewExpense() {
-    _ViewExpenses(
+    _ViewDebt(
         events = sampleSharedExpenses,
         user = samplePeopleShera.first(),
         people = samplePeopleShera
