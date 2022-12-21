@@ -20,21 +20,34 @@ import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.Center
 import com.mikkelthygesen.billsplit.ui.widgets.PullToRefreshComposable
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun GroupsList(viewModel: MainViewModel = viewModel()) {
 
+    var groupsState by remember {
+        mutableStateOf<List<Group>>(emptyList())
+    }
+
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.groupsFlow.collect {
+            groupsState = it
+        }
+    })
+
     PullToRefreshComposable(
         initialCallback = {
-            viewModel.getGroups(false)
+            groupsState = viewModel.getGroups(false)
+            groupsState
         },
         onRefresh = {
-            viewModel.getGroups(true)
+            groupsState = viewModel.getGroups(true)
+            groupsState
         },
         errorComposable = null,
         onError = viewModel::handleError
-    ) { groups ->
-        if (groups.isEmpty())
+    ) { _ ->
+        if (groupsState.isEmpty())
             Center(
                 modifier = Modifier.padding(16.dp),
             ) {
@@ -48,10 +61,10 @@ fun GroupsList(viewModel: MainViewModel = viewModel()) {
                 }
             }
         else
-            RequireUserView(baseViewModel = viewModel) {
+            RequireUserView(baseViewModel = viewModel) { user ->
                 _GroupsView(
-                    user = it,
-                    groups = groups,
+                    user = user,
+                    groups = groupsState,
                     onGroupClick = { viewModel.showGroup(it.id) })
             }
     }
@@ -65,6 +78,8 @@ private fun _GroupsView(
     groups: List<Group>,
     onGroupClick: (Group) -> Unit
 ) {
+    println("qqq update view=${groups.size}")
+
     Center {
         Text(
             modifier = Modifier.padding(top = 32.dp),

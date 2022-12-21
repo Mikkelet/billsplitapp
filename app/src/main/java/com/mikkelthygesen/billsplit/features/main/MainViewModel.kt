@@ -23,6 +23,7 @@ class MainViewModel @Inject constructor(
     private val signInWithEmailUseCase: SignInWithEmailUseCase,
     private val uploadProfilePictureUseCase: UploadProfilePictureUseCase,
     private val updateNameUseCase: UpdateNameUseCase,
+    private val observeDatabaseGroupsUseCase: ObserveDatabaseGroupsUseCase
 ) : BaseViewModel() {
 
     object Main : UiState
@@ -33,6 +34,8 @@ class MainViewModel @Inject constructor(
     class ShowGroup(val groupId: String) : UiEvent
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(MyGroups)
+
+    val groupsFlow by lazy { observeDatabaseGroupsUseCase.execute() }
 
     fun showGroup(groupId: String) = emitUiEvent(ShowGroup(groupId))
 
