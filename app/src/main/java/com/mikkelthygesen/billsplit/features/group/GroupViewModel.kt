@@ -37,7 +37,9 @@ class GroupViewModel @Inject constructor(
     fun getGroup(groupId: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val response = runCatching { getGroupUseCase.execute(groupId) }
+            val response = runCatching {
+                getGroupUseCase.execute(groupId)
+            }
             response.foldSuccess { group ->
                 this@GroupViewModel.group = group
                 _people.addAll(group.peopleState)

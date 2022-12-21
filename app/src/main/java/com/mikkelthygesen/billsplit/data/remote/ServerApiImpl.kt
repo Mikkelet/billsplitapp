@@ -46,9 +46,9 @@ class ServerApiImpl @Inject constructor(
         return result.event
     }
 
-    suspend fun getGroup(groupId: String): GroupDTO {
+    suspend fun getGroup(groupId: String): Pair<GroupDTO, List<EventDTO>> {
         val dto = serverApi.getGroup(GetGroup.Request(groupId))
-        return dto.group
+        return dto.group to dto.events
     }
 
     suspend fun getGroups(): List<GroupDTO> = serverApi.getGroups().groups

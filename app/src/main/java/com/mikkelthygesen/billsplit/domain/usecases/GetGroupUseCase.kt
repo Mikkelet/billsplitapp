@@ -11,8 +11,9 @@ class GetGroupUseCase @Inject constructor(
 ) {
 
     suspend fun execute(groupId: String): Group {
-        val group = serverApiImpl.getGroup(groupId).toGroup()
-        database.groupsDao().insert(group.toDb())
-        return group
+        val groupAndEvents = serverApiImpl.getGroup(groupId)
+        database.groupsDao().insert(groupAndEvents.first.toDB())
+        val events = groupAndEvents.second.map { it.toEvent() }
+        return groupAndEvents.first.toGroup().copy(events = events)
     }
 }
