@@ -25,19 +25,21 @@ import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import kotlin.math.absoluteValue
 
 @Composable
-fun ViewExpenses(
+fun ViewDebt(
     groupViewModel: GroupViewModel = viewModel(),
-    user: Person
 ) {
     val eventsFlow = groupViewModel.eventStateFlow.collectAsState()
-    _ViewExpenses(
-        events = eventsFlow.value,
-        user = user,
-        people = groupViewModel.people
-    )
+    RequireUserView(baseViewModel = groupViewModel) {
+        _ViewExpenses(
+            events = eventsFlow.value,
+            user = it,
+            people = groupViewModel.people
+        )
+    }
 }
 
 
@@ -55,7 +57,9 @@ private fun _ViewExpenses(
     val debtForPerson = calculator.calculateEffectiveDebtOfPerson(user)
     calculator.logDebt(user)
     Column(
-        Modifier.fillMaxWidth().padding(top = 32.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -81,7 +85,9 @@ private fun _ViewExpenses(
 @Composable
 private fun DebtToYou(debt: Pair<Person, Float>) {
     Text(
-        modifier = Modifier.fillMaxWidth().shadowModifier(MaterialTheme.colors.background),
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadowModifier(MaterialTheme.colors.background),
         text = "${debt.first.nameState} owes you $${debt.second.absoluteValue}",
         style = TextStyle(color = Color(0xFF0B9D3A), fontSize = 20.sp)
     )

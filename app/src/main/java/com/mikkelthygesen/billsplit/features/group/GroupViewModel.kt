@@ -21,7 +21,7 @@ class GroupViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     object Chat : UiState
-    class ShowDebt(val user: Person) : UiState
+    object ShowDebt : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
 
@@ -131,10 +131,7 @@ class GroupViewModel @Inject constructor(
     }
 
     fun showDebt() {
-        requireLoggedInUser {
-        updateUiState(ShowDebt(it))
-
-        }
+        updateUiState(ShowDebt)
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {

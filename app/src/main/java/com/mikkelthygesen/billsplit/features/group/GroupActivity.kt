@@ -24,7 +24,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.group.add_expense.ExpenseView
 import com.mikkelthygesen.billsplit.features.group.group_view.GroupEventsView
-import com.mikkelthygesen.billsplit.features.group.view_expenses.ViewExpenses
+import com.mikkelthygesen.billsplit.features.group.view_expenses.ViewDebt
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.features.main.signup.SignInView
 import com.mikkelthygesen.billsplit.features.main.signup.SignUpView
@@ -93,7 +93,7 @@ class GroupActivity : ComponentActivity() {
                                 is BaseViewModel.UiState.SignIn -> SignInView()
                                 is BaseViewModel.UiState.SignUp -> SignUpView()
                                 is GroupViewModel.Chat -> GroupEventsView()
-                                is GroupViewModel.ShowDebt -> ViewExpenses(user = state.user)
+                                is GroupViewModel.ShowDebt -> ViewDebt()
                                 is GroupViewModel.EditExpense -> ExpenseView(groupExpense = state.groupExpense)
                             }
                         }
