@@ -85,7 +85,7 @@ class MainViewModel @Inject constructor(
     fun signUpEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val result = runCatching { signInWithEmailUseCase.execute(email, password) }
+            val result = runCatching { signUpWithEmailUseCase.execute(email, password) }
             result.foldSuccess { showProfile() }
         }
     }
@@ -93,7 +93,7 @@ class MainViewModel @Inject constructor(
     fun signInEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val result = runCatching { signUpWithEmailUseCase.execute(email, password) }
+            val result = runCatching { signInWithEmailUseCase.execute(email, password) }
             result.foldSuccess { showProfile() }
         }
     }
