@@ -25,6 +25,7 @@ import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.group.add_expense.ExpenseView
 import com.mikkelthygesen.billsplit.features.group.group_view.GroupEventsView
 import com.mikkelthygesen.billsplit.features.group.view_expenses.ViewDebt
+import com.mikkelthygesen.billsplit.features.group.widgets.ConfirmChangesDialog
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.features.main.signup.SignInView
 import com.mikkelthygesen.billsplit.features.main.signup.SignUpView
@@ -65,7 +66,7 @@ class GroupActivity : ComponentActivity() {
                 val uiState = groupUiState.value
 
                 when (val state = viewModel.dialogState) {
-                    is GroupViewModel.ConfirmChangesDialog -> GroupViewModel.ConfirmChangesDialog(
+                    is GroupViewModel.ConfirmChangesDialog -> ConfirmChangesDialog(
                         groupExpense = state.groupExpense
                     )
                     is BaseViewModel.DialogState.Error -> ErrorDialog(
