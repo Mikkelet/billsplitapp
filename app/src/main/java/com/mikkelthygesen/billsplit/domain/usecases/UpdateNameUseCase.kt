@@ -7,7 +7,7 @@ class UpdateNameUseCase @Inject constructor(
     private val authProvider: AuthProvider
 ) {
 
-    suspend fun execute(){
+    suspend fun execute() {
         authProvider.updateUserName()
     }
 }

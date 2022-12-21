@@ -9,7 +9,7 @@ import kotlinx.serialization.json.Json
 class Converters {
 
     @TypeConverter
-    fun listToJson(value: List<DebtDb>):String = Json.encodeToString(value)
+    fun listToJson(value: List<DebtDb>): String = Json.encodeToString(value)
 
     @TypeConverter
     fun jsonToList(value: String): List<DebtDb> = Json.decodeFromString(value)

@@ -9,7 +9,7 @@ class GetGroupsUseCase @Inject constructor(
     private val database: BillSplitDb,
     private val serverApiImpl: ServerApiImpl
 ) {
-    suspend fun execute(sync: Boolean):List<Group> {
+    suspend fun execute(sync: Boolean): List<Group> {
         return if (sync) {
             val dtos = serverApiImpl.getGroups()
             database.groupsDao().insert(dtos.map { it.toDB() })

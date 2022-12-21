@@ -185,7 +185,7 @@ private fun _SignUpView(
 @Composable
 private fun Preview() {
     _SignUpView(
-        onSignUpWithCredentials = { x, y -> },
+        onSignUpWithCredentials = { _, _ -> },
         onSignUpWithGoogleClicked = { },
         onSignUpWithFacebookClicked = {},
         onAlreadySignedUpClicked = {},

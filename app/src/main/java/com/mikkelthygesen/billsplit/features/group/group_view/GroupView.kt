@@ -38,9 +38,10 @@ fun GroupEventsView(
     val eventsFlow = viewModel.eventStateFlow.collectAsState()
 
     RequireUserView(baseViewModel = viewModel) {
+        val eventsState = eventsFlow.value
         _ListViewExpense(
             modifier = modifier,
-            eventsFlow = eventsFlow,
+            eventsFlow = eventsState,
             loggedInUser = it,
         )
     }
@@ -52,9 +53,9 @@ fun GroupEventsView(
 private fun _ListViewExpense(
     modifier: Modifier = Modifier,
     loggedInUser: Person,
-    eventsFlow: State<List<Event>>
+    eventsFlow: List<Event>
 ) {
-    val eventsState = eventsFlow.value.sortedBy { it.timeStamp }.reversed()
+    val eventsState = eventsFlow.sortedBy { it.timeStamp }.reversed()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     var focusListItemIndex by remember {
@@ -159,7 +160,7 @@ private fun PreviewSharedExpenseListItem() {
         _ListViewExpense(
             modifier = Modifier,
             loggedInUser = Person("Mikkel"),
-            eventsFlow = MutableStateFlow<List<Event>>(emptyList()) as State<List<Event>>
+            eventsFlow = sampleSharedExpenses
         )
     }
 }
