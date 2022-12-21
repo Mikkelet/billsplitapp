@@ -48,15 +48,17 @@ class GroupViewModel @Inject constructor(
     }
 
     fun addExpense() {
-        val groupExpense = GroupExpense(
-            id = group.id,
-            createdBy = requireLoggedInUser,
-            description = "",
-            payee = requireLoggedInUser,
-            sharedExpense = 0F,
-            individualExpenses = people.toNewIndividualExpenses(),
-        )
-        _mutableUiStateFlow.value = EditExpense(groupExpense)
+        requireLoggedInUser {
+            val groupExpense = GroupExpense(
+                id = group.id,
+                createdBy = requireLoggedInUser,
+                description = "",
+                payee = requireLoggedInUser,
+                sharedExpense = 0F,
+                individualExpenses = people.toNewIndividualExpenses(),
+            )
+            _mutableUiStateFlow.value = EditExpense(groupExpense)
+        }
     }
 
     suspend fun addPayment(paidTo: Person, amount: Float) {
@@ -127,7 +129,10 @@ class GroupViewModel @Inject constructor(
     }
 
     fun showDebt() {
-        updateUiState(ShowDebt(requireLoggedInUser))
+        requireLoggedInUser {
+        updateUiState(ShowDebt(it))
+
+        }
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {

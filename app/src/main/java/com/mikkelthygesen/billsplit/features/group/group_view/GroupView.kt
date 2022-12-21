@@ -24,6 +24,7 @@ import com.mikkelthygesen.billsplit.models.interfaces.Event
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
+import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -36,11 +37,13 @@ fun GroupEventsView(
 ) {
     val eventsFlow = viewModel.eventStateFlow.collectAsState()
 
-    _ListViewExpense(
-        modifier = modifier,
-        eventsFlow = eventsFlow,
-        loggedInUser = viewModel.requireLoggedInUser,
-    )
+    RequireUserView(baseViewModel = viewModel) {
+        _ListViewExpense(
+            modifier = modifier,
+            eventsFlow = eventsFlow,
+            loggedInUser = it,
+        )
+    }
 }
 
 

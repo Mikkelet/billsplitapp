@@ -80,6 +80,12 @@ abstract class BaseViewModel : ViewModel() {
         _mutableUiStateFlow.value = event
     }
 
+    fun requireLoggedInUser(withUser:(Person) -> Unit){
+        if(loggedIdUser == null)
+            withUser(requireLoggedInUser)
+        else handleError(NetworkExceptions.UserLoggedOutException)
+    }
+
     fun handleError(exception: Throwable) {
         Timber.e(exception)
         when (exception) {
