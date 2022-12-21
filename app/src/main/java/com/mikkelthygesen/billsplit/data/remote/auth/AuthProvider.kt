@@ -5,7 +5,6 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.storage.FirebaseStorage
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.data.remote.exceptions.NetworkExceptions
 import com.mikkelthygesen.billsplit.models.Person
@@ -18,13 +17,6 @@ class AuthProvider @Inject constructor() {
 
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
-            if (BuildConfig.FLAVOR == "emulator")
-                useEmulator("10.0.2.2", 9099)
-        }
-    }
-
-    private val firebaseStorage by lazy {
-        FirebaseStorage.getInstance().apply {
             if (BuildConfig.FLAVOR == "emulator")
                 useEmulator("10.0.2.2", 9099)
         }
@@ -64,17 +56,11 @@ class AuthProvider @Inject constructor() {
     }
 
     @Suppress("KotlinConstantConditions")
-    suspend fun updateProfilePicture(uri: Uri) {
+    suspend fun updateProfilePicture(downloadUrl: Uri) {
         val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
-        val loggedInUser = loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
-        val snapshot = firebaseStorage
-            .getReference("${loggedInUser.uid}/${uri.lastPathSegment}")
-            .putFile(uri).await()
-        val downloadUrl = snapshot.storage.downloadUrl.await()
         val updateRequest = UserProfileChangeRequest.Builder()
         updateRequest.photoUri = downloadUrl
         currentUser.updateProfile(updateRequest.build()).await()
-        loggedInUser.pfpUrlState = downloadUrl.toString()
     }
 
     suspend fun signUpWithEmail(email: String, password: String) {

@@ -2,7 +2,8 @@ package com.mikkelthygesen.billsplit.features.group
 
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.DebtCalculator
-import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
+import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
+import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.*
 import com.mikkelthygesen.billsplit.models.interfaces.Event
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GroupViewModel @Inject constructor(
-    private val serverApiImpl: ServerApiImpl,
+    private val addEventUseCase: AddEventUseCase,
+    private val getGroupUseCase: GetGroupUseCase
 ) : BaseViewModel() {
 
     object Chat : UiState
@@ -35,7 +37,7 @@ class GroupViewModel @Inject constructor(
     fun getGroup(groupId: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val response = kotlin.runCatching { serverApiImpl.getGroup(groupId) }
+            val response = runCatching { getGroupUseCase.execute(groupId) }
             response.foldSuccess { group ->
                 this@GroupViewModel.group = group
                 _people.addAll(group.peopleState)
@@ -64,7 +66,7 @@ class GroupViewModel @Inject constructor(
             amount = amount
         )
         group.debtsState = getCalculator(payment).calculateEffectiveDebtForGroup()
-        val paymentResponse = serverApiImpl.addEvent(group, payment)
+        val paymentResponse = addEventUseCase.execute(group, payment)
         _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
     }
 
@@ -92,7 +94,7 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             val response = runCatching {
                 group.debtsState = getCalculator(groupExpense).calculateEffectiveDebtForGroup()
-                serverApiImpl.addEvent(group, groupExpense)
+                addEventUseCase.execute(group, groupExpense)
             }
             response.foldSuccess {
                 _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
@@ -111,7 +113,7 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             val response = runCatching {
                 group.debtsState = getCalculator().calculateEffectiveDebtForGroup()
-                serverApiImpl.addEvent(group, groupExpensesChanged)
+                addEventUseCase.execute(group, groupExpensesChanged)
             }
             response.foldSuccess {
                 _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)

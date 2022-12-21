@@ -2,7 +2,7 @@ package com.mikkelthygesen.billsplit.features.main
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
-import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
+import com.mikkelthygesen.billsplit.domain.usecases.*
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
@@ -14,7 +14,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val api: ServerApiImpl,
+    private val addGroupUseCase: AddGroupUseCase,
+    private val getGroupsUseCase: GetGroupsUseCase,
+    private val addFriendEmailUseCase: AddFriendEmailUseCase,
+    private val acceptFriendRequestUseCase: AcceptFriendRequestUseCase,
+    private val getFriendsUseCase: GetFriendsUseCase,
+    private val signUpWithEmailUseCase: SignUpWithEmailUseCase,
+    private val signInWithEmailUseCase: SignInWithEmailUseCase,
+    private val uploadProfilePictureUseCase: UploadProfilePictureUseCase,
+    private val updateNameUseCase: UpdateNameUseCase,
 ) : BaseViewModel() {
 
     object Main : UiState
@@ -46,39 +54,38 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    suspend fun updateUser() = authProvider.updateUserName()
+    suspend fun updateUser() = updateNameUseCase.execute()
 
     suspend fun uploadProfilePhoto(uri: Uri, onSuccess: () -> Unit) {
-        val result = runCatching { authProvider.updateProfilePicture(uri) }
+        val result = runCatching { uploadProfilePictureUseCase.execute(uri) }
         result.foldSuccess { onSuccess() }
     }
 
     suspend fun getGroups(sync: Boolean = true): List<Group> {
-        return api.getGroups(sync)
+        return getGroupsUseCase.execute(sync)
     }
 
     suspend fun saveGroup(group: Group) {
-        group.applyChanges()
-        val groupResponse = api.addGroup(group)
+        val groupResponse = addGroupUseCase.execute(group)
         emitUiEvent(ShowGroup(groupResponse.id))
     }
 
     suspend fun getFriends(sync: Boolean = false): List<Friend> {
-        return api.getFriends(sync)
+        return getFriendsUseCase.execute(sync)
     }
 
     suspend fun acceptFriendRequest(friend: Person): Friend {
-        return api.addFriendUserId(requireLoggedInUser.uid, friend)
+        return acceptFriendRequestUseCase.execute(friend)
     }
 
     suspend fun addFriend(email: String): Friend {
-        return api.addFriendEmail(requireLoggedInUser.uid, email)
+        return addFriendEmailUseCase.execute(email)
     }
 
     fun signUpEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val result = kotlin.runCatching { authProvider.signUpWithEmail(email, password) }
+            val result = runCatching { signInWithEmailUseCase.execute(email, password) }
             result.foldSuccess { showProfile() }
         }
     }
@@ -86,7 +93,7 @@ class MainViewModel @Inject constructor(
     fun signInEmail(email: String, password: String) {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val result = runCatching { authProvider.signInWithEmail(email, password) }
+            val result = runCatching { signUpWithEmailUseCase.execute(email, password) }
             result.foldSuccess { showProfile() }
         }
     }
