@@ -14,7 +14,4 @@ interface PersonDao {
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(people: List<PersonDb>)
-
-    @Query("SELECT * FROM people")
-    suspend fun getPeople(): List<PersonDb>
 }

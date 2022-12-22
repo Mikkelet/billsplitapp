@@ -26,7 +26,6 @@ import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 
@@ -37,12 +36,14 @@ fun GroupEventsView(
 ) {
     val eventsFlow = viewModel.eventStateFlow.collectAsState()
 
-    RequireUserView(baseViewModel = viewModel) {
+    RequireUserView(baseViewModel = viewModel) { user ->
         val eventsState = eventsFlow.value
+            .sortedBy { event -> event.timeStamp }
+            .reversed()
         _ListViewExpense(
             modifier = modifier,
-            eventsFlow = eventsState,
-            loggedInUser = it,
+            events = eventsState,
+            loggedInUser = user,
         )
     }
 }
@@ -53,9 +54,8 @@ fun GroupEventsView(
 private fun _ListViewExpense(
     modifier: Modifier = Modifier,
     loggedInUser: Person,
-    eventsFlow: List<Event>
+    events: List<Event>
 ) {
-    val eventsState = eventsFlow.sortedBy { it.timeStamp }.reversed()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     var focusListItemIndex by remember {
@@ -80,17 +80,17 @@ private fun _ListViewExpense(
             }
         }
         items(
-            count = eventsState.size,
-            key = { eventsState[it].id }) { index ->
+            count = events.size,
+            key = { events[it].id }) { index ->
             Row(
                 Modifier.padding(vertical = 4.dp),
                 Arrangement.SpaceEvenly
             ) {
-                val event = eventsState[index]
+                val event = events[index]
                 val latestIndex =
                     tryCatchDefault(true) {
-                        eventsState[index - 1].createdBy != event.createdBy
-                                || eventsState[index - 1] is Payment
+                        events[index - 1].createdBy != event.createdBy
+                                || events[index - 1] is Payment
                     }
                 if (event.createdBy != loggedInUser && event !is Payment) {
                     if (latestIndex)
@@ -122,8 +122,8 @@ private fun _ListViewExpense(
                             onClickGoToExpense = { id ->
                                 coroutineScope.launch {
                                     val groupExpense =
-                                        eventsState.first { it is GroupExpense && it.id == id }
-                                    val indexOf = eventsState.indexOf(groupExpense)
+                                        events.first { it is GroupExpense && it.id == id }
+                                    val indexOf = events.indexOf(groupExpense)
                                     lazyListState.animateScrollToItem(indexOf)
                                     focusListItemIndex = indexOf
                                 }
@@ -160,7 +160,7 @@ private fun PreviewSharedExpenseListItem() {
         _ListViewExpense(
             modifier = Modifier,
             loggedInUser = Person("Mikkel"),
-            eventsFlow = sampleSharedExpenses
+            events = sampleSharedExpenses
         )
     }
 }

@@ -6,8 +6,10 @@ import com.mikkelthygesen.billsplit.data.remote.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.remote.exceptions.NetworkExceptions
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
+import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
+@ViewModelScoped
 class AcceptFriendRequestUseCase @Inject constructor(
     private val serverApiImpl: ServerApiImpl,
     private val database: BillSplitDb,

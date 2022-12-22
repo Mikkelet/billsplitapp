@@ -4,8 +4,10 @@ import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
 import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
+import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
+@ViewModelScoped
 class AddFriendEmailUseCase @Inject constructor(
     private val serverApiImpl: ServerApiImpl,
     private val database: BillSplitDb,

@@ -3,8 +3,10 @@ package com.mikkelthygesen.billsplit.domain.usecases
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
 import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
 import com.mikkelthygesen.billsplit.models.Group
+import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
+@ViewModelScoped
 class GetGroupsUseCase @Inject constructor(
     private val database: BillSplitDb,
     private val serverApiImpl: ServerApiImpl
