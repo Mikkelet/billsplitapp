@@ -39,7 +39,7 @@ sealed class EventDTO {
             description = description,
             payee = payee.toDB(),
             sharedExpense = sharedExpense,
-            individualExpenses = individualExpenses.map { it.toIndividualExpense() },
+            individualExpenses = individualExpenses.map { it.toDb()  },
             timeStamp = timeStamp
         )
     }

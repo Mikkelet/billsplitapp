@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.IndividualExpenseDb
 import com.mikkelthygesen.billsplit.models.IndividualExpense
 
 @kotlinx.serialization.Serializable
@@ -13,6 +14,12 @@ data class IndividualExpenseDTO(
         expense = expense,
         person = person.toPerson(),
         isParticipant = isParticipant
+    )
+
+    fun toDb() = IndividualExpenseDb(
+        person.toDB(),
+        expense,
+        isParticipant
     )
 
     companion object {
