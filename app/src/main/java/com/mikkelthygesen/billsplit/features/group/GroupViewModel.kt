@@ -35,16 +35,24 @@ class GroupViewModel @Inject constructor(
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
 
     fun getGroup(groupId: String) {
-        updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val response = runCatching {
+            updateUiState(UiState.Loading)
+            val cacheResponse = runCatching {
                 getGroupUseCase.execute(groupId)
             }
-            response.foldSuccess { group ->
+            cacheResponse.foldSuccess { group ->
                 this@GroupViewModel.group = group
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events
                 updateUiState(Chat)
+            }
+            val syncResponse = runCatching {
+                getGroupUseCase.execute(groupId, true)
+            }
+            syncResponse.foldSuccess { group ->
+                _people.clear()
+                _people.addAll(group.peopleState)
+                _mutableEventsStateFlow.value = group.events
             }
         }
     }

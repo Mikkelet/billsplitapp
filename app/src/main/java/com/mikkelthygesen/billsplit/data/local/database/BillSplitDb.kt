@@ -20,8 +20,7 @@ import com.mikkelthygesen.billsplit.data.local.database.model.*
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
-abstract class
-BillSplitDb : RoomDatabase() {
+abstract class BillSplitDb : RoomDatabase() {
 
     abstract fun friendsDao(): FriendsDao
     abstract fun groupsDao(): GroupsDao

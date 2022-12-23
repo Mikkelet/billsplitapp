@@ -18,7 +18,6 @@ class GroupExpenseDb(
     @Embedded(prefix = "payee_")
     val payee: PersonDb,
     val sharedExpense: Float,
-    @Embedded
     val individualExpenses: List<IndividualExpenseDb>,
     val timeStamp: Long
 ) {

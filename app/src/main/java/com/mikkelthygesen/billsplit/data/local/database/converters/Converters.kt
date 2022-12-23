@@ -25,8 +25,14 @@ class Converters {
         Json.decodeFromString(value)
 
     @TypeConverter
-    fun personToJson(value: List<PersonDb>): String = Json.encodeToString(value)
+    fun peopleToJson(value: List<PersonDb>): String = Json.encodeToString(value)
 
     @TypeConverter
-    fun jsonToPerson(value: String): List<PersonDb> = Json.decodeFromString(value)
+    fun jsonToPeople(value: String): List<PersonDb> = Json.decodeFromString(value)
+
+    @TypeConverter
+    fun personToJson(value: PersonDb): String = Json.encodeToString(value)
+
+    @TypeConverter
+    fun jsonToPerson(value: String): PersonDb = Json.decodeFromString(value)
 }
