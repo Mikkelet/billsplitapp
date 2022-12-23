@@ -1,7 +1,9 @@
 package com.mikkelthygesen.billsplit.data.local.database.model
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.DebtDb
 import com.mikkelthygesen.billsplit.models.Group
 
 @Entity(tableName = "groups")
@@ -10,6 +12,7 @@ data class GroupDb(
     val id: String,
     val name: String,
     val timestamp: Long,
+    @Embedded
     val debts: List<DebtDb>
 ) {
 

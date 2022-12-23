@@ -60,7 +60,7 @@ data class GroupExpense(
         individualExpenses.forEach { it.saveChanges() }
     }
 
-    fun copy():GroupExpense = GroupExpense(
+    fun copy(): GroupExpense = GroupExpense(
         id,
         createdBy.copy(),
         descriptionState,

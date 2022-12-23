@@ -4,16 +4,19 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.mikkelthygesen.billsplit.data.local.database.converters.Converters
+import com.mikkelthygesen.billsplit.data.local.database.daos.EventsDao
 import com.mikkelthygesen.billsplit.data.local.database.daos.FriendsDao
 import com.mikkelthygesen.billsplit.data.local.database.daos.GroupsDao
-import com.mikkelthygesen.billsplit.data.local.database.daos.PersonDao
-import com.mikkelthygesen.billsplit.data.local.database.model.FriendDb
-import com.mikkelthygesen.billsplit.data.local.database.model.GroupDb
-import com.mikkelthygesen.billsplit.data.local.database.model.PersonDb
+import com.mikkelthygesen.billsplit.data.local.database.model.*
 
 @Database(
-    entities = [FriendDb::class, PersonDb::class, GroupDb::class],
-    version = 5,
+    entities = [
+        FriendDb::class,
+        GroupDb::class,
+        GroupExpenseDb::class,
+        PaymentDb::class,
+        ExpenseChangeDb::class],
+    version = 8,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -22,5 +25,5 @@ BillSplitDb : RoomDatabase() {
 
     abstract fun friendsDao(): FriendsDao
     abstract fun groupsDao(): GroupsDao
-    abstract fun peopleDao(): PersonDao
+    abstract fun eventsDao(): EventsDao
 }

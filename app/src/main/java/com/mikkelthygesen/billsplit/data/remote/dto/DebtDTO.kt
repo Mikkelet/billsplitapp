@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
-import com.mikkelthygesen.billsplit.data.local.database.model.DebtDb
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.DebtDb
 
 @kotlinx.serialization.Serializable
 data class DebtDTO(

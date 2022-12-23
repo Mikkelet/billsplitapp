@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.data.local.database.model
+package com.mikkelthygesen.billsplit.data.local.database.model.embedded
 
 @kotlinx.serialization.Serializable
 data class DebtDb(

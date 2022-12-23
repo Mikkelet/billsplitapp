@@ -4,11 +4,11 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.RoomWarnings
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
 import com.mikkelthygesen.billsplit.data.remote.dto.FriendStatusDTO
 import com.mikkelthygesen.billsplit.models.Friend
 
 @Entity(tableName = "friends")
-@SuppressWarnings(RoomWarnings.PRIMARY_KEY_FROM_EMBEDDED_IS_DROPPED)
 data class FriendDb(
     @PrimaryKey
     val id: String,

@@ -21,4 +21,7 @@ interface GroupsDao {
 
     @Query("SELECT * FROM groups")
     fun getGroupsFlow() : Flow<List<GroupDb>>
+
+    @Query("SELECT * FROM groups WHERE :groupId == id")
+    suspend fun getGroup(groupId: String) : GroupDb
 }

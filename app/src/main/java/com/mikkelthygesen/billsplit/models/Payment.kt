@@ -8,13 +8,13 @@ data class Payment(
     val paidTo: Person,
     val amount: Float,
     override val timeStamp: Long = System.currentTimeMillis(),
-) : Event{
+) : Event {
 
     fun asExpense() = GroupExpense(
         id = id,
         createdBy = createdBy,
         payee = createdBy,
-        individualExpenses =  listOf(
+        individualExpenses = listOf(
             IndividualExpense(paidTo, amount, true)
         ),
         timeStamp = timeStamp

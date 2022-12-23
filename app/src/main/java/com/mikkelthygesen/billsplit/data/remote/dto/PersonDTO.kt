@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
-import com.mikkelthygesen.billsplit.data.local.database.model.PersonDb
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
 import com.mikkelthygesen.billsplit.models.Person
 
 @kotlinx.serialization.Serializable

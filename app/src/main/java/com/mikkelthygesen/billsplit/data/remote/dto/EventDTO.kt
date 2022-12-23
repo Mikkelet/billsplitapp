@@ -1,5 +1,8 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
+import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
+import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
+import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
 import com.mikkelthygesen.billsplit.models.GroupExpense
 import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.models.Payment
@@ -27,7 +30,19 @@ sealed class EventDTO {
         val payee: PersonDTO,
         val sharedExpense: Float,
         val individualExpenses: List<IndividualExpenseDTO>,
-    ) : EventDTO()
+    ) : EventDTO() {
+
+        fun toDb(groupId: String) = GroupExpenseDb(
+            groupId = groupId,
+            id = id,
+            createdBy = createdBy.toDB(),
+            description = description,
+            payee = payee.toDB(),
+            sharedExpense = sharedExpense,
+            individualExpenses = individualExpenses.map { it.toIndividualExpense() },
+            timeStamp = timeStamp
+        )
+    }
 
     @kotlinx.serialization.Serializable
     @SerialName(TYPE_PAYMENT)
@@ -37,7 +52,17 @@ sealed class EventDTO {
         val timeStamp: Long,
         val paidTo: PersonDTO,
         val amount: Float,
-    ) : EventDTO()
+    ) : EventDTO() {
+
+        fun toDb(groupId: String) = PaymentDb(
+            groupId = groupId,
+            id = id,
+            createdBy = createdBy.toDB(),
+            timeStamp = timeStamp,
+            paidTo = paidTo.toDB(),
+            amount = amount,
+        )
+    }
 
     @kotlinx.serialization.Serializable
     @SerialName(TYPE_CHANGE)
@@ -47,7 +72,17 @@ sealed class EventDTO {
         val timeStamp: Long,
         val groupExpenseOriginal: EventDTO,
         val groupExpenseEdited: EventDTO
-    ) : EventDTO()
+    ) : EventDTO() {
+
+        fun toDb(groupId: String) = ExpenseChangeDb(
+            groupId = groupId,
+            id = id,
+            timeStamp = timeStamp,
+            createdBy = createdBy.toDB(),
+            groupExpenseOriginal = (groupExpenseOriginal as ExpenseDTO).toDb(groupId),
+            groupExpenseEdited = (groupExpenseEdited as ExpenseDTO).toDb(groupId),
+        )
+    }
 
     companion object {
         const val TYPE_PAYMENT = "payment"
