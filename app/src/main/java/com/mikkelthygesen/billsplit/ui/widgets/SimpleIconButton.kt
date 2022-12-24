@@ -20,9 +20,7 @@ fun SimpleIconButton(
         onClick = onClick
     ) {
         Icon(
-            painter = painterResource(
-                id = iconResId
-            ),
+            painter = painterResource(id = iconResId),
             contentDescription = "",
             tint = tint
         )

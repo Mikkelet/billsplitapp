@@ -78,7 +78,6 @@ private fun _GroupsView(
     groups: List<Group>,
     onGroupClick: (Group) -> Unit
 ) {
-    println("qqq update view=${groups.size}")
 
     Center {
         Text(

@@ -150,8 +150,6 @@ private fun TopBar(
             }
         }
     }
-
-
 }
 
 @Composable

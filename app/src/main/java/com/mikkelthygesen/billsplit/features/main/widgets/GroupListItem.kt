@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.fmt2dec
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.sampleGroup
@@ -37,11 +38,11 @@ fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
         )
         when {
             debt.second > 0F -> Text(
-                text = "$${debt.second}",
+                text = "-$${debt.second.fmt2dec()}",
                 style = TextStyle(color = Color.Red)
             )
             debt.second < 0F -> Text(
-                text = "$${debt.second.absoluteValue}",
+                text = "$${debt.second.absoluteValue.fmt2dec()}",
                 style = TextStyle(color = Color(0xFF0B9D3A))
             )
         }

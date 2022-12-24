@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
 
 data class Person(
     val uid: String = "",
@@ -22,7 +23,7 @@ data class Person(
         name = nameState
     }
 
-    fun resetState(){
+    fun resetState() {
         nameState = name
     }
 
@@ -35,4 +36,10 @@ data class Person(
     override fun hashCode(): Int {
         return uid.hashCode()
     }
+
+    fun toDb() = PersonDb(
+        uid = uid,
+        name = nameState,
+        pfpUrl = pfpUrlState
+    )
 }

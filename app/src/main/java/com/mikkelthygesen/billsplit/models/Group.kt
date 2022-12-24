@@ -24,7 +24,7 @@ data class Group(
         peopleState = peopleState.plus(person)
     }
 
-    fun removePerson(person: Person){
+    fun removePerson(person: Person) {
         peopleState = peopleState.minus(person)
     }
 
@@ -34,9 +34,11 @@ data class Group(
     }
 
     fun toDb() = GroupDb(
-        id,
-        nameState,
-        timeStamp,
-        debts.map { DebtDb(it.first, it.second) }
+        id = id,
+        name = nameState,
+        createdBy = createdBy.toDb(),
+        timestamp = timeStamp,
+        people = people.map { it.toDb() },
+        debts = debts.map { DebtDb(it.first, it.second) }
     )
 }

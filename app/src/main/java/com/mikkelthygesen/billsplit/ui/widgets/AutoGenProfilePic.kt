@@ -28,7 +28,7 @@ fun AutoProfilePic(modifier: Modifier = Modifier, user: Person) {
     Box(
         modifier = modifier
             .clip(CircleShape)
-            .background(Color(userName.hashCode()).copy(alpha = 1f))
+            .background(Color(user.uid.hashCode()).copy(alpha = 1f))
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center),
@@ -43,6 +43,6 @@ fun AutoProfilePic(modifier: Modifier = Modifier, user: Person) {
 @Composable
 private fun Preview() {
     Box(Modifier.size(100.dp)) {
-        AutoProfilePic(user = Person(name = ""))
+        AutoProfilePic(user = Person(name = "M E", uid = "13112dsfad312"))
     }
 }

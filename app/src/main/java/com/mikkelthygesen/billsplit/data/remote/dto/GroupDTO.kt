@@ -25,8 +25,10 @@ data class GroupDTO(
     fun toDB() = GroupDb(
         id = id,
         name = name,
+        createdBy = createdBy.toDB(),
         timestamp = timeStamp,
-        debts = debts.map { it.toDb() }
+        debts = debts.map { it.toDb() },
+        people = people.map { it.toDB() },
     )
 
     companion object {
