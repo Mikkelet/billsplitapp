@@ -8,7 +8,9 @@ import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -17,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -98,6 +101,16 @@ class GroupActivity : ComponentActivity() {
                                 is GroupViewModel.EditExpense -> ExpenseView(groupExpense = state.groupExpense)
                             }
                         }
+                        if (viewModel.showChatLoader)
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(top = 24.dp)
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colors.background)
+                                    .padding(4.dp)
+                                    .align(Alignment.TopCenter)
+                            )
                         TopBar(
                             modifier = Modifier.align(Alignment.TopCenter)
                         ) {
@@ -125,7 +138,23 @@ private fun TopBar(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            BackButton(onClick = onBackPressed)
+            Row {
+                BackButton(onClick = onBackPressed)
+                val title = when (it) {
+                    GroupViewModel.Chat -> groupViewModel.group.nameState
+                    GroupViewModel.ShowDebt -> "Debts"
+                    is GroupViewModel.EditExpense -> "Expense"
+                    else -> ""
+                }
+                Text(
+                    modifier = modifier
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colors.background)
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    text = title,
+                    style = MaterialTheme.typography.h6
+                )
+            }
             Row(
                 Modifier.shadowModifier(
                     MaterialTheme.colors.background,

@@ -1,5 +1,8 @@
 package com.mikkelthygesen.billsplit.features.group
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
@@ -25,6 +28,9 @@ class GroupViewModel @Inject constructor(
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
 
+    var showChatLoader by mutableStateOf(false)
+        private set
+
     private val _people = mutableListOf<Person>()
     val people: List<Person> = _people
     lateinit var group: Group
@@ -47,9 +53,11 @@ class GroupViewModel @Inject constructor(
                 updateUiState(Chat)
             }
             val syncResponse = runCatching {
+                showChatLoader = true
                 getGroupUseCase.execute(groupId, true)
             }
             syncResponse.foldSuccess { group ->
+                showChatLoader = false
                 _people.clear()
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events

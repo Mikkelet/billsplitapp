@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
 import kotlin.math.absoluteValue
 
@@ -43,7 +44,7 @@ private fun _DebtView(
 ) {
     val isDebt = debt.second > 0
     Row(
-        modifier = Modifier.shadowModifier(MaterialTheme.colors.background),
+        modifier = Modifier.shadowModifier(MaterialTheme.colors.listItemColor()),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (isDebt)

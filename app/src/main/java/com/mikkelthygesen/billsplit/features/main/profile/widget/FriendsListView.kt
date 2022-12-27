@@ -15,6 +15,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
@@ -28,7 +29,7 @@ fun FriendsListView(
     FutureComposable(
         asyncCallback = {
             sync = false
-            mainViewModel.getFriends(sync)
+            mainViewModel.getFriends(false)
         },
         onError = mainViewModel::handleError,
         loadingComposable = {
@@ -80,8 +81,7 @@ private fun _FriendsListView(friends: List<Friend>, showLoading: Boolean = false
     }
     Column(
         modifier =
-        Modifier
-            .shadowModifier(MaterialTheme.colors.background),
+        Modifier.shadowModifier(MaterialTheme.colors.listItemColor()),
     ) {
         AddFriendEmailTextField {
             friendsState = friendsState.plus(it)

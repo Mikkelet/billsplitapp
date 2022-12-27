@@ -151,7 +151,6 @@ private fun _ListViewExpense(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewSharedExpenseListItem() {
-    val groupExpense = sampleSharedExpenses.first()
     Box(
         modifier = Modifier
             .height(200.dp)

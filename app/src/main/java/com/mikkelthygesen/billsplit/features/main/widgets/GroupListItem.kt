@@ -16,6 +16,7 @@ import com.mikkelthygesen.billsplit.fmt2dec
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.sampleGroup
+import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import kotlin.math.absoluteValue
 
 @Composable
@@ -25,7 +26,7 @@ fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .shadowModifier(
-                backgroundColor = MaterialTheme.colors.background,
+                backgroundColor = MaterialTheme.colors.listItemColor(),
                 onClick = { onClick(group) },
                 innerPadding = PaddingValues(32.dp)
             ),

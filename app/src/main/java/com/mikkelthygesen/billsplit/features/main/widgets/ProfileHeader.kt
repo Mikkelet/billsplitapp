@@ -15,6 +15,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.features.main.widgets.widgets.ProfilePictureWithUpload
 import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
@@ -36,7 +37,7 @@ fun ProfileHeader(
             mutableStateOf(false)
         }
         Column(
-            Modifier.shadowModifier(MaterialTheme.colors.background)
+            Modifier.shadowModifier(MaterialTheme.colors.listItemColor())
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
