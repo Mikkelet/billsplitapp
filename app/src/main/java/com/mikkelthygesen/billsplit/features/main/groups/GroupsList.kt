@@ -17,10 +17,7 @@ import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.sampleGroup
-import com.mikkelthygesen.billsplit.ui.widgets.Center
-import com.mikkelthygesen.billsplit.ui.widgets.PullToRefreshComposable
-import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
-import kotlinx.coroutines.flow.collect
+import com.mikkelthygesen.billsplit.ui.widgets.*
 
 @Composable
 fun GroupsList(viewModel: MainViewModel = viewModel()) {
@@ -44,9 +41,12 @@ fun GroupsList(viewModel: MainViewModel = viewModel()) {
             groupsState = viewModel.getGroups(true)
             groupsState
         },
-        errorComposable = null,
-        onError = viewModel::handleError
-    ) { _ ->
+    ) { state ->
+        if(state is PullToRefreshState.RefreshFailure)
+            viewModel.handleError(state.error)
+        else if(state is PullToRefreshState.InitFailure)
+            viewModel.handleError(state.error)
+
         if (groupsState.isEmpty())
             Center(
                 modifier = Modifier.padding(16.dp),

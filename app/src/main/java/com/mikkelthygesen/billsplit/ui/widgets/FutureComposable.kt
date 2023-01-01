@@ -1,52 +1,76 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
-import androidx.compose.material.Text
+import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
 import androidx.compose.runtime.*
 import kotlinx.coroutines.launch
 
-sealed class AsyncState<T> {
-    class Ready<T> : AsyncState<T>()
-    class Loading<T> : AsyncState<T>()
-    class Success<T>(val data: T) : AsyncState<T>()
-    class Failure<T>(val error: Throwable) : AsyncState<T>()
+sealed class FutureState<T> {
+    class Loading<T> : FutureState<T>()
+    class Success<T>(val data: T) : FutureState<T>()
+    class Failure<T>(val error: Throwable) : FutureState<T>()
 }
 
 @Composable
 fun <T> FutureComposable(
     asyncCallback: suspend () -> T,
-    loadingComposable: @Composable () -> Unit = { LoadingView() },
-    onError: (Throwable) -> Unit = {},
-    errorComposable: @Composable (Throwable) -> Unit = {
-        Text(text = it.toString())
-    },
-    successComposable: @Composable (T, (suspend ()->T) -> Unit) -> Unit,
+    content: @Composable (state: FutureState<T>, refresh: () -> Unit) -> Unit
+) {
+    _FutureComposable(
+        asyncCallback,
+        asyncCallback,
+        content
+    )
+}
+
+@Composable
+fun <T> FutureComposable(
+    asyncCallback: suspend () -> T,
+    refreshCallback: suspend () -> T,
+    content: @Composable (state: FutureState<T>, refresh: () -> Unit) -> Unit
+) {
+    _FutureComposable(
+        asyncCallback,
+        refreshCallback,
+        content
+    )
+}
+
+@Composable
+@SuppressLint("ComposableNaming")
+private fun <T> _FutureComposable(
+    asyncCallback: suspend () -> T,
+    refreshCallback: suspend () -> T,
+    content: @Composable (state: FutureState<T>, refresh: () -> Unit) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    var asyncState: AsyncState<T> by remember {
-        mutableStateOf(AsyncState.Loading())
+    var futureState: FutureState<T> by remember {
+        mutableStateOf(FutureState.Loading())
     }
 
-    fun loadData(callback: suspend () -> T) {
+    fun execute(refresh: Boolean) {
+        futureState = FutureState.Loading()
         coroutineScope.launch {
-            asyncState = AsyncState.Loading()
-            val response = runCatching { callback() }
+            val response = runCatching {
+                if (refresh)
+                    refreshCallback()
+                else asyncCallback()
+            }
             response.fold(
-                onSuccess = { asyncState = AsyncState.Success(it) },
-                onFailure = {
-                    onError(it)
-                    asyncState = AsyncState.Failure(it)
-                }
+                onSuccess = { futureState = FutureState.Success(it) },
+                onFailure = { futureState = FutureState.Failure(it) }
             )
         }
     }
-    LaunchedEffect(Unit) { loadData(asyncCallback) }
 
-    when (val state = asyncState) {
-        is AsyncState.Failure<T> -> errorComposable(state.error)
-        is AsyncState.Success<T> -> when (state.data) {
-            null -> Unit
-            else -> successComposable(state.data) { refreshCallback -> loadData(refreshCallback) }
+    // Run on launch
+    LaunchedEffect(Unit) {
+        execute(false)
+    }
+
+    Crossfade(targetState = futureState) {
+        content(it) {
+            execute(true)
         }
-        else -> loadingComposable()
     }
 }

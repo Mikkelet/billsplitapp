@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
@@ -14,85 +15,73 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+sealed class PullToRefreshState<T> {
+    class Loading<T> : PullToRefreshState<T>()
+    class Success<T>(val data: T) : PullToRefreshState<T>()
+    class RefreshFailure<T>(val error: Throwable, val currentData: T?) : PullToRefreshState<T>()
+    class InitFailure<T>(val error: Throwable) : PullToRefreshState<T>()
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <T> PullToRefreshComposable(
     initialCallback: suspend () -> T,
     onRefresh: suspend () -> T,
-    loadingComposable: @Composable () -> Unit = { LoadingView() },
-    onError: (Throwable) -> Unit = {},
-    errorComposable: @Composable ((Throwable) -> Unit)? = { Text(text = "$it") },
-    successComposable: @Composable (T) -> Unit,
+    content: @Composable (PullToRefreshState<T>) -> Unit,
 ) {
-
-    var asyncState: AsyncState<T> by remember {
-        mutableStateOf(AsyncState.Loading())
+    val coroutineScope = rememberCoroutineScope()
+    var asyncState: PullToRefreshState<T> by remember {
+        mutableStateOf(PullToRefreshState.Loading())
     }
     var prevSuccessData: T? by remember {
         mutableStateOf(null)
     }
 
-    val coroutineScope = rememberCoroutineScope()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = asyncState is AsyncState.Loading,
-        onRefresh = {
-            asyncState = AsyncState.Loading()
-            coroutineScope.launch {
-                val response = runCatching { onRefresh() }
-                response.fold(
-                    onSuccess = {
-                        prevSuccessData = it
-                        asyncState = AsyncState.Success(it)
-                    },
-                    onFailure = {
-                        onError(it)
-                        asyncState = if (errorComposable == null && prevSuccessData != null)
-                            AsyncState.Success(prevSuccessData!!)
-                        else AsyncState.Failure(it)
-                    }
-                )
+    fun execute(refresh: Boolean) {
+        asyncState = PullToRefreshState.Loading()
+        coroutineScope.launch {
+            val response = runCatching {
+                if (refresh)
+                    onRefresh()
+                else initialCallback()
             }
-        })
-
-    LaunchedEffect(Unit) {
-        asyncState = AsyncState.Loading()
-        val response = runCatching { initialCallback() }
-        response.fold(
-            onSuccess = {
-                prevSuccessData = it
-                asyncState = AsyncState.Success(it)
-            },
-            onFailure = {
-                onError(it)
-                asyncState = if (errorComposable == null && prevSuccessData != null)
-                    AsyncState.Success(prevSuccessData!!)
-                else AsyncState.Failure(it)
-            }
-        )
+            response.fold(
+                onSuccess = {
+                    prevSuccessData = it
+                    asyncState = PullToRefreshState.Success(it)
+                },
+                onFailure = {
+                    asyncState = if (prevSuccessData == null)
+                        PullToRefreshState.InitFailure(it)
+                    else PullToRefreshState.RefreshFailure(it, prevSuccessData)
+                }
+            )
+        }
     }
 
-    when (val state = asyncState) {
-        is AsyncState.Failure<T> ->
-            if (errorComposable != null)
-                errorComposable(state.error)
-        is AsyncState.Success<T> ->
-            Box(
-                modifier = Modifier
-                    .pullRefresh(pullRefreshState)
-            ) {
-                LazyColumn {
-                    item {
-                        successComposable(state.data)
-                    }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = asyncState is PullToRefreshState.Loading,
+        onRefresh = { execute(true) })
+
+    LaunchedEffect(Unit) { execute(false) }
+
+    Box(
+        modifier = Modifier
+            .pullRefresh(pullRefreshState)
+    ) {
+        Crossfade(targetState = asyncState) {
+            LazyColumn {
+                item {
+                    content(it)
                 }
-                PullRefreshIndicator(
-                    refreshing = asyncState is AsyncState.Loading,
-                    state = pullRefreshState,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter),
-                )
             }
-        else -> loadingComposable()
+        }
+        PullRefreshIndicator(
+            refreshing = asyncState is PullToRefreshState.Loading,
+            state = pullRefreshState,
+            modifier = Modifier
+                .align(Alignment.TopCenter),
+        )
     }
 }
 

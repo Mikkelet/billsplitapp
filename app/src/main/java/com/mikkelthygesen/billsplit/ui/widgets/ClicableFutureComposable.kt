@@ -1,43 +1,44 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.runtime.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
+
+sealed class TriggerFutureState<T> {
+    class Ready<T> : TriggerFutureState<T>()
+    class Loading<T> : TriggerFutureState<T>()
+    class Success<T>(val data: T) : TriggerFutureState<T>()
+    class Failure<T>(val error: Throwable) : TriggerFutureState<T>()
+}
 
 @Composable
-fun <T> ClickableFutureComposable(
+fun <T> TriggerFutureComposable(
     onClickAsync: suspend () -> T,
-    onError: (Throwable) -> Unit = { Timber.e(it) },
-    onSuccess: (T?) -> Unit = {},
-    loadingComposable: @Composable () -> Unit = { LoadingView() },
-    clickableComposable: @Composable (() -> Unit) -> Unit,
+    content: @Composable (TriggerFutureState<T>, () -> Unit) -> Unit
 ) {
-    var asyncState: AsyncState<T> by remember {
-        mutableStateOf(AsyncState.Ready())
-    }
     val coroutineScope = rememberCoroutineScope()
+    var asyncState: TriggerFutureState<T> by remember {
+        mutableStateOf(TriggerFutureState.Ready())
+    }
 
-    val callback: () -> Unit = {
+    fun callback() {
         coroutineScope.launch {
-            asyncState = AsyncState.Loading()
+            asyncState = TriggerFutureState.Loading()
             val response = runCatching { onClickAsync() }
             response.fold(
                 onSuccess = {
-                    onSuccess(it)
-                    asyncState = AsyncState.Success(it)
+                    asyncState = TriggerFutureState.Success(it)
                 },
                 onFailure = {
-                    onError(it)
-                    asyncState = AsyncState.Ready()
+                    asyncState = TriggerFutureState.Failure(it)
                 }
             )
         }
     }
 
-    // Clickable state can only be ready or loading.
-    // Success and failure should be handled by the relevant callbacks
-    when (asyncState) {
-        is AsyncState.Loading<T> -> loadingComposable()
-        else -> clickableComposable(callback)
+    Crossfade(targetState = asyncState) {
+        content(it) {
+            callback()
+        }
     }
 }

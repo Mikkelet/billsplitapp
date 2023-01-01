@@ -18,10 +18,10 @@ import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.matchesEmail
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
 import io.ktor.utils.io.core.*
-import kotlinx.coroutines.delay
 
 @Composable
 fun AddFriendEmailTextField(
@@ -64,20 +64,26 @@ fun _AddFriendTextField(
                 errorMessage = ""
                 addFriendTextFieldValue = it
             }, trailingIcon = {
-                ClickableFutureComposable(
+                TriggerFutureComposable(
                     onClickAsync = {
-                        if(addFriendTextFieldValue.trim().lowercase().matchesEmail())
+                        if (addFriendTextFieldValue.trim().lowercase().matchesEmail())
                             onAddFriend(addFriendTextFieldValue.trim().lowercase())
                         else throw Exception("Not a valid email")
                     },
-                    loadingComposable = { CircularProgressIndicator() },
-                    onSuccess = { addFriendTextFieldValue = "" },
-                    onError = { errorMessage = it.message.toString() }
-                ) {
-                    SimpleIconButton(
-                        iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_add_plus,
-                        onClick = it
-                    )
+                ) { state, trigger ->
+                    when (state) {
+                        is TriggerFutureState.Loading -> CircularProgressIndicator()
+                        else -> {
+                            if (state is TriggerFutureState.Failure)
+                                errorMessage = state.error.message.toString()
+                            else if (state is TriggerFutureState.Success)
+                                addFriendTextFieldValue = ""
+                            SimpleIconButton(
+                                iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_add_plus,
+                                onClick = trigger
+                            )
+                        }
+                    }
                 }
             }
         )

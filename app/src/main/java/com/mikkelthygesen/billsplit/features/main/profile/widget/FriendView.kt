@@ -15,8 +15,10 @@ import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
-import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
 
 
 @Composable
@@ -31,20 +33,21 @@ fun ProfilePageFriendView(
     _FriendView(person = friend.person) {
         when (friendStatus) {
             is Friend.FriendRequestReceived -> {
-                ClickableFutureComposable(
+                TriggerFutureComposable(
                     onClickAsync = {
                         mainViewModel.acceptFriendRequest(friend.person)
-                    },
-                    onSuccess = {
-                        if (it != null)
-                            friendStatus = it
-                    },
-                    onError = mainViewModel::handleError,
-                    loadingComposable = {
-                        Text(text = "Accepting...")
-                    }) {
-                    Button(onClick = it) {
-                        Text(text = "Accept")
+                    }) { state, addFriend ->
+                    when (state) {
+                        is TriggerFutureState.Loading -> Text(text = "Accepting...")
+                        else -> {
+                            if (state is TriggerFutureState.Success) {
+                                friendStatus = state.data
+                            } else if (state is TriggerFutureState.Failure)
+                                mainViewModel.handleError(state.error)
+                            Button(onClick = addFriend) {
+                                Text(text = "Accept")
+                            }
+                        }
                     }
                 }
             }
@@ -91,7 +94,8 @@ private fun _FriendView(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
-        ) { ProfilePicture(
+        ) {
+            ProfilePicture(
                 modifier = Modifier.size(64.dp),
                 person = person
             )

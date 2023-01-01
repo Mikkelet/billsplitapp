@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +20,8 @@ import com.mikkelthygesen.billsplit.features.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
-import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
 import kotlin.math.absoluteValue
 
 @Composable
@@ -60,24 +62,34 @@ private fun _DebtView(
                 style = TextStyle(color = Color(0xFF0B9D3A), fontSize = 20.sp)
             )
         if (isDebt)
-            ClickableFutureComposable(
-                onClickAsync = {
-                    onPay()
-                },
-                onError = onError
-            ) {
-                Button(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wrapContentWidth(),
-                    onClick = it
-                ) {
-                    Text(text = "PAY")
+            TriggerFutureComposable(
+                onClickAsync = { onPay() },
+            ) { state, onTrigger ->
+                when (state) {
+                    is TriggerFutureState.Loading -> CircularProgressIndicator()
+                    else -> {
+                        if (state is TriggerFutureState.Failure)
+                            onError(state.error)
+                        PayButton(
+                            modifier = Modifier.weight(1f),
+                            onPay = onTrigger
+                        )
+                    }
                 }
             }
     }
 }
 
+@Composable
+private fun PayButton(modifier: Modifier = Modifier, onPay: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .wrapContentWidth(),
+        onClick = onPay
+    ) {
+        Text(text = "PAY")
+    }
+}
 
 @Preview
 @Composable

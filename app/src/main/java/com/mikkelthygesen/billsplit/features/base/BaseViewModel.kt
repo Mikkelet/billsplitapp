@@ -91,6 +91,8 @@ abstract class BaseViewModel : ViewModel() {
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
             is NetworkExceptions.UserLoggedOutException -> showSignIn()
+            is io.ktor.client.network.sockets.SocketTimeoutException ->
+                showDialog(DialogState.Error(Exception("Session timed out")))
             else -> {
                 showDialog(DialogState.Error(exception))
             }

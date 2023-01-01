@@ -16,8 +16,10 @@ import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.features.main.widgets.widgets.ProfilePictureWithUpload
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
-import com.mikkelthygesen.billsplit.ui.widgets.ClickableFutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
+import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
 
 
 @Composable
@@ -68,41 +70,44 @@ fun ProfileHeader(
                     )
                 )
                 if (showSaveNameOptions)
-                    ClickableFutureComposable(
+                    TriggerFutureComposable(
                         onClickAsync = {
                             onUpdateUser()
                             focusRequester.clearFocus()
-                        },
-                        onError = onError,
-                        onSuccess = {
-                            user.saveChanges()
-                            focusRequester.clearFocus()
-                            showSaveNameOptions = false
-                        },
-                    ) { saveName ->
-                        Row {
-                            SimpleIconButton(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .padding(end = 4.dp),
-                                iconResId = R.drawable.ic_check
-                            ) {
-                                saveName()
-                            }
-                            SimpleIconButton(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .padding(end = 4.dp),
-                                iconResId = R.drawable.ic_outline_cancel_24,
-                                tint = MaterialTheme.colors.error
-                            ) {
-                                user.resetState()
-                                focusRequester.clearFocus()
-                                showSaveNameOptions = false
+                        }
+                    ) { state, updateUser ->
+                        when (state) {
+                            is TriggerFutureState.Loading -> LoadingView()
+                            else -> {
+                                if (state is TriggerFutureState.Success) {
+                                    user.saveChanges()
+                                    focusRequester.clearFocus()
+                                    showSaveNameOptions = false
+                                } else if (state is TriggerFutureState.Failure)
+                                    onError(state.error)
+                                Row {
+                                    SimpleIconButton(
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .padding(end = 4.dp),
+                                        iconResId = R.drawable.ic_check,
+                                        onClick = updateUser
+                                    )
+                                    SimpleIconButton(
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .padding(end = 4.dp),
+                                        iconResId = R.drawable.ic_outline_cancel_24,
+                                        tint = MaterialTheme.colors.error
+                                    ) {
+                                        user.resetState()
+                                        focusRequester.clearFocus()
+                                        showSaveNameOptions = false
+                                    }
+                                }
                             }
                         }
                     }
-
             }
             Divider(Modifier.padding(vertical = 16.dp, horizontal = 64.dp))
             Text(
@@ -117,5 +122,8 @@ fun ProfileHeader(
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
-    ProfileHeader(user = Person("pokaspd123123psodak", name = "Catra"), onUpdateUser = {}, onError = {})
+    ProfileHeader(
+        user = Person("pokaspd123123psodak", name = "Catra"),
+        onUpdateUser = {},
+        onError = {})
 }

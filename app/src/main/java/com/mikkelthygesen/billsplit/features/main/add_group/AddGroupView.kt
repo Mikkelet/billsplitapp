@@ -50,11 +50,11 @@ fun AddGroupView(
                     group = group
                 )
             }
-            ClickableFutureComposable(
-                onClickAsync = { viewModel.saveGroup(group) },
-                onError = viewModel::handleError,
-                loadingComposable = {
-                    Row(
+            TriggerFutureComposable(
+                onClickAsync = { viewModel.saveGroup(group) }
+            ) { state, saveGroup ->
+                when (state) {
+                    is TriggerFutureState.Loading -> Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -65,28 +65,31 @@ fun AddGroupView(
                             )
                         )
                     }
-                }
-            ) { addGroup ->
-                Row(
-                    Modifier
-                        .padding(top = 64.dp, bottom = 64.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    val enabled = group.nameState.isNotBlank()
-                            && group.peopleState.isNotEmpty()
-                    SimpleIconButton(
-                        modifier = Modifier
-                            .size(92.dp)
-                            .clip(CircleShape)
-                            .background(
-                                if (enabled) MaterialTheme.colors.primary else Color.Gray
-                            ),
-                        iconResId = R.drawable.ic_check,
-                        tint = MaterialTheme.colors.onPrimary
-                    ) {
-                        if (enabled)
-                            addGroup()
+                    else -> {
+                        if (state is TriggerFutureState.Failure)
+                            viewModel.handleError(state.error)
+                        Row(
+                            Modifier
+                                .padding(top = 64.dp, bottom = 64.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            val enabled = group.nameState.isNotBlank()
+                                    && group.peopleState.isNotEmpty()
+                            SimpleIconButton(
+                                modifier = Modifier
+                                    .size(92.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (enabled) MaterialTheme.colors.primary
+                                        else Color.Gray
+                                    ),
+                                iconResId = R.drawable.ic_check,
+                                tint = MaterialTheme.colors.onPrimary
+                            ) {
+                                if (enabled) saveGroup()
+                            }
+                        }
                     }
                 }
             }

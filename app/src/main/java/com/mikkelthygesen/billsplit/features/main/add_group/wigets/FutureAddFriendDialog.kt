@@ -17,7 +17,9 @@ import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Group
 import com.mikkelthygesen.billsplit.sampleFriends
 import com.mikkelthygesen.billsplit.sampleGroup
+import com.mikkelthygesen.billsplit.ui.widgets.ErrorView
 import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.FutureState
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
 
@@ -49,39 +51,44 @@ fun _FutureAddFriendDialog(
     if (showAddFriendDialog) {
         FutureComposable(
             asyncCallback = { getFriends(false) },
-            loadingComposable = {
-                Dialog(onDismissRequest = {
-                    showAddFriendDialog = false
-                }) {
-                    CircularProgressIndicator()
+        ) { state, refresh ->
+            when (state) {
+                is FutureState.Loading -> {
+                    Dialog(onDismissRequest = {
+                        showAddFriendDialog = false
+                    }) {
+                        CircularProgressIndicator()
+                    }
+                }
+                is FutureState.Failure -> ErrorView(error = state.error, refresh)
+                is FutureState.Success -> {
+                    val acceptedFriends = state.data.filterIsInstance<Friend.FriendAccepted>()
+                    val addableFriends = acceptedFriends
+                        .let { list ->
+                            if (list.isEmpty()) emptyList()
+                            else list.map { it.person }
+                                .minus(group.peopleState.toSet())
+
+                        }
+                    AddFriendToGroupDialog(
+                        friendsToAdd = addableFriends,
+                        totalFriends = acceptedFriends.size,
+                        onDismiss = {
+                            showAddFriendDialog = false
+                        },
+                        onRefresh = refresh,
+                        onAddFriend = group::addPerson,
+                        onGoToProfilePage = {
+                            showAddFriendDialog = false
+                            showProfile()
+                        }
+                    )
                 }
             }
-        ) { friends, refreshCallback ->
-            val acceptedFriends =
-                friends.filterIsInstance<Friend.FriendAccepted>()
-            val addableFriends = acceptedFriends
-                .let { list ->
-                    if (list.isEmpty()) emptyList()
-                    else list.map { it.person }
-                        .minus(group.peopleState.toSet())
 
-                }
-            AddFriendToGroupDialog(
-                friendsToAdd = addableFriends,
-                totalFriends = acceptedFriends.size,
-                onDismiss = {
-                    showAddFriendDialog = false
-                },
-                onRefresh = {
-                    refreshCallback { getFriends(true) }
-                },
-                onAddFriend = group::addPerson,
-                onGoToProfilePage = {
-                    showAddFriendDialog = false
-                    showProfile()
-                }
-            )
         }
+
+
     }
     SimpleIconButton(
         modifier = modifier

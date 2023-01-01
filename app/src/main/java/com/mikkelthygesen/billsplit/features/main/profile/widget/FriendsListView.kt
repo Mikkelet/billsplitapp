@@ -17,6 +17,7 @@ import com.mikkelthygesen.billsplit.models.Friend
 import com.mikkelthygesen.billsplit.models.Person
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
+import com.mikkelthygesen.billsplit.ui.widgets.FutureState
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
 @Composable
@@ -26,20 +27,32 @@ fun FriendsListView(
     var sync by remember {
         mutableStateOf(false)
     }
+    var friends: List<Friend> by remember {
+        mutableStateOf(emptyList())
+    }
     FutureComposable(
         asyncCallback = {
             sync = false
             mainViewModel.getFriends(false)
         },
-        onError = mainViewModel::handleError,
-        loadingComposable = {
-            FriendsListWithTitle(friends = emptyList(), sync) {}
-        }
-    ) { friends, refreshCallback ->
-        FriendsListWithTitle(friends = friends) {
+        refreshCallback = {
             sync = true
-            refreshCallback { mainViewModel.getFriends(sync) }
+            mainViewModel.getFriends(true)
         }
+    ) { state, refresh ->
+        when (state) {
+            is FutureState.Loading -> FriendsListWithTitle(friends = emptyList(), sync) {}
+            else -> {
+                if (state is FutureState.Failure)
+                    mainViewModel.handleError(state.error)
+                else if (state is FutureState.Success)
+                    friends = state.data
+                FriendsListWithTitle(friends = friends.sortedBy { it.javaClass.simpleName }) {
+                    refresh()
+                }
+            }
+        }
+
     }
 }
 
@@ -75,7 +88,10 @@ private fun FriendsListWithTitle(
 
 @Composable
 @SuppressLint("ComposableNaming")
-private fun _FriendsListView(friends: List<Friend>, showLoading: Boolean = false) {
+private fun _FriendsListView(
+    friends: List<Friend>,
+    showLoading: Boolean = false
+) {
     var friendsState by remember {
         mutableStateOf(friends)
     }
@@ -90,7 +106,10 @@ private fun _FriendsListView(friends: List<Friend>, showLoading: Boolean = false
             ProfilePageFriendView(it)
         }
         if (showLoading)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 CircularProgressIndicator()
             }
     }
