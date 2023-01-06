@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.group.GroupViewModel
-import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 
 

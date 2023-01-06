@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
-import com.mikkelthygesen.billsplit.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.Payment
 
 @Entity(tableName = "payments")
 data class PaymentDb(

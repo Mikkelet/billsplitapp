@@ -5,11 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.DebtCalculator
+import com.mikkelthygesen.billsplit.domain.models.*
 import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.models.*
-import com.mikkelthygesen.billsplit.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.toNewIndividualExpenses
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

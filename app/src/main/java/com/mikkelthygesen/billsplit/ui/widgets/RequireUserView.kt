@@ -3,7 +3,7 @@ package com.mikkelthygesen.billsplit.ui.widgets
 import androidx.compose.runtime.Composable
 import com.mikkelthygesen.billsplit.data.remote.exceptions.NetworkExceptions
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Person
 
 @Composable
 fun RequireUserView(

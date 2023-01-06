@@ -1,7 +1,7 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupDb
-import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Group
 
 @kotlinx.serialization.Serializable
 data class GroupDTO(

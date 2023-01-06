@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.fmt2dec
-import com.mikkelthygesen.billsplit.models.Group
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import kotlin.math.absoluteValue

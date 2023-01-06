@@ -14,10 +14,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.features.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.group.view_expenses.widgets.DebtView
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView

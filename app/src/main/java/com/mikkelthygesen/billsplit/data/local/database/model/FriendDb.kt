@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import androidx.room.RoomWarnings
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
 import com.mikkelthygesen.billsplit.data.remote.dto.FriendStatusDTO
-import com.mikkelthygesen.billsplit.models.Friend
+import com.mikkelthygesen.billsplit.domain.models.Friend
 
 @Entity(tableName = "friends")
 data class FriendDb(

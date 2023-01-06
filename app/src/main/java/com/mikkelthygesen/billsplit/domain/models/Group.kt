@@ -1,11 +1,11 @@
-package com.mikkelthygesen.billsplit.models
+package com.mikkelthygesen.billsplit.domain.models
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.DebtDb
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupDb
-import com.mikkelthygesen.billsplit.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 
 data class Group(
     val id: String,

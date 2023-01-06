@@ -2,7 +2,7 @@ package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Person
 
 @Composable
 fun ProfilePicture(modifier: Modifier = Modifier, person: Person) {

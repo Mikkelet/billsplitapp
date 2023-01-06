@@ -1,7 +1,7 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.IndividualExpenseDb
-import com.mikkelthygesen.billsplit.models.IndividualExpense
+import com.mikkelthygesen.billsplit.domain.models.IndividualExpense
 
 @kotlinx.serialization.Serializable
 data class IndividualExpenseDTO(

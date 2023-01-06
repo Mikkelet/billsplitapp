@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.data.local.database.model.embedded
 
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Person
 
 @kotlinx.serialization.Serializable
 data class PersonDb(

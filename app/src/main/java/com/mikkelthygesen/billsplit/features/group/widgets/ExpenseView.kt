@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.*
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.IndividualExpense
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.IndividualExpense
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.widgets.ExpenseTextField
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 

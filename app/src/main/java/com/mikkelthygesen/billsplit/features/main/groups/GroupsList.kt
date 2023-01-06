@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
-import com.mikkelthygesen.billsplit.models.Group
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
 

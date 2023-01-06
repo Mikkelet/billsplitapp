@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit
 
+import com.mikkelthygesen.billsplit.domain.models.*
 import com.mikkelthygesen.billsplit.models.*
 import kotlin.math.absoluteValue
 

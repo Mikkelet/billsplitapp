@@ -25,7 +25,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.add_group.wigets.FutureAddFriendDialog
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
-import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
 

@@ -12,8 +12,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.fmt2dec
-import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.Person
 
 
 @Composable

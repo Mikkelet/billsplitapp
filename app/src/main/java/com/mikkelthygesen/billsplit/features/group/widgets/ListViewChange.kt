@@ -15,10 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.fmt2dec
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.models.IndividualExpense
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
+import com.mikkelthygesen.billsplit.domain.models.IndividualExpense
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.widgets.CircularImageView
 import com.mikkelthygesen.billsplit.ui.widgets.HorizontalDivider

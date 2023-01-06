@@ -1,5 +1,8 @@
 package com.mikkelthygesen.billsplit
 
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.models.*
 
 class DebtCalculator(

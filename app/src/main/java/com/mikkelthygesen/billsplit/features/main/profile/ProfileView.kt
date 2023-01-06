@@ -14,7 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.profile.widget.FriendsListView
 import com.mikkelthygesen.billsplit.features.main.widgets.ProfileHeader
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 
 @Composable

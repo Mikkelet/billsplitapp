@@ -1,8 +1,8 @@
 package com.mikkelthygesen.billsplit
 
 import android.util.Patterns
-import com.mikkelthygesen.billsplit.models.IndividualExpense
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.IndividualExpense
+import com.mikkelthygesen.billsplit.domain.models.Person
 
 fun <T> tryCatchDefault(defaultValue: T, callback: () -> T) = try {
     callback()

@@ -12,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.models.Friend
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Friend
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable

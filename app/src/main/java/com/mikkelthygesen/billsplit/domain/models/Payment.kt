@@ -1,6 +1,6 @@
-package com.mikkelthygesen.billsplit.models
+package com.mikkelthygesen.billsplit.domain.models
 
-import com.mikkelthygesen.billsplit.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 
 data class Payment(
     override val id: String = "",

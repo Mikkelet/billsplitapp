@@ -16,11 +16,11 @@ import com.mikkelthygesen.billsplit.features.group.group_view.widgets.Menu
 import com.mikkelthygesen.billsplit.features.group.widgets.ChangesListView
 import com.mikkelthygesen.billsplit.features.group.widgets.ListViewExpense
 import com.mikkelthygesen.billsplit.features.group.widgets.ListViewPayment
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.models.Person
-import com.mikkelthygesen.billsplit.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
+import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
@@ -32,8 +32,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupEventsView(
     modifier: Modifier = Modifier,
-    viewModel: GroupViewModel = viewModel()
 ) {
+    val viewModel: GroupViewModel = viewModel()
     val eventsFlow = viewModel.eventStateFlow.collectAsState()
 
     RequireUserView(baseViewModel = viewModel) { user ->

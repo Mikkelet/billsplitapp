@@ -3,10 +3,10 @@ package com.mikkelthygesen.billsplit.data.remote.dto
 import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
 import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
-import com.mikkelthygesen.billsplit.models.GroupExpense
-import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.models.Payment
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
+import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.Person
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.*

@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.models
+package com.mikkelthygesen.billsplit.domain.models
 
 import com.mikkelthygesen.billsplit.data.remote.dto.FriendDTO
 import com.mikkelthygesen.billsplit.data.remote.dto.FriendStatusDTO

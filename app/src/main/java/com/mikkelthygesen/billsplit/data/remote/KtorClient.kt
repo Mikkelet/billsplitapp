@@ -58,8 +58,9 @@ class KtorClient @Inject constructor(private val authProvider: AuthProvider) {
             json(json)
         }
         install(HttpTimeout) {
-            this.connectTimeoutMillis = 20 * 1000
-            this.requestTimeoutMillis = 20 * 1000
+            this.connectTimeoutMillis = 20_000
+            this.requestTimeoutMillis = 20_000
+            this.socketTimeoutMillis = 20_000
         }
         install(Logging) {
             logger = Logger.SIMPLE

@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.RoomWarnings
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
-import com.mikkelthygesen.billsplit.models.GroupExpensesChanged
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 
 @Entity(tableName = "expense_changes")
 @SuppressWarnings(RoomWarnings.PRIMARY_KEY_FROM_EMBEDDED_IS_DROPPED)

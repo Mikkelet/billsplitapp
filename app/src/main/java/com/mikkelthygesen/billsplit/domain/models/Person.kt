@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.models
+package com.mikkelthygesen.billsplit.domain.models
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

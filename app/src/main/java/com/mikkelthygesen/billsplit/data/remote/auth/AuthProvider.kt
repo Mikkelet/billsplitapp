@@ -7,7 +7,7 @@ import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.data.remote.exceptions.NetworkExceptions
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Person
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState

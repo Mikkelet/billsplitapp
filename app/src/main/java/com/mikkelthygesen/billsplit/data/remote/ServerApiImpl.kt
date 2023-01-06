@@ -2,8 +2,12 @@ package com.mikkelthygesen.billsplit.data.remote
 
 import com.mikkelthygesen.billsplit.data.remote.dto.*
 import com.mikkelthygesen.billsplit.data.remote.requests.*
+import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
+import com.mikkelthygesen.billsplit.domain.models.Payment
 import com.mikkelthygesen.billsplit.models.*
-import com.mikkelthygesen.billsplit.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import io.ktor.client.*
 import javax.inject.Inject
 import javax.inject.Singleton

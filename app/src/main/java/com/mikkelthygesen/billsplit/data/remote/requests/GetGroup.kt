@@ -2,7 +2,7 @@ package com.mikkelthygesen.billsplit.data.remote.requests
 
 import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
 import com.mikkelthygesen.billsplit.data.remote.dto.GroupDTO
-import com.mikkelthygesen.billsplit.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Group
 
 object GetGroup {
     @kotlinx.serialization.Serializable

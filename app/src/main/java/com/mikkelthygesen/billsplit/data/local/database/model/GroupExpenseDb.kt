@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.IndividualExpenseDb
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
-import com.mikkelthygesen.billsplit.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 
 @Entity(tableName = "group_expenses")
 class GroupExpenseDb(

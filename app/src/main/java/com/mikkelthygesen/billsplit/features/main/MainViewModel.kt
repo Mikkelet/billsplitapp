@@ -4,9 +4,9 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.domain.usecases.*
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.models.Friend
-import com.mikkelthygesen.billsplit.models.Group
-import com.mikkelthygesen.billsplit.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Friend
+import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
