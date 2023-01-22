@@ -78,12 +78,11 @@ private fun _GroupsView(
     groups: List<Group>,
     onGroupClick: (Group) -> Unit
 ) {
-
-    Center {
+    Column {
         Text(
-            modifier = Modifier.padding(top = 32.dp),
+            modifier = Modifier.padding(top = 32.dp, start = 32.dp, bottom = 32.dp),
             text = "Groups",
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h4
         )
         groups.map { group ->
             Column(modifier = Modifier.clickable {

@@ -28,6 +28,7 @@ fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
             .shadowModifier(
                 backgroundColor = MaterialTheme.colors.listItemColor(),
                 onClick = { onClick(group) },
+                outerPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
                 innerPadding = PaddingValues(32.dp)
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
