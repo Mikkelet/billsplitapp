@@ -6,7 +6,6 @@ import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.domain.models.Payment
-import com.mikkelthygesen.billsplit.models.*
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import io.ktor.client.*
 import javax.inject.Inject

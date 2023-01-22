@@ -80,20 +80,23 @@ class KtorClient @Inject constructor(private val authProvider: AuthProvider) {
 
             if (!call.response.status.isSuccess()) {
                 if (call.response.status.value == 408) {
-                    println("qqq getting new authtoken")
                     val refreshAuthToken = authProvider.getAuthToken(true)
                     req.header(HttpHeaders.Authorization, refreshAuthToken)
                     return@intercept execute(req)
                 }
 
                 val content = call.response.body<String>()
-                throw when (call.response.status.value) {
-                    403, 401 -> NetworkExceptions.ForbiddenException
-                    404 -> NetworkExceptions.NotFoundException
-                    else -> NetworkExceptions.GenericException(Throwable("${call.response.status}: $content"))
-                }
+                errorCodeNetworkInterceptor(call.response.status.value, content)
             }
             call
+        }
+    }
+
+    private fun errorCodeNetworkInterceptor(errorCode: Int, content: String) {
+        throw when (errorCode) {
+            403, 401 -> NetworkExceptions.ForbiddenException
+            404 -> NetworkExceptions.NotFoundException
+            else -> NetworkExceptions.GenericException(Throwable("$errorCode: $content"))
         }
     }
 }

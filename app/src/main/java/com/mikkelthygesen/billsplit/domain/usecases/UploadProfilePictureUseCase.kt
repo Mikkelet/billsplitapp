@@ -19,5 +19,4 @@ class UploadProfilePictureUseCase @Inject  constructor(
         authProvider.updateProfilePicture(downloadUrl)
         loggedInUser.pfpUrlState = downloadUrl.toString()
     }
-
 }
