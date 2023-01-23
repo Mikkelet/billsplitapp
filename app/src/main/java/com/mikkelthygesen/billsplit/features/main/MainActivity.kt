@@ -10,6 +10,8 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -78,8 +80,20 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
                 Scaffold(
                     backgroundColor = MaterialTheme.colors.background,
+                    floatingActionButton = {
+                        Crossfade(targetState = uiStateFlow.value) { uiState ->
+                            when(uiState){
+                                is MainViewModel.MyGroups -> FloatingActionButton(onClick = {
+                                    viewModel.showAddGroup()
+                                }) {
+                                    Icon(Icons.Filled.Add, contentDescription = "Add Group")
+                                }
+                            }
+                        }
+                    },
                     bottomBar = { if (showNavigation(uiStateFlow.value)) BottomNavBar() },
                     topBar = {
                         if (BuildConfig.DEBUG)
@@ -142,18 +156,6 @@ private fun BottomNavBar(
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_person_24),
-                    contentDescription = ""
-                )
-            }
-        )
-        BottomNavigationItem(
-            selected = uiState is MainViewModel.AddGroup,
-            onClick = viewModel::showAddGroup,
-            selectedContentColor = MaterialTheme.colors.primary,
-            unselectedContentColor = Color.Gray,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_add_plus),
                     contentDescription = ""
                 )
             }
