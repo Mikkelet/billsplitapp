@@ -1,105 +1,101 @@
 package com.mikkelthygesen.billsplit.features.main.groups
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
-import com.mikkelthygesen.billsplit.domain.models.Group
-import com.mikkelthygesen.billsplit.domain.models.Person
-import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun GroupsList(viewModel: MainViewModel = viewModel()) {
+fun GroupsList() {
+    val viewModel: MainViewModel = viewModel()
+    val groupsViewModel: GroupsViewModel = hiltViewModel()
+    val uiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
+    val uiState = uiStateFlow.value
 
-    var groupsState by remember {
-        mutableStateOf<List<Group>>(emptyList())
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState is BaseViewModel.UiState.Loading,
+        onRefresh = { groupsViewModel.getGroups(true) })
+
+    LaunchedEffect(Unit) {
+        groupsViewModel.getGroups(false)
     }
 
-    LaunchedEffect(key1 = Unit, block = {
-        viewModel.groupsFlow.collect {
-            groupsState = it
-        }
-    })
-
-    PullToRefreshComposable(
-        initialCallback = {
-            groupsState = viewModel.getGroups(false)
-            groupsState
-        },
-        onRefresh = {
-            groupsState = viewModel.getGroups(true)
-            groupsState
-        },
-    ) { state ->
-        if(state is PullToRefreshState.RefreshFailure)
-            viewModel.handleError(state.error)
-        else if(state is PullToRefreshState.InitFailure)
-            viewModel.handleError(state.error)
-
-        if (groupsState.isEmpty())
-            Center(
-                modifier = Modifier.padding(16.dp),
-            ) {
-                Text(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    text = "You are not part of any groups yet!",
-                    style = MaterialTheme.typography.body1
-                )
-                Button(onClick = viewModel::showAddGroup) {
-                    Text(text = "Add a new group!")
-                }
-            }
-        else
-            RequireUserView(baseViewModel = viewModel) { user ->
-                _GroupsView(
-                    user = user,
-                    groups = groupsState,
-                    onGroupClick = { viewModel.showGroup(it.id) })
-            }
-    }
-}
-
-
-@Composable
-@SuppressLint("ComposableNaming")
-private fun _GroupsView(
-    user: Person,
-    groups: List<Group>,
-    onGroupClick: (Group) -> Unit
-) {
-    Column {
-        Text(
-            modifier = Modifier.padding(top = 32.dp, start = 32.dp, bottom = 32.dp),
-            text = "Groups",
-            style = MaterialTheme.typography.h4
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .pullRefresh(pullRefreshState)
+    ) {
+        PullRefreshIndicator(
+            refreshing = uiState is BaseViewModel.UiState.Loading,
+            state = pullRefreshState,
+            modifier = Modifier
+                .align(Alignment.TopCenter),
         )
-        groups.map { group ->
-            Column(modifier = Modifier.clickable {
-                onGroupClick(group)
-            }) {
-                GroupListItem(user, group = group, onGroupClick)
-            }
+        Crossfade(targetState = uiState) { state ->
+            if (state is BaseViewModel.UiState.Loading)
+                LoadingView()
+            else if (state is GroupsViewModel.ShowGroups)
+                RequireUserView(baseViewModel = viewModel) { user ->
+                    LazyColumn {
+                        item {
+                            Text(
+                                modifier = Modifier.padding(
+                                    top = 32.dp,
+                                    start = 32.dp,
+                                    bottom = 32.dp
+                                ),
+                                text = "Groups",
+                                style = MaterialTheme.typography.h4
+                            )
+                        }
+                        if (state.groups.isEmpty())
+                            item {
+                                EmptyGroupList(viewModel::showAddGroup)
+                            }
+                        else
+                            items(state.groups.size) { index ->
+                                val group = state.groups[index]
+                                GroupListItem(user, group = group) {
+                                    viewModel.showGroup(group.id)
+
+                                }
+                            }
+                        item { 
+                            Box(Modifier.height(80.dp))
+                        }
+                    }
+                }
         }
     }
 }
 
-
-@Preview(showSystemUi = true)
 @Composable
-private fun Preview() {
-    _GroupsView(
-        user = sampleGroup.createdBy,
-        groups = (0..5).map { sampleGroup },
-        onGroupClick = {})
+private fun EmptyGroupList(onAddGroup: () -> Unit) {
+    Center(
+        modifier = Modifier.padding(16.dp),
+    ) {
+        Text(
+            modifier = Modifier.padding(bottom = 16.dp),
+            text = "You are not part of any groups yet!",
+            style = MaterialTheme.typography.body1
+        )
+        Button(onClick = onAddGroup) {
+            Text(text = "Add a new group!")
+        }
+    }
 }

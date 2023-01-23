@@ -15,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val addGroupUseCase: AddGroupUseCase,
-    private val getGroupsUseCase: GetGroupsUseCase,
     private val addFriendEmailUseCase: AddFriendEmailUseCase,
     private val acceptFriendRequestUseCase: AcceptFriendRequestUseCase,
     private val getFriendsUseCase: GetFriendsUseCase,
@@ -23,7 +22,6 @@ class MainViewModel @Inject constructor(
     private val signInWithEmailUseCase: SignInWithEmailUseCase,
     private val uploadProfilePictureUseCase: UploadProfilePictureUseCase,
     private val updateNameUseCase: UpdateNameUseCase,
-    private val observeDatabaseGroupsUseCase: ObserveDatabaseGroupsUseCase
 ) : BaseViewModel() {
 
     object Main : UiState
@@ -34,8 +32,6 @@ class MainViewModel @Inject constructor(
     class ShowGroup(val groupId: String) : UiEvent
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(MyGroups)
-
-    val groupsFlow by lazy { observeDatabaseGroupsUseCase.execute() }
 
     fun showGroup(groupId: String) = emitUiEvent(ShowGroup(groupId))
 
@@ -62,10 +58,6 @@ class MainViewModel @Inject constructor(
     suspend fun uploadProfilePhoto(uri: Uri, onSuccess: () -> Unit) {
         val result = runCatching { uploadProfilePictureUseCase.execute(uri) }
         result.foldSuccess { onSuccess() }
-    }
-
-    suspend fun getGroups(sync: Boolean = true): List<Group> {
-        return getGroupsUseCase.execute(sync)
     }
 
     suspend fun saveGroup(group: Group) {
