@@ -1,6 +1,9 @@
 package com.mikkelthygesen.billsplit.data.remote.auth
 
 import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
@@ -14,6 +17,8 @@ import javax.inject.Singleton
 
 @Singleton
 class AuthProvider @Inject constructor() {
+
+    var userState: Person? by mutableStateOf(null)
 
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
@@ -29,15 +34,15 @@ class AuthProvider @Inject constructor() {
         }
 
     private val authListener = AuthStateListener {
-        val user = it.currentUser
-        loggedInUser = user?.let {
-            Person(
-                it.uid,
-                name = it.displayName ?: "Splittsby User",
-                pfpUrl = it.photoUrl?.toString() ?: "",
-                email = it.email ?: ""
-            )
-        }
+        val fbUser = it.currentUser
+        val userPerson = if (fbUser == null) null else Person(
+            fbUser.uid,
+            name = fbUser.displayName ?: "Splittsby User",
+            pfpUrl = fbUser.photoUrl?.toString() ?: "",
+            email = fbUser.email ?: ""
+        )
+        loggedInUser = userPerson
+        userState = userPerson
     }
 
     fun onCreate() {

@@ -22,10 +22,11 @@ abstract class BaseViewModel : ViewModel() {
     lateinit var authProvider: AuthProvider
 
     val loggedIdUser: Person?
-        get() = authProvider.loggedInUser
+        get() = authProvider.userState
 
     val requireLoggedInUser: Person
-        get() = authProvider.loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
+        get() = authProvider.userState ?: throw NetworkExceptions.UserLoggedOutException
+
 
     interface DialogState {
         object DismissDialogs : DialogState
