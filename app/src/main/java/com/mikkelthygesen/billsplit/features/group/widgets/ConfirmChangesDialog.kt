@@ -33,7 +33,8 @@ private fun _ConfirmChangesDialog(
         primaryText = "Keep editing",
         primaryAction = dismiss,
         secondaryText = "Revert changes and cancel",
-        secondaryAction = revert
+        secondaryAction = revert,
+        onDismiss = dismiss
     )
 }
 

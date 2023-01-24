@@ -41,17 +41,7 @@ class MainViewModel @Inject constructor(
 
     fun showAddGroup() = updateUiState(AddGroup)
 
-    fun getNewGroup(user: Person): Group {
-        return Group(
-            id = "",
-            name = "",
-            people = listOf(user),
-            createdBy = user,
-            timeStamp = 0,
-            events = listOf(),
-            debts = emptyList()
-        )
-    }
+
 
     suspend fun updateUser() = updateNameUseCase.execute()
 

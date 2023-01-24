@@ -31,7 +31,8 @@ fun AddFriendToGroupDialog(
             primaryText = "Go to profile page!",
             primaryAction = onGoToProfilePage,
             secondaryText = "Refresh",
-            secondaryAction = onRefresh
+            secondaryAction = onRefresh,
+            onDismiss = onDismiss
         )
     } else
         Dialog(onDismissRequest = onDismiss) {

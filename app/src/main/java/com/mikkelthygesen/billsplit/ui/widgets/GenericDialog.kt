@@ -18,12 +18,12 @@ import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 fun GenericDialog(
     dialogText: String,
     primaryText: String,
+    onDismiss: () -> Unit,
     primaryAction: () -> Unit,
     secondaryText: String,
     secondaryAction: () -> Unit
 ) {
-    Dialog(onDismissRequest = primaryAction) {
-
+    Dialog(onDismissRequest = onDismiss) {
         Column(
             Modifier.shadowModifier(MaterialTheme.colors.background),
             Arrangement.Center,
@@ -53,6 +53,7 @@ private fun PreviewGenericDialog() {
         primaryText = "Yes!!",
         primaryAction = {},
         secondaryText = "I'd rather be dragged to hell!",
-        secondaryAction = {}
+        secondaryAction = {},
+        onDismiss = {}
     )
 }

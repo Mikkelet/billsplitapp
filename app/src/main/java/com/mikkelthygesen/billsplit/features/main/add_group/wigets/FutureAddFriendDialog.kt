@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
@@ -66,8 +65,7 @@ fun _FutureAddFriendDialog(
                     val addableFriends = acceptedFriends
                         .let { list ->
                             if (list.isEmpty()) emptyList()
-                            else list.map { it.person }
-                                .minus(group.peopleState.toSet())
+                            else list.plus(list).plus(list).map { it.person }
 
                         }
                     AddFriendToGroupDialog(
@@ -87,8 +85,6 @@ fun _FutureAddFriendDialog(
             }
 
         }
-
-
     }
     SimpleIconButton(
         modifier = modifier

@@ -23,9 +23,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.data.remote.ServerApi
-import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
-import com.mikkelthygesen.billsplit.domain.usecases.AddFriendEmailUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.group.GroupActivity
 import com.mikkelthygesen.billsplit.features.main.add_group.AddGroupView
@@ -37,7 +34,6 @@ import com.mikkelthygesen.billsplit.features.main.widgets.dialogs.ErrorDialog
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
-import io.ktor.client.*
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
