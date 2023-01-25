@@ -30,10 +30,7 @@ class AuthProvider @Inject constructor() {
     }
 
     var loggedInUser: Person? = null
-        private set(value) {
-            println("qqq value=$value")
-            field = value
-        }
+        private set
 
     private val authListener = AuthStateListener {
         val fbUser = it.currentUser
@@ -54,7 +51,12 @@ class AuthProvider @Inject constructor() {
 
     fun onDestroy() {
         firebase.removeAuthStateListener(authListener)
+    }
 
+    fun signOut(){
+        firebase.signOut()
+        userState = null
+        userLiveData.value = null
     }
 
     suspend fun updateUserName() {
