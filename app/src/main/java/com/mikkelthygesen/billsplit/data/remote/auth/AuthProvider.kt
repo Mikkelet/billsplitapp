@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
@@ -19,6 +20,7 @@ import javax.inject.Singleton
 class AuthProvider @Inject constructor() {
 
     var userState: Person? by mutableStateOf(null)
+    var userLiveData = MutableLiveData<Person?>(null)
 
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
@@ -43,6 +45,7 @@ class AuthProvider @Inject constructor() {
         )
         loggedInUser = userPerson
         userState = userPerson
+        userLiveData.value = userPerson
     }
 
     fun onCreate() {
@@ -51,6 +54,7 @@ class AuthProvider @Inject constructor() {
 
     fun onDestroy() {
         firebase.removeAuthStateListener(authListener)
+
     }
 
     suspend fun updateUserName() {

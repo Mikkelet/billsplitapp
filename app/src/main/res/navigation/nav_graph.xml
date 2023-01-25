@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/landingFragment">
+
+    <fragment
+        android:id="@+id/landingFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.signup.LandingFragment"
+        android:label="LandingFragment" />
+    <fragment
+        android:id="@+id/groupsFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.groups.GroupsFragment"
+        android:label="GroupsFragment" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.profile.ProfileFragment"
+        android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/addGroupFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.add_group.AddGroupFragment"
+        android:label="AddGroupFragment" />
+    <action
+        android:id="@+id/action_global_addGroupFragment"
+        app:destination="@id/addGroupFragment"
+        app:enterAnim="@anim/slide_up"
+        app:popExitAnim="@anim/slide_down"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        />
+</navigation>

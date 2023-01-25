@@ -94,8 +94,6 @@ class GroupActivity : ComponentActivity() {
                         Crossfade(targetState = uiState, modifier = Modifier.padding(it)) { state ->
                             when (state) {
                                 is BaseViewModel.UiState.Loading -> LoadingView()
-                                is BaseViewModel.UiState.SignIn -> SignInView()
-                                is BaseViewModel.UiState.SignUp -> SignUpView()
                                 is GroupViewModel.Chat -> GroupEventsView()
                                 is GroupViewModel.ShowDebt -> ViewDebt()
                                 is GroupViewModel.EditExpense -> ExpenseView(groupExpense = state.groupExpense)

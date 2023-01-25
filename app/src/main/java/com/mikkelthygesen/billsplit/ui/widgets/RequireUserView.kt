@@ -13,5 +13,6 @@ fun RequireUserView(
 ) {
     if (baseViewModel.loggedIdUser != null) {
         content(baseViewModel.requireLoggedInUser)
-    } else SignInView()
+    } else content(baseViewModel.requireLoggedInUser)
+
 }

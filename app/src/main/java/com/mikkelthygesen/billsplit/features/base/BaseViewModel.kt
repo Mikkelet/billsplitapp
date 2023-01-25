@@ -27,7 +27,6 @@ abstract class BaseViewModel : ViewModel() {
     val requireLoggedInUser: Person
         get() = authProvider.userState ?: throw NetworkExceptions.UserLoggedOutException
 
-
     interface DialogState {
         object DismissDialogs : DialogState
         class Error(val exception: Throwable) : DialogState
@@ -35,20 +34,12 @@ abstract class BaseViewModel : ViewModel() {
 
     interface UiState {
         object Loading : UiState
-        object SignIn : UiState
-        object SignUp : UiState
+
     }
 
     interface UiEvent {
         object OnBackPressed : UiEvent
-    }
-
-    fun showSignIn() {
-        updateUiState(UiState.SignIn)
-    }
-
-    fun showSignUp() {
-        updateUiState(UiState.SignUp)
+        object UserLoggedOut : UiEvent
     }
 
     protected abstract val _mutableUiStateFlow: MutableStateFlow<UiState>
@@ -91,7 +82,7 @@ abstract class BaseViewModel : ViewModel() {
         Timber.e(exception)
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
-            is NetworkExceptions.UserLoggedOutException -> showSignIn()
+            is NetworkExceptions.UserLoggedOutException -> emitUiEvent(UiEvent.UserLoggedOut)
             is io.ktor.client.network.sockets.SocketTimeoutException ->
                 showDialog(DialogState.Error(Exception("Session timed out")))
             else -> {

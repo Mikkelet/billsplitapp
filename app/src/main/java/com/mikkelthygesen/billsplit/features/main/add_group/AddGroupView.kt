@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.add_group.wigets.FutureAddFriendDialog
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
@@ -40,58 +41,44 @@ import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
 @Composable
-fun AddGroupView() {
-    val mainViewModel: MainViewModel = viewModel()
-    val addGroupViewModel: AddGroupViewModel = hiltViewModel()
-    val uiStateFlow = addGroupViewModel.uiStateFlow.collectAsState()
-    val uiState = uiStateFlow.value
+fun AddGroupView(
+    uiState: BaseViewModel.UiState,
+    group: Group,
+    onNext: () -> Unit,
+    onBack: () -> Unit,
+    onClose: () -> Unit,
+    onSubmitGroup: (Group) -> Unit,
+    showSubmitLoader: Boolean
+) {
     val focusRequester = androidx.compose.ui.platform.LocalFocusManager.current
 
-    val group: Group by remember {
-        mutableStateOf(addGroupViewModel.getNewGroup())
-    }
+
     val animateState by animateAlignmentAsState(
         targetAlignment =
         if (uiState is AddGroupViewModel.AddName) CenterStart else TopStart
     )
 
-    LaunchedEffect(key1 = Unit, block = {
-        addGroupViewModel.uiEventsState.collect {
-            if (it is AddGroupViewModel.GroupAdded) {
-                mainViewModel.showMyGroups()
-                mainViewModel.showGroup(it.group.id)
-                addGroupViewModel.reset()
-            }
-        }
-    })
-
-    fun handleBack(){
-        if (uiState !is AddGroupViewModel.AddName)
-            addGroupViewModel.back()
-        else mainViewModel.showMyGroups()
-    }
-
     BackHandler {
-        handleBack()
+        onBack()
     }
 
     fun onNextClicked() {
         when (uiState) {
-            is AddGroupViewModel.Ready -> addGroupViewModel.saveGroup(group)
-            else -> addGroupViewModel.next()
+            is AddGroupViewModel.Ready -> onSubmitGroup(group)
+            else -> onNext()
         }
     }
 
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween) {
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             BackButton(Modifier.padding(8.dp)) {
-                handleBack()
+                onBack()
             }
             CloseButton(Modifier.padding(8.dp)) {
-                addGroupViewModel.reset()
-                mainViewModel.showMyGroups()
+                onClose()
             }
         }
         Text(
@@ -149,7 +136,7 @@ fun AddGroupView() {
                     _AddGroupView(group = group, isEditing = isEditing)
             }
 
-            if (addGroupViewModel.submittingGroup)
+            if (showSubmitLoader)
                 CircularProgressIndicator(
                     Modifier
                         .padding(bottom = 16.dp)
@@ -164,7 +151,6 @@ fun AddGroupView() {
                     onClick = { onNextClicked() })
         }
     }
-
 }
 
 @Composable

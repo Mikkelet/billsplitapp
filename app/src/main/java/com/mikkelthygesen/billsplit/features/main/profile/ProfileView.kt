@@ -18,21 +18,8 @@ import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 
 @Composable
-fun ProfileView(
-    mainViewModel: MainViewModel = viewModel(),
-) {
-    RequireUserView(mainViewModel) {
-        _ProfileView(
-            user = it,
-            onUpdateUser = { mainViewModel.updateUser() },
-            onError = mainViewModel::handleError
-        )
-    }
-}
-
-@Composable
 @SuppressLint("ComposableNaming")
-private fun _ProfileView(
+fun ProfileView(
     user: Person,
     onUpdateUser: suspend () -> Unit,
     onError: (Throwable) -> Unit
@@ -52,5 +39,5 @@ private fun _ProfileView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview() {
-    _ProfileView(Person(name = "Catra"), onUpdateUser = {}, onError = {})
+    ProfileView(Person(name = "Catra"), onUpdateUser = {}, onError = {})
 }

@@ -23,7 +23,7 @@ class AddGroupViewModel @Inject constructor(
 
     data class GroupAdded(val group: Group) : UiEvent
 
-    fun getNewGroup() =
+    val group : Group by lazy {
         Group(
             id = "",
             name = "",
@@ -33,6 +33,8 @@ class AddGroupViewModel @Inject constructor(
             events = listOf(),
             debts = emptyList()
         )
+    }
+
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(AddName)
 
@@ -67,5 +69,4 @@ class AddGroupViewModel @Inject constructor(
         updateUiState(AddName)
         submittingGroup = false
     }
-
 }
