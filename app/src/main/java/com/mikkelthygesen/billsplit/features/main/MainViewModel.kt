@@ -8,12 +8,13 @@ import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val addGroupUseCase: AddGroupUseCase,
     private val addFriendEmailUseCase: AddFriendEmailUseCase,
     private val acceptFriendRequestUseCase: AcceptFriendRequestUseCase,
     private val getFriendsUseCase: GetFriendsUseCase,
@@ -24,7 +25,6 @@ class MainViewModel @Inject constructor(
     object AddGroup : UiState
     object MyGroups : UiState
     object ShowProfile : UiState
-    object Landing: UiState
 
     class ShowGroup(val groupId: String) : UiEvent
 

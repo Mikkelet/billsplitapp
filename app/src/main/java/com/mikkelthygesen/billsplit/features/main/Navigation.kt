@@ -29,7 +29,7 @@ fun Fragment.navigate(to: Screen, from: Screen) {
     }
     when (to) {
         Screen.Landing -> {
-            findNavController().navigate(R.id.landingFragment)
+            findNavController().navigate(R.id.action_global_landingFragment)
         }
         Screen.Profile -> {
             findNavController().navigate(R.id.profileFragment)

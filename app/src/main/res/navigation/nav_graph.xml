@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/landingFragment">
+    app:startDestination="@id/groupsFragment">
 
     <fragment
         android:id="@+id/landingFragment"
@@ -21,11 +21,15 @@
         android:name="com.mikkelthygesen.billsplit.features.main.add_group.AddGroupFragment"
         android:label="AddGroupFragment" />
     <action
+        android:id="@+id/action_global_landingFragment"
+        app:destination="@id/landingFragment"
+        app:enterAnim="@anim/slide_up"
+        app:popExitAnim="@anim/slide_down"
+        />
+    <action
         android:id="@+id/action_global_addGroupFragment"
         app:destination="@id/addGroupFragment"
         app:enterAnim="@anim/slide_up"
         app:popExitAnim="@anim/slide_down"
-        app:exitAnim="@anim/fade_out"
-        app:popEnterAnim="@anim/fade_in"
         />
 </navigation>

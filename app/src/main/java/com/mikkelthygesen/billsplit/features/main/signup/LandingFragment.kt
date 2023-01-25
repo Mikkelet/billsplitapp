@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,6 +23,7 @@ class LandingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         return ComposeView(requireContext()).apply {
             setContent {
                 BillSplitTheme {
@@ -46,6 +48,14 @@ class LandingFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.authProvider.userLiveData.observe(requireActivity()) {
+            if(it != null)
+                findNavController().popBackStack()
         }
     }
 

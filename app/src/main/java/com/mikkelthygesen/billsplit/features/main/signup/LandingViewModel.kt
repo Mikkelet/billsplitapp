@@ -14,7 +14,6 @@ class LandingViewModel @Inject constructor(
     private val signInWithEmailUseCase: SignInWithEmailUseCase,
     private val signUpWithEmailUseCase: SignUpWithEmailUseCase,
 ) : BaseViewModel() {
-
     object SignIn : UiState
     object SignUp : UiState
 
