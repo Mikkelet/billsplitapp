@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background

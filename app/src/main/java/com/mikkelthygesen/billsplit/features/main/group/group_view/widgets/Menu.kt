@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.group_view.widgets
+package com.mikkelthygesen.billsplit.features.main.group.group_view.widgets
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 
 
 @Composable

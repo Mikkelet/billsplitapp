@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions

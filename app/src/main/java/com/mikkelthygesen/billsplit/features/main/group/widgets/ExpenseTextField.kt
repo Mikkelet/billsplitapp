@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.ui.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding

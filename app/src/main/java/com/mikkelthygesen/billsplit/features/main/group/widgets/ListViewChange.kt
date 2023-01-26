@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

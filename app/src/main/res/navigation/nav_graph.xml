@@ -34,7 +34,7 @@
         app:popExitAnim="@anim/slide_down" />
     <fragment
         android:id="@+id/groupFragment"
-        android:name="com.mikkelthygesen.billsplit.features.group.GroupFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.group.GroupFragment"
         android:label="GroupFragment" />
     <action
         android:id="@+id/action_global_groupFragment"

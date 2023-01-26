@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.group_view
+package com.mikkelthygesen.billsplit.features.main.group.group_view
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.group.GroupViewModel
-import com.mikkelthygesen.billsplit.features.group.group_view.widgets.Menu
-import com.mikkelthygesen.billsplit.features.group.widgets.ChangesListView
-import com.mikkelthygesen.billsplit.features.group.widgets.ListViewExpense
-import com.mikkelthygesen.billsplit.features.group.widgets.ListViewPayment
+import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.group.group_view.widgets.Menu
+import com.mikkelthygesen.billsplit.features.main.group.widgets.ChangesListView
+import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewExpense
+import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewPayment
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.domain.models.Payment

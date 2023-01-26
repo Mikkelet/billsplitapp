@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.fmt2dec
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.sampleSharedExpenses

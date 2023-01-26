@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 
 
 @Composable

@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group
+package com.mikkelthygesen.billsplit.features.main.group
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

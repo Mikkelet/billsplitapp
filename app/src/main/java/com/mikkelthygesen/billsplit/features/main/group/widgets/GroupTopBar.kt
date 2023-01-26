@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton

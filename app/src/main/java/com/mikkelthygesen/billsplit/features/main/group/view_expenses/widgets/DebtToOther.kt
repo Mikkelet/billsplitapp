@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.view_expenses.widgets
+package com.mikkelthygesen.billsplit.features.main.group.view_expenses.widgets
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Row
@@ -16,7 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor

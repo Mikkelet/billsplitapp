@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.view_expenses
+package com.mikkelthygesen.billsplit.features.main.group.view_expenses
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -12,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.DebtCalculator
-import com.mikkelthygesen.billsplit.features.group.GroupViewModel
-import com.mikkelthygesen.billsplit.features.group.view_expenses.widgets.DebtView
+import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.group.view_expenses.widgets.DebtView
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.Payment
 import com.mikkelthygesen.billsplit.domain.models.Person

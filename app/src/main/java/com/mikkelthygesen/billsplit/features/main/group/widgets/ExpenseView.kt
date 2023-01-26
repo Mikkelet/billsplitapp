@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.group.widgets
+package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
@@ -27,7 +27,6 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.IndividualExpense
 import com.mikkelthygesen.billsplit.domain.models.Person
-import com.mikkelthygesen.billsplit.ui.widgets.ExpenseTextField
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 
 data class PersonViewFlags(
