@@ -38,6 +38,7 @@ class GroupsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        groupsViewModel.getGroups(false)
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -66,9 +67,6 @@ class GroupsFragment : Fragment() {
                                         args.putString("group_id", group.id)
                                         navigate(Screen.Group, Screen.Groups, args)
                                     },
-                                    getGroups = {
-                                        groupsViewModel.getGroups(false)
-                                    },
                                     onRefresh = {
                                         groupsViewModel.getGroups(true)
                                     },
@@ -82,7 +80,6 @@ class GroupsFragment : Fragment() {
                         }
                     }
                 }
-
             }
         }
     }

@@ -25,7 +25,6 @@ fun GroupsList(
     user: Person,
     onAddGroup: () -> Unit,
     showGroup: (Group) -> Unit,
-    getGroups: () -> Unit,
     onRefresh: () -> Unit,
     title: @Composable () -> Unit
 ) {
@@ -33,10 +32,6 @@ fun GroupsList(
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState is BaseViewModel.UiState.Loading,
         onRefresh = onRefresh)
-
-    LaunchedEffect(Unit) {
-        getGroups()
-    }
 
     Box(
         modifier = Modifier

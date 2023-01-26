@@ -43,8 +43,9 @@ class GroupViewModel @Inject constructor(
     fun getGroup(groupId: String) {
         viewModelScope.launch {
             updateUiState(UiState.Loading)
+            // call get cached group
             val cacheResponse = runCatching {
-                getGroupUseCase.execute(groupId)
+                getGroupUseCase.execute(groupId, false)
             }
             cacheResponse.foldSuccess { group ->
                 this@GroupViewModel.group = group
@@ -52,6 +53,8 @@ class GroupViewModel @Inject constructor(
                 _mutableEventsStateFlow.value = group.events
                 updateUiState(Chat)
             }
+
+            // then sync with remote
             val syncResponse = runCatching {
                 showChatLoader = true
                 getGroupUseCase.execute(groupId, true)
