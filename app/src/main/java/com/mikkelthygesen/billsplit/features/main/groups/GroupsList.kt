@@ -63,7 +63,7 @@ fun GroupsList(
                                 start = 32.dp,
                                 bottom = 32.dp
                             ),
-                            text = "Groups",
+                            text = "Splitsby",
                             style = MaterialTheme.typography.h4
                         )
                     }

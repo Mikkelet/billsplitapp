@@ -20,7 +20,7 @@ import com.mikkelthygesen.billsplit.domain.models.Person
 fun AutoProfilePic(modifier: Modifier = Modifier, user: Person) {
     val userName = user.nameState
     val displayName = if (userName.trim().contains(" ")) {
-        val split = userName.split(" ")
+        val split = userName.split(" ").filter { it.isNotBlank() }
         val initials = split.map { it.first().toString() }
             .reduce { acc, c -> "$acc$c" }
         initials.substring(0..1)
