@@ -33,7 +33,7 @@ fun Fragment.navigate(to: Screen, from: Screen, args: Bundle? = null) {
             findNavController().navigate(R.id.action_global_landingFragment)
         }
         Screen.Profile -> {
-            findNavController().navigate(R.id.profileFragment)
+            findNavController().navigate(R.id.action_global_profileFragment)
         }
         Screen.Groups -> {
             findNavController().navigate(R.id.groupsFragment)

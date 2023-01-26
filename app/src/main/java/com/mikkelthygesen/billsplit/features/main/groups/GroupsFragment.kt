@@ -1,10 +1,10 @@
 package com.mikkelthygesen.billsplit.features.main.groups
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -21,6 +21,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.Screen
+import com.mikkelthygesen.billsplit.features.main.groups.views.GroupsTitle
 import com.mikkelthygesen.billsplit.features.main.navigate
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
@@ -45,33 +46,39 @@ class GroupsFragment : Fragment() {
                         backgroundColor = MaterialTheme.colors.background,
                         floatingActionButton = {
                             FloatingActionButton(
-                                modifier = Modifier.padding(32.dp)
-                                ,onClick = {
-                                navigate(Screen.AddGroup, Screen.Groups)
-                            }) {
+                                modifier = Modifier.padding(32.dp), onClick = {
+                                    navigate(Screen.AddGroup, Screen.Groups)
+                                }) {
                                 Icon(Icons.Filled.Add, contentDescription = "Add Group")
                             }
                         },
                     ) {
-                        val padding = it
                         val uiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
                         RequireUserView(baseViewModel = mainViewModel) { user ->
-                            GroupsList(
-                                uiState = uiStateFlow.value,
-                                user = user,
-                                onAddGroup = mainViewModel::showAddGroup,
-                                showGroup = { group ->
-                                    val args = Bundle()
-                                    args.putString("group_id", group.id)
-                                    navigate(Screen.Group, Screen.Groups, args)
-                                },
-                                getGroups = {
-                                    groupsViewModel.getGroups(false)
-                                },
-                                onRefresh = {
-                                    groupsViewModel.getGroups(true)
-                                }
-                            )
+                            Column(Modifier.padding(it)) {
+
+                                GroupsList(
+                                    uiState = uiStateFlow.value,
+                                    user = user,
+                                    onAddGroup = mainViewModel::showAddGroup,
+                                    showGroup = { group ->
+                                        val args = Bundle()
+                                        args.putString("group_id", group.id)
+                                        navigate(Screen.Group, Screen.Groups, args)
+                                    },
+                                    getGroups = {
+                                        groupsViewModel.getGroups(false)
+                                    },
+                                    onRefresh = {
+                                        groupsViewModel.getGroups(true)
+                                    },
+                                    title = {
+                                        GroupsTitle(user = user) {
+                                            navigate(Screen.Profile, Screen.Groups)
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
                 }

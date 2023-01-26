@@ -12,12 +12,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
@@ -29,7 +26,8 @@ fun GroupsList(
     onAddGroup: () -> Unit,
     showGroup: (Group) -> Unit,
     getGroups: () -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    title: @Composable () -> Unit
 ) {
 
     val pullRefreshState = rememberPullRefreshState(
@@ -57,15 +55,7 @@ fun GroupsList(
             else if (state is GroupsViewModel.ShowGroups)
                 LazyColumn {
                     item {
-                        Text(
-                            modifier = Modifier.padding(
-                                top = 32.dp,
-                                start = 32.dp,
-                                bottom = 32.dp
-                            ),
-                            text = "Splitsby",
-                            style = MaterialTheme.typography.h4
-                        )
+                        title()
                     }
                     if (state.groups.isEmpty())
                         item {

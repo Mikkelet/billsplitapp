@@ -42,6 +42,13 @@
         app:enterAnim="@anim/slide_up"
         app:exitAnim="@anim/scale_down"
         app:popEnterAnim="@anim/scale_up"
-        app:popExitAnim="@anim/slide_down"
+        app:popExitAnim="@anim/slide_down" />
+    <action
+        android:id="@+id/action_global_profileFragment"
+        app:destination="@id/profileFragment"
+        app:enterAnim="@anim/slide_in_left"
+        app:exitAnim="@anim/slide_out_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popEnterAnim="@anim/slide_in_right"
         />
 </navigation>
