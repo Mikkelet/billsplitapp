@@ -19,15 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import com.mikkelthygesen.billsplit.features.group.GroupActivity
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.Screen
 import com.mikkelthygesen.billsplit.features.main.navigate
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class GroupsFragment : Fragment() {
@@ -40,16 +37,6 @@ class GroupsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        lifecycleScope.launch {
-            mainViewModel.uiEventsState.collect {
-                if (it is MainViewModel.ShowGroup) {
-                    val intent = Intent(requireContext(), GroupActivity::class.java)
-                    intent.putExtra("group_id", it.groupId)
-                    startActivity(intent)
-                }
-            }
-        }
 
         return ComposeView(requireContext()).apply {
             setContent {
