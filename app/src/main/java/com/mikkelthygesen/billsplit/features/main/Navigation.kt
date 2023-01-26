@@ -16,14 +16,15 @@
 
 package com.mikkelthygesen.billsplit.features.main
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikkelthygesen.billsplit.R
 import java.security.InvalidParameterException
 
-enum class Screen { Landing, Profile, Groups, AddGroup }
+enum class Screen { Landing, Profile, Groups, AddGroup, Group }
 
-fun Fragment.navigate(to: Screen, from: Screen) {
+fun Fragment.navigate(to: Screen, from: Screen, args: Bundle? = null) {
     if (to == from) {
         throw InvalidParameterException("Can't navigate to $to")
     }
@@ -40,5 +41,10 @@ fun Fragment.navigate(to: Screen, from: Screen) {
         Screen.AddGroup -> {
             findNavController().navigate(R.id.action_global_addGroupFragment)
         }
+        Screen.Group -> {
+            findNavController().navigate(R.id.action_global_groupFragment, args)
+        }
     }
 }
+
+fun Fragment.popBackStack() = findNavController().popBackStack()

@@ -24,14 +24,24 @@
         android:id="@+id/action_global_landingFragment"
         app:destination="@id/landingFragment"
         app:enterAnim="@anim/slide_up"
-        app:popExitAnim="@anim/slide_down"
-        />
+        app:popExitAnim="@anim/slide_down" />
     <action
         android:id="@+id/action_global_addGroupFragment"
         app:destination="@id/addGroupFragment"
         app:enterAnim="@anim/slide_up"
-        app:popExitAnim="@anim/slide_down"
         app:exitAnim="@anim/scale_down"
         app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down" />
+    <fragment
+        android:id="@+id/groupFragment"
+        android:name="com.mikkelthygesen.billsplit.features.group.GroupFragment"
+        android:label="GroupFragment" />
+    <action
+        android:id="@+id/action_global_groupFragment"
+        app:destination="@id/groupFragment"
+        app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down"
         />
 </navigation>

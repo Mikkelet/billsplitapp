@@ -29,11 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".features.group.GroupActivity"
-            android:exported="true"
-            android:resizeableActivity="true"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

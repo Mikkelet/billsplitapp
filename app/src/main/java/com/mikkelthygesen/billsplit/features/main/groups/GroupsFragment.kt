@@ -73,7 +73,11 @@ class GroupsFragment : Fragment() {
                                 uiState = uiStateFlow.value,
                                 user = user,
                                 onAddGroup = mainViewModel::showAddGroup,
-                                showGroup = { group -> mainViewModel.showGroup(group.id) },
+                                showGroup = { group ->
+                                    val args = Bundle()
+                                    args.putString("group_id", group.id)
+                                    navigate(Screen.Group, Screen.Groups, args)
+                                },
                                 getGroups = {
                                     groupsViewModel.getGroups(false)
                                 },
