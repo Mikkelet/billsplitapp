@@ -73,7 +73,7 @@ fun ProfilePictureWithUpload(
     else
         ProfilePicture(
             modifier = Modifier
-                .padding(top = 32.dp)
+                .padding(vertical = 32.dp)
                 .size(100.dp)
                 .clip(CircleShape)
                 .clickable {
