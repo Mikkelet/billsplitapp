@@ -17,6 +17,9 @@ class GroupsViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     data class ShowGroups(val groups: List<Group> = emptyList()) : UiState
+    object ShowProfile : UiEvent
+    data class ShowGroup(val group: Group) : UiEvent
+    object AddGroup : UiEvent
 
     init {
         viewModelScope.launch {
@@ -36,5 +39,17 @@ class GroupsViewModel @Inject constructor(
                 _mutableUiStateFlow.value = ShowGroups(it)
             }
         }
+    }
+
+    fun onProfilePictureClicked() {
+        emitUiEvent(ShowProfile)
+    }
+
+    fun showGroup(group: Group) {
+        emitUiEvent(ShowGroup(group))
+    }
+
+    fun addGroup() {
+        emitUiEvent(AddGroup)
     }
 }

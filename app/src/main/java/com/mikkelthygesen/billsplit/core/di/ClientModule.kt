@@ -14,6 +14,8 @@ object ClientModule {
 
     @Singleton
     @Provides
-    fun bindKtorClient(ktorClient: KtorClient): HttpClient = ktorClient.client
+    fun bindKtorClient(
+        ktorClient: KtorClient
+    ): HttpClient = ktorClient.client
 }
 

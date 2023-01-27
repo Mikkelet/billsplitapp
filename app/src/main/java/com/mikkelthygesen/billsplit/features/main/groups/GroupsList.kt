@@ -12,9 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mikkelthygesen.billsplit.domain.models.Group
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
+import com.mikkelthygesen.billsplit.features.main.groups.views.GroupsTitle
 import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
@@ -23,15 +24,13 @@ import com.mikkelthygesen.billsplit.ui.widgets.*
 fun GroupsList(
     uiState: BaseViewModel.UiState,
     user: Person,
-    onAddGroup: () -> Unit,
-    showGroup: (Group) -> Unit,
-    onRefresh: () -> Unit,
-    title: @Composable () -> Unit
 ) {
+    val groupsViewModel: GroupsViewModel = viewModel()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState is BaseViewModel.UiState.Loading,
-        onRefresh = onRefresh)
+        onRefresh = { groupsViewModel.getGroups(true) }
+    )
 
     Box(
         modifier = Modifier
@@ -50,17 +49,19 @@ fun GroupsList(
             else if (state is GroupsViewModel.ShowGroups)
                 LazyColumn {
                     item {
-                        title()
+                        GroupsTitle(user = user)
                     }
                     if (state.groups.isEmpty())
                         item {
-                            EmptyGroupList(onAddGroup)
+                            EmptyGroupList {
+                                groupsViewModel.addGroup()
+                            }
                         }
                     else
                         items(state.groups.size) { index ->
                             val group = state.groups[index]
                             GroupListItem(user, group = group) {
-                                showGroup(group)
+                                groupsViewModel.showGroup(group)
                             }
                         }
                     item {
