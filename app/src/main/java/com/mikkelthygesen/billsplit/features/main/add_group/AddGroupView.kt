@@ -29,14 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.add_group.wigets.FutureAddFriendDialog
-import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
 

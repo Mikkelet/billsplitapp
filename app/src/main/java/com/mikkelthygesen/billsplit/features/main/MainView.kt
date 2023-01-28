@@ -91,10 +91,10 @@ private fun BottomNavBar(
         elevation = 0.dp
     ) {
         BottomNavigationItem(
-            selected = uiState is MainViewModel.ShowProfile,
+            selected = true,
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = Color.Gray,
-            onClick = viewModel::showProfile,
+            onClick = {  },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_person_24),

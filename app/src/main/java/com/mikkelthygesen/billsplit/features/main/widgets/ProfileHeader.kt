@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.features.main.widgets.widgets.ProfilePictureWithUpload
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor

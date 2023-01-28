@@ -14,7 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
-import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import com.mikkelthygesen.billsplit.R

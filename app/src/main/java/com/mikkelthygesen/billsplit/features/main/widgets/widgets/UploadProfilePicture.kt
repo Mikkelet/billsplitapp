@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
