@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.features.main.widgets.widgets
 
-import android.net.Uri
+ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable

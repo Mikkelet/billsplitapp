@@ -17,4 +17,7 @@ interface FriendsDao {
 
     @Query("SELECT * FROM friends")
     suspend fun getFriends(): List<FriendDb>
+
+    @Query("DELETE FROM friends")
+    suspend fun clearTable()
 }

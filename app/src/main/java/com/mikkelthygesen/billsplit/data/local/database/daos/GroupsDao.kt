@@ -24,4 +24,8 @@ interface GroupsDao {
 
     @Query("SELECT * FROM groups WHERE :groupId == id")
     suspend fun getGroup(groupId: String) : GroupDb
+
+
+    @Query("DELETE FROM groups")
+    suspend fun clearTable()
 }
