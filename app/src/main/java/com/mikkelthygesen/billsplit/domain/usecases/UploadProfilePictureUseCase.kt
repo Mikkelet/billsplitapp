@@ -14,7 +14,7 @@ class UploadProfilePictureUseCase @Inject  constructor(
 ) {
 
     suspend fun execute(uri: Uri){
-        val loggedInUser = authProvider.loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
+        val loggedInUser = authProvider.userState ?: throw NetworkExceptions.UserLoggedOutException
         val downloadUrl = storageProvider.uploadPhoto(loggedInUser.uid, uri)
         authProvider.updateProfilePicture(downloadUrl)
         loggedInUser.pfpUrlState = downloadUrl.toString()

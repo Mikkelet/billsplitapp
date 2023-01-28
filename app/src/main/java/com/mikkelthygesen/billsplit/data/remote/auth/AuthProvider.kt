@@ -29,9 +29,6 @@ class AuthProvider @Inject constructor() {
         }
     }
 
-    var loggedInUser: Person? = null
-        private set
-
     private val authListener = AuthStateListener {
         val fbUser = it.currentUser
         val userPerson = if (fbUser == null) null else Person(
@@ -40,7 +37,6 @@ class AuthProvider @Inject constructor() {
             pfpUrl = fbUser.photoUrl?.toString() ?: "",
             email = fbUser.email ?: ""
         )
-        loggedInUser = userPerson
         userState = userPerson
         userLiveData.value = userPerson
     }
@@ -61,7 +57,7 @@ class AuthProvider @Inject constructor() {
 
     suspend fun updateUserName() {
         val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
-        val loggedInUser = loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
+        val loggedInUser = userState ?: throw NetworkExceptions.UserLoggedOutException
         val request = UserProfileChangeRequest.Builder()
         request.displayName = loggedInUser.nameState
         currentUser.updateProfile(request.build()).await()
@@ -89,8 +85,8 @@ class AuthProvider @Inject constructor() {
     private fun onSignIn(authResult: AuthResult) {
         val user = authResult.user
         if (user != null) {
-            val person = Person(user.uid, name = user.displayName ?: "Unknown user")
-            loggedInUser = person
+            val person = Person(user.uid, name = user.displayName ?: "Splitsby user")
+            userState = person
         }
     }
 
