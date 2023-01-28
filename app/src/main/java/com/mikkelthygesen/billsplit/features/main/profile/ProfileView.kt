@@ -13,7 +13,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.main.profile.views.ProfileMenuButton
 import com.mikkelthygesen.billsplit.features.main.profile.views.SignOutButton
-import com.mikkelthygesen.billsplit.features.main.widgets.ProfileHeader
+import com.mikkelthygesen.billsplit.features.main.profile.views.ProfileHeader
 
 @Composable
 @SuppressLint("ComposableNaming")

@@ -45,8 +45,8 @@ class ProfileFragment : Fragment() {
                     RequireUserView(baseViewModel = profileViewModel) { user ->
                         ProfileView(
                             user = user,
-                            onUpdateUser = {},
-                            onError = {}
+                            onUpdateUser = profileViewModel::updateName,
+                            onError = profileViewModel::handleError
                         )
                     }
                 }

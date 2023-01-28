@@ -16,7 +16,7 @@ class ProfileViewModel @Inject constructor(
     private val updateNameUseCase: UpdateNameUseCase,
     private val uploadProfilePictureUseCase: UploadProfilePictureUseCase,
     private val signOutUseCase: SignOutUseCase
-    ) : BaseViewModel() {
+) : BaseViewModel() {
 
     object Profile : UiState
     object FriendsPressed : UiEvent
@@ -28,6 +28,8 @@ class ProfileViewModel @Inject constructor(
         emitUiEvent(FriendsPressed)
     }
 
+    suspend fun updateName() = updateNameUseCase.execute()
+
     suspend fun uploadProfilePhoto(uri: Uri) {
         val result = runCatching { uploadProfilePictureUseCase.execute(uri) }
         result.foldSuccess { emitUiEvent(ProfilePictureUploaded) }
@@ -36,7 +38,7 @@ class ProfileViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch {
             val response = runCatching { signOutUseCase.execute() }
-            response.foldSuccess {  }
+            response.foldSuccess { }
         }
     }
 }

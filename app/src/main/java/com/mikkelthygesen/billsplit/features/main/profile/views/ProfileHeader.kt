@@ -1,9 +1,10 @@
-package com.mikkelthygesen.billsplit.features.main.widgets
+package com.mikkelthygesen.billsplit.features.main.profile.views
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,16 +29,15 @@ fun ProfileHeader(
     onUpdateUser: suspend () -> Unit,
     onError: (Throwable) -> Unit
 ) {
+    val focusRequester = LocalFocusManager.current
+    var showSaveNameOptions by rememberSaveable {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         ProfilePictureWithUpload(user)
-        val focusRequester = LocalFocusManager.current
-        var showSaveNameOptions by remember {
-            mutableStateOf(false)
-        }
         Column(
             Modifier.shadowModifier(MaterialTheme.colors.listItemColor())
         ) {
