@@ -31,7 +31,7 @@ fun Fragment.navigateToAddGroup() =
 fun Fragment.navigateToGroup(groupId: String) {
     val args = Bundle()
     args.putString(GroupFragment.ARG_GROUP_ID, groupId)
-    findNavController().navigate(R.id.action_global_addGroupFragment, args)
+    findNavController().navigate(R.id.action_global_groupFragment, args)
 }
 
 fun Fragment.navigateToFriends() {
