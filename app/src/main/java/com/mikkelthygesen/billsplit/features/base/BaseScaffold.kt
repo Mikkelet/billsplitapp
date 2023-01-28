@@ -13,12 +13,14 @@ import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 fun BaseScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     topBar: @Composable () -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     BillSplitTheme {
         Scaffold(
             backgroundColor = MaterialTheme.colors.background,
             topBar = topBar,
+            bottomBar = bottomBar,
             floatingActionButton = floatingActionButton,
         ) {
             Box(

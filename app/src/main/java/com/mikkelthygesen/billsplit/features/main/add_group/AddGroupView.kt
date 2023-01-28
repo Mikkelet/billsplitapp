@@ -99,7 +99,7 @@ fun AddGroupView(
                             .fillMaxWidth(),
                         value = group.nameState,
                         singleLine = true,
-                        onValueChange = { group.nameState = it },
+                        onValueChange = { value -> group.nameState = value },
                         placeholder = { Text(text = ("fx. Trip to Madrid")) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
