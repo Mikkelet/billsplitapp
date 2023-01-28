@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.main.navigateToFriends
+import com.mikkelthygesen.billsplit.features.main.navigateToGroup
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -55,6 +56,10 @@ class AddGroupFragment : Fragment() {
             when (it) {
                 is AddGroupViewModel.ShowFriendsPressed -> {
                     navigateToFriends()
+                }
+                is AddGroupViewModel.GroupAdded -> {
+                    popBackStack()
+                    navigateToGroup(it.group.id)
                 }
             }
         }
