@@ -4,20 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
+import com.mikkelthygesen.billsplit.collectEvents
+import com.mikkelthygesen.billsplit.features.base.BaseScaffold
+import com.mikkelthygesen.billsplit.features.main.Screen
+import com.mikkelthygesen.billsplit.features.main.navigate
+import com.mikkelthygesen.billsplit.features.main.popBackStack
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AddGroupFragment : Fragment() {
 
     private val addGroupViewModel: AddGroupViewModel by viewModels()
-    private val group by lazy {  addGroupViewModel.group }
+    private val group by lazy { addGroupViewModel.group }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,30 +31,33 @@ class AddGroupFragment : Fragment() {
             setContent {
                 val uiStateFlow = addGroupViewModel.uiStateFlow.collectAsState()
                 val uiState = uiStateFlow.value
-
-                BillSplitTheme {
-                    Scaffold {
-                        val padding = it
-                        AddGroupView(
-                            uiState = uiState,
-                            group = group,
-                            onNext = addGroupViewModel::next,
-                            onBack = {
-                                if (uiState is AddGroupViewModel.AddName)
-                                    close()
-                                else addGroupViewModel.back()
-                            },
-                            onClose = ::close,
-                            onSubmitGroup = addGroupViewModel::saveGroup,
-                            showSubmitLoader = addGroupViewModel.submittingGroup
-                        )
-                    }
+                BaseScaffold {
+                    AddGroupView(
+                        uiState = uiState,
+                        group = group,
+                        onNext = addGroupViewModel::next,
+                        onBack = {
+                            if (uiState is AddGroupViewModel.AddName)
+                                popBackStack()
+                            else addGroupViewModel.back()
+                        },
+                        onClose = ::popBackStack,
+                        onSubmitGroup = addGroupViewModel::saveGroup,
+                        showSubmitLoader = addGroupViewModel.submittingGroup
+                    )
                 }
             }
         }
     }
 
-    private fun close() {
-        findNavController().popBackStack()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        collectEvents(addGroupViewModel.uiEventsState) {
+            when (it) {
+                is AddGroupViewModel.ShowFriendsPressed -> {
+                    navigate(Screen.Friends, Screen.AddGroup)
+                }
+            }
+        }
     }
 }

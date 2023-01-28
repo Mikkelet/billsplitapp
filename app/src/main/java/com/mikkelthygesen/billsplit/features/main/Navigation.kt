@@ -20,9 +20,10 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.simpleName
 import java.security.InvalidParameterException
 
-enum class Screen { Landing, Profile, Groups, AddGroup, Group }
+enum class Screen { Landing, Profile, Groups, AddGroup, Group, Friends }
 
 fun Fragment.navigate(to: Screen, from: Screen, args: Bundle? = null) {
     if (to == from) {
@@ -44,7 +45,16 @@ fun Fragment.navigate(to: Screen, from: Screen, args: Bundle? = null) {
         Screen.Group -> {
             findNavController().navigate(R.id.action_global_groupFragment, args)
         }
+        Screen.Friends -> {
+            findNavController().navigate(R.id.action_global_friendsFragment)
+        }
     }
 }
 
-fun Fragment.popBackStack() = findNavController().popBackStack()
+fun Fragment.popBackStack() {
+    println("qqq topFragment=${findNavController().backQueue.last().destination.simpleName()}")
+    findNavController().popBackStack()
+    findNavController().backQueue.map { it.destination.simpleName() }.reversed().also {
+        println("qqq stack=$it")
+    }
+}

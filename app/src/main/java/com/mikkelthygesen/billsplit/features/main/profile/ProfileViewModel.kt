@@ -11,12 +11,12 @@ class ProfileViewModel @Inject constructor(
     private val updateNameUseCase: UpdateNameUseCase,
 ) : BaseViewModel() {
 
-    object Main : UiState
+    object Profile : UiState
+    object FriendsPressed : UiEvent
 
-    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Main)
+    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Profile)
 
-    fun updateUserName(){
-
+    fun showFriends() {
+        emitUiEvent(FriendsPressed)
     }
-
 }

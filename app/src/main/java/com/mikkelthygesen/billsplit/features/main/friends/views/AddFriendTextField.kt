@@ -14,10 +14,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.matchesEmail
 import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.features.main.friends.FriendsViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
@@ -25,11 +25,11 @@ import io.ktor.utils.io.core.*
 
 @Composable
 fun AddFriendEmailTextField(
-    viewModel: MainViewModel = viewModel(),
     onFriendAdded: (Friend) -> Unit
 ) {
+    val friendsViewModel: FriendsViewModel = viewModel()
     _AddFriendTextField {
-        val friend = viewModel.addFriend(it.trim().lowercase())
+        val friend = friendsViewModel.addFriend(it.trim().lowercase())
         onFriendAdded(friend)
         friend
     }

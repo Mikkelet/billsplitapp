@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.main.profile.widget
+package com.mikkelthygesen.billsplit.features.main.friends.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -11,20 +11,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.features.main.friends.FriendsViewModel
 import com.mikkelthygesen.billsplit.samplePeopleShera
-import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
 
 
 @Composable
-fun ProfilePageFriendView(
+fun FriendView(
     friend: Friend,
-    mainViewModel: MainViewModel = viewModel(),
+    friendsViewModel: FriendsViewModel = viewModel(),
 ) {
     var friendStatus by remember {
         mutableStateOf(friend)
@@ -35,7 +34,7 @@ fun ProfilePageFriendView(
             is Friend.FriendRequestReceived -> {
                 TriggerFutureComposable(
                     onClickAsync = {
-                        mainViewModel.acceptFriendRequest(friend.person)
+                        friendsViewModel.acceptFriendRequest(friend.person)
                     }) { state, addFriend ->
                     when (state) {
                         is TriggerFutureState.Loading -> Text(text = "Accepting...")
@@ -43,7 +42,7 @@ fun ProfilePageFriendView(
                             if (state is TriggerFutureState.Success) {
                                 friendStatus = state.data
                             } else if (state is TriggerFutureState.Failure)
-                                mainViewModel.handleError(state.error)
+                                friendsViewModel.handleError(state.error)
                             Button(onClick = addFriend) {
                                 Text(text = "Accept")
                             }
@@ -112,7 +111,7 @@ private fun _FriendView(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFriendRequestSent() {
-    ProfilePageFriendView(
+    FriendView(
         friend = Friend.FriendRequestSent(samplePeopleShera[1])
     )
 }
@@ -120,7 +119,7 @@ private fun PreviewFriendRequestSent() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewAcceptRequest() {
-    ProfilePageFriendView(
+    FriendView(
         friend = Friend.FriendRequestReceived(samplePeopleShera[1])
     )
 }
@@ -128,7 +127,7 @@ private fun PreviewAcceptRequest() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFriend() {
-    ProfilePageFriendView(
+    FriendView(
         friend = Friend.FriendAccepted(samplePeopleShera[1])
     )
 }

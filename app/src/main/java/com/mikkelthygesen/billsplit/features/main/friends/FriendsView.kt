@@ -1,7 +1,9 @@
-package com.mikkelthygesen.billsplit.features.main.profile.widget
+package com.mikkelthygesen.billsplit.features.main.friends
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -12,18 +14,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.features.main.profile.widget.AddFriendEmailTextField
+import com.mikkelthygesen.billsplit.features.main.friends.views.FriendView
+import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.FutureState
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
 @Composable
-fun FriendsListView(
-    mainViewModel: MainViewModel = viewModel()
-) {
+fun FriendsView() {
+    val friendsViewModel: FriendsViewModel = viewModel()
     var sync by remember {
         mutableStateOf(false)
     }
@@ -33,18 +36,18 @@ fun FriendsListView(
     FutureComposable(
         asyncCallback = {
             sync = false
-            mainViewModel.getFriends(false)
+            friendsViewModel.getFriends(false)
         },
         refreshCallback = {
             sync = true
-            mainViewModel.getFriends(true)
+            friendsViewModel.getFriends(true)
         }
     ) { state, refresh ->
         when (state) {
             is FutureState.Loading -> FriendsListWithTitle(friends = emptyList(), sync) {}
             else -> {
                 if (state is FutureState.Failure)
-                    mainViewModel.handleError(state.error)
+                    friendsViewModel.handleError(state.error)
                 else if (state is FutureState.Success)
                     friends = state.data
                 FriendsListWithTitle(friends = friends.sortedBy { it.javaClass.simpleName }) {
@@ -62,20 +65,23 @@ private fun FriendsListWithTitle(
     showLoading: Boolean = false,
     onRefreshClick: () -> Unit
 ) {
-    Column {
+    Column(
+        Modifier
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
                 modifier = Modifier
-                    .align(Alignment.Center),
+                    .padding(bottom = 32.dp),
                 text = "Friends",
-                style = MaterialTheme.typography.h5
+                style = MaterialTheme.typography.h4
             )
             SimpleIconButton(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp),
+                    .align(Alignment.BottomEnd),
                 iconResId = R.drawable.ic_baseline_refresh_24
             ) {
                 onRefreshClick()
@@ -97,13 +103,16 @@ private fun _FriendsListView(
     }
     Column(
         modifier =
-        Modifier.shadowModifier(MaterialTheme.colors.listItemColor()),
+        Modifier.shadowModifier(
+            MaterialTheme.colors.listItemColor(),
+            outerPadding = PaddingValues(0.dp)
+        ),
     ) {
         AddFriendEmailTextField {
             friendsState = friendsState.plus(it)
         }
         friendsState.map {
-            ProfilePageFriendView(it)
+            FriendView(it)
         }
         if (showLoading)
             Row(

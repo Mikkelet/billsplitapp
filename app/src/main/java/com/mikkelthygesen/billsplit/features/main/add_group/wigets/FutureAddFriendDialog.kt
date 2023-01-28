@@ -11,9 +11,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.features.main.add_group.AddGroupViewModel
 import com.mikkelthygesen.billsplit.sampleFriends
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.ErrorView
@@ -25,13 +25,13 @@ import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 @Composable
 fun FutureAddFriendDialog(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = viewModel(),
     group: Group
 ) {
+    val addGroupViewModel: AddGroupViewModel = viewModel()
     _FutureAddFriendDialog(
         modifier = modifier,
-        getFriends = mainViewModel::getFriends,
-        showProfile = mainViewModel::showProfile,
+        getFriends = addGroupViewModel::getFriends,
+        showProfile = addGroupViewModel::showProfile,
         group = group
     )
 }
@@ -65,8 +65,8 @@ fun _FutureAddFriendDialog(
                     val addableFriends = acceptedFriends
                         .let { list ->
                             if (list.isEmpty()) emptyList()
-                            else list.plus(list).plus(list).map { it.person }
-
+                            else list.map { it.person }
+                                .minus(group.peopleState.toSet())
                         }
                     AddFriendToGroupDialog(
                         friendsToAdd = addableFriends,

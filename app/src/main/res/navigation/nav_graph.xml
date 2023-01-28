@@ -48,7 +48,18 @@
         app:destination="@id/profileFragment"
         app:enterAnim="@anim/slide_in_left"
         app:exitAnim="@anim/slide_out_left"
-        app:popExitAnim="@anim/slide_out_right"
         app:popEnterAnim="@anim/slide_in_right"
+        app:popExitAnim="@anim/slide_out_right" />
+    <fragment
+        android:id="@+id/friendsFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.friends.FriendsFragment"
+        android:label="FriendsFragment" />
+    <action
+        android:id="@+id/action_global_friendsFragment"
+        app:destination="@id/friendsFragment"
+        app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down"
         />
 </navigation>
