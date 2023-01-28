@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.main.profile.views.ProfileMenuButton
+import com.mikkelthygesen.billsplit.features.main.profile.views.SignOutButton
 import com.mikkelthygesen.billsplit.features.main.widgets.ProfileHeader
 
 @Composable
@@ -33,9 +34,7 @@ fun ProfileView(
         ProfileMenuButton(text = "Friends") {
             profileViewModel.showFriends()
         }
-        ProfileMenuButton(text = "Sign out") {
-            profileViewModel.signOut()
-        }
+        SignOutButton()
     }
 }
 
