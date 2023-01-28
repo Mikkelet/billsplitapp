@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,6 +26,13 @@ class MainActivity : FragmentActivity() {
         lifecycleScope.launch {
             delay(1000)
             listenToAuth()
+        }
+
+        lifecycleScope.launch {
+            viewModel.uiEventsState.collect { event ->
+                if(event is BaseViewModel.UiEvent.OnBackPressed)
+                    onBackPressedDispatcher.onBackPressed()
+            }
         }
     }
 
