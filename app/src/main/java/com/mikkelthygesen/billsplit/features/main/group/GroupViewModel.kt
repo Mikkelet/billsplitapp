@@ -60,11 +60,11 @@ class GroupViewModel @Inject constructor(
                 getGroupUseCase.execute(groupId, true)
             }
             syncResponse.foldSuccess { group ->
-                showChatLoader = false
                 _people.clear()
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events
             }
+            showChatLoader = false
         }
     }
 
