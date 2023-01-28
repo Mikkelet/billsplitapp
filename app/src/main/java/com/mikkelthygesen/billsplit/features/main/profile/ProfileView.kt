@@ -5,17 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.main.widgets.ProfileHeader
 import com.mikkelthygesen.billsplit.domain.models.Person
-import com.mikkelthygesen.billsplit.ui.shadowModifier
-import com.mikkelthygesen.billsplit.ui.theme.listItemColor
+import com.mikkelthygesen.billsplit.features.main.profile.views.ProfileMenuButton
+import com.mikkelthygesen.billsplit.features.main.widgets.ProfileHeader
 
 @Composable
 @SuppressLint("ComposableNaming")
@@ -33,18 +30,11 @@ fun ProfileView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ProfileHeader(user, onUpdateUser, onError)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadowModifier(MaterialTheme.colors.listItemColor(),
-                    onClick = {
-                        profileViewModel.showFriends()
-
-                    }),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Friends")
-            Icon(Icons.Filled.ArrowForward, contentDescription = "Friens")
+        ProfileMenuButton(text = "Friends") {
+            profileViewModel.showFriends()
+        }
+        ProfileMenuButton(text = "Sign out") {
+            profileViewModel.signOut()
         }
     }
 }

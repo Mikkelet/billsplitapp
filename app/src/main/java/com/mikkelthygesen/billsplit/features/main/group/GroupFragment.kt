@@ -39,7 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class GroupFragment : Fragment() {
 
     private val viewModel: GroupViewModel by viewModels()
-    private val groupId by lazy { arguments?.getString("group_id") ?: "" }
+    private val groupId by lazy { arguments?.getString(ARG_GROUP_ID) ?: "" }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -115,12 +115,6 @@ class GroupFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(groupId: String): GroupFragment {
-            val args = Bundle()
-            args.putString("group_id", groupId)
-            val fragment = GroupFragment()
-            fragment.arguments = args
-            return fragment
-        }
+        const val ARG_GROUP_ID = "group_id"
     }
 }

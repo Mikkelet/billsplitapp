@@ -15,7 +15,15 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.mikkelthygesen.billsplit.features.main.profile.ProfileFragment"
-        android:label="ProfileFragment" />
+        android:label="ProfileFragment">
+        <action
+            android:id="@+id/action_profileFragment_to_friendsFragment"
+            app:destination="@id/friendsFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
     <fragment
         android:id="@+id/addGroupFragment"
         android:name="com.mikkelthygesen.billsplit.features.main.add_group.AddGroupFragment"
@@ -24,6 +32,8 @@
         android:id="@+id/action_global_landingFragment"
         app:destination="@id/landingFragment"
         app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
         app:popExitAnim="@anim/slide_down" />
     <action
         android:id="@+id/action_global_addGroupFragment"
@@ -60,6 +70,5 @@
         app:enterAnim="@anim/slide_up"
         app:exitAnim="@anim/scale_down"
         app:popEnterAnim="@anim/scale_up"
-        app:popExitAnim="@anim/slide_down"
-        />
+        app:popExitAnim="@anim/slide_down" />
 </navigation>

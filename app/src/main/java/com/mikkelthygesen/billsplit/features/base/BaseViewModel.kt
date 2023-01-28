@@ -78,6 +78,10 @@ abstract class BaseViewModel : ViewModel() {
         else handleError(NetworkExceptions.UserLoggedOutException)
     }
 
+    fun showLanding(){
+        emitUiEvent(UiEvent.UserLoggedOut)
+    }
+
     fun handleError(exception: Throwable) {
         Timber.e(exception)
         when (exception) {

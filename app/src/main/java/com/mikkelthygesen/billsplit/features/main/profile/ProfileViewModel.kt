@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val updateNameUseCase: UpdateNameUseCase,
+    private val updateNameUseCase: UpdateNameUseCase
 ) : BaseViewModel() {
 
     object Profile : UiState
@@ -18,5 +18,9 @@ class ProfileViewModel @Inject constructor(
 
     fun showFriends() {
         emitUiEvent(FriendsPressed)
+    }
+
+    fun signOut() {
+        authProvider.signOut()
     }
 }

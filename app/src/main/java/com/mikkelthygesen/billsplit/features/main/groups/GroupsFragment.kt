@@ -9,7 +9,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -17,10 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.features.main.Screen
-import com.mikkelthygesen.billsplit.features.main.navigate
+import com.mikkelthygesen.billsplit.features.main.*
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,30 +37,11 @@ class GroupsFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-
-                LaunchedEffect(key1 = Unit, block = {
-                    groupsViewModel.uiEventsState.collect { uiEvents ->
-                        when (uiEvents) {
-                            is GroupsViewModel.ShowProfile -> {
-                                navigate(Screen.Profile, Screen.Groups)
-                            }
-                            is GroupsViewModel.ShowGroup -> {
-                                val args = Bundle()
-                                args.putString("group_id", uiEvents.group.id)
-                                navigate(Screen.Group, Screen.Groups, args)
-                            }
-                            is GroupsViewModel.AddGroup -> {
-                                navigate(Screen.AddGroup, Screen.Groups)
-                            }
-                        }
-                    }
-                })
-
                 BaseScaffold(
                     floatingActionButton = {
                         FloatingActionButton(
                             modifier = Modifier.padding(32.dp), onClick = {
-                                navigate(Screen.AddGroup, Screen.Groups)
+                                navigateToAddGroup()
                             }) {
                             Icon(Icons.Filled.Add, contentDescription = "Add Group")
                         }
@@ -75,6 +54,23 @@ class GroupsFragment : Fragment() {
                             user = user
                         )
                     }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        collectEvents(groupsViewModel.uiEventsState) { event ->
+            when (event) {
+                is GroupsViewModel.ShowProfile -> {
+                    navigateToProfile()
+                }
+                is GroupsViewModel.ShowGroup -> {
+                    navigateToGroup(event.group.id)
+                }
+                is GroupsViewModel.AddGroup -> {
+                    navigateToAddGroup()
                 }
             }
         }

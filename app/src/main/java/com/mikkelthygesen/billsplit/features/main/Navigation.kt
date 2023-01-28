@@ -20,41 +20,27 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikkelthygesen.billsplit.R
-import com.mikkelthygesen.billsplit.simpleName
-import java.security.InvalidParameterException
+import com.mikkelthygesen.billsplit.features.main.group.GroupFragment
+import com.mikkelthygesen.billsplit.features.main.profile.ProfileFragment
 
-enum class Screen { Landing, Profile, Groups, AddGroup, Group, Friends }
+fun Fragment.navigateToProfile() =
+    findNavController().navigate(R.id.action_global_profileFragment)
+fun Fragment.navigateToAddGroup() =
+    findNavController().navigate(R.id.action_global_addGroupFragment)
 
-fun Fragment.navigate(to: Screen, from: Screen, args: Bundle? = null) {
-    if (to == from) {
-        throw InvalidParameterException("Can't navigate to $to")
-    }
-    when (to) {
-        Screen.Landing -> {
-            findNavController().navigate(R.id.action_global_landingFragment)
-        }
-        Screen.Profile -> {
-            findNavController().navigate(R.id.action_global_profileFragment)
-        }
-        Screen.Groups -> {
-            findNavController().navigate(R.id.groupsFragment)
-        }
-        Screen.AddGroup -> {
-            findNavController().navigate(R.id.action_global_addGroupFragment)
-        }
-        Screen.Group -> {
-            findNavController().navigate(R.id.action_global_groupFragment, args)
-        }
-        Screen.Friends -> {
-            findNavController().navigate(R.id.action_global_friendsFragment)
-        }
+fun Fragment.navigateToGroup(groupId: String) {
+    val args = Bundle()
+    args.putString(GroupFragment.ARG_GROUP_ID, groupId)
+    findNavController().navigate(R.id.action_global_addGroupFragment, args)
+}
+
+fun Fragment.navigateToFriends() {
+    when (this) {
+        is ProfileFragment -> findNavController().navigate(R.id.action_profileFragment_to_friendsFragment)
+        else -> findNavController().navigate(R.id.action_global_friendsFragment)
     }
 }
 
 fun Fragment.popBackStack() {
-    println("qqq topFragment=${findNavController().backQueue.last().destination.simpleName()}")
     findNavController().popBackStack()
-    findNavController().backQueue.map { it.destination.simpleName() }.reversed().also {
-        println("qqq stack=$it")
-    }
 }

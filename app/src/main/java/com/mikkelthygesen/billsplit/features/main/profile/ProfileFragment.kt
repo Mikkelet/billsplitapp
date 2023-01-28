@@ -12,8 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
-import com.mikkelthygesen.billsplit.features.main.Screen
-import com.mikkelthygesen.billsplit.features.main.navigate
+import com.mikkelthygesen.billsplit.features.main.navigateToFriends
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
@@ -60,7 +59,7 @@ class ProfileFragment : Fragment() {
         collectEvents(profileViewModel.uiEventsState) { event ->
             when (event) {
                 is ProfileViewModel.FriendsPressed -> {
-                    navigate(Screen.Friends, Screen.Profile)
+                    navigateToFriends()
                 }
             }
         }

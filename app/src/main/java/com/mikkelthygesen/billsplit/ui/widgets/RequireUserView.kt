@@ -11,6 +11,7 @@ fun RequireUserView(
 ) {
     if (baseViewModel.loggedIdUser != null) {
         content(baseViewModel.requireLoggedInUser)
-    } else LoadingView()
-
+    } else SignedOutWarning {
+        baseViewModel.showLanding()
+    }
 }
