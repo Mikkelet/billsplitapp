@@ -15,5 +15,4 @@ class DatabaseRepository @Inject constructor(
         billSplitDb.groupsDao().clearTable()
         billSplitDb.friendsDao().clearTable()
     }
-
 }
