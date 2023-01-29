@@ -128,13 +128,13 @@ class GroupViewModel @Inject constructor(
     }
 
     private fun handleEditExpense(originalCopy: GroupExpense, updatedCopy: GroupExpense) {
-        val groupExpensesChanged = GroupExpensesChanged(
-            id = originalCopy.id,
-            createdBy = originalCopy.createdBy,
-            groupExpenseOriginal = originalCopy,
-            groupExpenseEdited = updatedCopy
-        )
         viewModelScope.launch {
+            val groupExpensesChanged = GroupExpensesChanged(
+                id = "",
+                createdBy = requireLoggedInUser,
+                groupExpenseOriginal = originalCopy,
+                groupExpenseEdited = updatedCopy
+            )
             val response = runCatching {
                 group.debtsState = getCalculator().calculateEffectiveDebtForGroup()
                 addEventUseCase.execute(group, groupExpensesChanged)
