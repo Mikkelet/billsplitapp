@@ -1,18 +1,15 @@
 package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
@@ -38,10 +35,6 @@ private fun _ExpenseViewHeader(
     onBackPressed: () -> Unit
 ) {
     Box(Modifier.padding(bottom = 32.dp)) {
-        Image(
-            painter = painterResource(id = R.drawable.best_restraunts),
-            contentDescription = "",
-        )
         DescriptionTextField(
             Modifier.align(Alignment.BottomStart),
             initialValue = groupExpense.descriptionState

@@ -14,11 +14,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ExpenseViewHeader
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ParticipantView
-import com.mikkelthygesen.billsplit.domain.models.GroupExpense
-import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.features.main.group.widgets.SharedExpensesView
+import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import kotlin.math.roundToInt
 
 
@@ -41,7 +41,6 @@ fun ExpenseView(
         color = MaterialTheme.colors.background,
     ) {
         Column(modifier = Modifier.verticalScroll(scrollState)) {
-            ExpenseViewHeader(groupExpense)
             SharedExpensesView(
                 modifier = Modifier.onGloballyPositioned {
                     sharedExpensePositionY = it.positionInParent().y - SCROLL_OFFSET
@@ -69,6 +68,7 @@ fun ExpenseView(
                     }
                 )
             }
+            ExpenseViewHeader(groupExpense)
             Box(modifier = Modifier.height(100.dp))
         }
     }

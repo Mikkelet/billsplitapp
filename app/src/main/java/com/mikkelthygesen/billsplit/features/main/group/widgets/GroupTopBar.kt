@@ -5,8 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 
 
 @Composable
@@ -76,4 +78,48 @@ fun GroupTopBar(
             }
         }
     }
+}
+
+@Composable
+fun GroupTopBar2(){
+    val groupViewModel: GroupViewModel = viewModel()
+    val uiStateFlow = groupViewModel.uiStateFlow.collectAsState()
+    val uiState = uiStateFlow.value
+
+    TopAppBar(
+        title = {
+            if (uiState is BaseViewModel.UiState.Loading)
+                Text(text = "")
+            else Text(text = groupViewModel.group.nameState)
+        },
+        navigationIcon = {
+            IconButton(onClick = {
+                groupViewModel.onBackButtonPressed()
+            }) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "")
+            }
+        },
+        actions = {
+            if (uiState is GroupViewModel.EditExpense)
+                SimpleIconButton(
+                    iconResId = R.drawable.ic_check,
+                    tint = MaterialTheme.colors.onBackground
+                ) {
+                    groupViewModel.saveGroupExpense(uiState.groupExpense)
+                }
+            if (uiState is GroupViewModel.Chat)
+                SimpleIconButton(
+                    iconResId = R.drawable.ic_baseline_settings_24,
+                    tint = MaterialTheme.colors.onBackground
+                ) {
+                    // show settings
+                }
+            if (uiState is GroupViewModel.Chat)
+                SimpleIconButton(
+                    iconResId = R.drawable.ic_money,
+                    tint = MaterialTheme.colors.onBackground,
+                    onClick = groupViewModel::showDebt
+                )
+        }
+    )
 }

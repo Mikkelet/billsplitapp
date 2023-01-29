@@ -25,6 +25,7 @@ class GroupViewModel @Inject constructor(
 
     object Chat : UiState
     object ShowDebt : UiState
+    object Services : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
 
@@ -151,6 +152,10 @@ class GroupViewModel @Inject constructor(
 
     fun showDebt() {
         updateUiState(ShowDebt)
+    }
+
+    fun showServices() {
+        updateUiState(Services)
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {
