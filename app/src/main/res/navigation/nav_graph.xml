@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/groupsFragment">
+
+    <fragment
+        android:id="@+id/landingFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.signup.LandingFragment"
+        android:label="LandingFragment" />
+    <fragment
+        android:id="@+id/groupsFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.groups.GroupsFragment"
+        android:label="GroupsFragment" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.profile.ProfileFragment"
+        android:label="ProfileFragment">
+        <action
+            android:id="@+id/action_profileFragment_to_friendsFragment"
+            app:destination="@id/friendsFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/addGroupFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.add_group.AddGroupFragment"
+        android:label="AddGroupFragment" />
+    <action
+        android:id="@+id/action_global_landingFragment"
+        app:destination="@id/landingFragment"
+        app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down" />
+    <action
+        android:id="@+id/action_global_addGroupFragment"
+        app:destination="@id/addGroupFragment"
+        app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down" />
+    <fragment
+        android:id="@+id/groupFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.group.GroupFragment"
+        android:label="GroupFragment" />
+    <action
+        android:id="@+id/action_global_groupFragment"
+        app:destination="@id/groupFragment"
+        app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down" />
+    <action
+        android:id="@+id/action_global_profileFragment"
+        app:destination="@id/profileFragment"
+        app:enterAnim="@anim/slide_in_left"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_right"
+        app:popExitAnim="@anim/slide_out_right" />
+    <fragment
+        android:id="@+id/friendsFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.friends.FriendsFragment"
+        android:label="FriendsFragment" />
+    <action
+        android:id="@+id/action_global_friendsFragment"
+        app:destination="@id/friendsFragment"
+        app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down" />
+</navigation>

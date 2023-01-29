@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
@@ -19,6 +20,7 @@ import javax.inject.Singleton
 class AuthProvider @Inject constructor() {
 
     var userState: Person? by mutableStateOf(null)
+    var userLiveData = MutableLiveData<Person?>(null)
 
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
@@ -26,12 +28,6 @@ class AuthProvider @Inject constructor() {
                 useEmulator("10.0.2.2", 9099)
         }
     }
-
-    var loggedInUser: Person? = null
-        private set(value) {
-            println("qqq value=$value")
-            field = value
-        }
 
     private val authListener = AuthStateListener {
         val fbUser = it.currentUser
@@ -41,8 +37,8 @@ class AuthProvider @Inject constructor() {
             pfpUrl = fbUser.photoUrl?.toString() ?: "",
             email = fbUser.email ?: ""
         )
-        loggedInUser = userPerson
         userState = userPerson
+        userLiveData.value = userPerson
     }
 
     fun onCreate() {
@@ -53,9 +49,15 @@ class AuthProvider @Inject constructor() {
         firebase.removeAuthStateListener(authListener)
     }
 
+    fun signOut(){
+        firebase.signOut()
+        userState = null
+        userLiveData.value = null
+    }
+
     suspend fun updateUserName() {
         val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
-        val loggedInUser = loggedInUser ?: throw NetworkExceptions.UserLoggedOutException
+        val loggedInUser = userState ?: throw NetworkExceptions.UserLoggedOutException
         val request = UserProfileChangeRequest.Builder()
         request.displayName = loggedInUser.nameState
         currentUser.updateProfile(request.build()).await()
@@ -83,8 +85,8 @@ class AuthProvider @Inject constructor() {
     private fun onSignIn(authResult: AuthResult) {
         val user = authResult.user
         if (user != null) {
-            val person = Person(user.uid, name = user.displayName ?: "Unknown user")
-            loggedInUser = person
+            val person = Person(user.uid, name = user.displayName ?: "Splitsby user")
+            userState = person
         }
     }
 

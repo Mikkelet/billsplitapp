@@ -12,28 +12,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
+import com.mikkelthygesen.billsplit.features.main.groups.views.GroupsTitle
 import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun GroupsList() {
-    val viewModel: MainViewModel = viewModel()
-    val groupsViewModel: GroupsViewModel = hiltViewModel()
-    val uiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
-    val uiState = uiStateFlow.value
+fun GroupsList(
+    uiState: BaseViewModel.UiState,
+    user: Person,
+) {
+    val groupsViewModel: GroupsViewModel = viewModel()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState is BaseViewModel.UiState.Loading,
-        onRefresh = { groupsViewModel.getGroups(true) })
-
-    LaunchedEffect(Unit) {
-        groupsViewModel.getGroups(false)
-    }
+        onRefresh = { groupsViewModel.getGroups(true) }
+    )
 
     Box(
         modifier = Modifier
@@ -50,34 +47,25 @@ fun GroupsList() {
             if (state is BaseViewModel.UiState.Loading)
                 LoadingView()
             else if (state is GroupsViewModel.ShowGroups)
-                RequireUserView(baseViewModel = viewModel) { user ->
-                    LazyColumn {
+                LazyColumn {
+                    item {
+                        GroupsTitle(user = user)
+                    }
+                    if (state.groups.isEmpty())
                         item {
-                            Text(
-                                modifier = Modifier.padding(
-                                    top = 32.dp,
-                                    start = 32.dp,
-                                    bottom = 32.dp
-                                ),
-                                text = "Groups",
-                                style = MaterialTheme.typography.h4
-                            )
-                        }
-                        if (state.groups.isEmpty())
-                            item {
-                                EmptyGroupList(viewModel::showAddGroup)
+                            EmptyGroupList {
+                                groupsViewModel.addGroup()
                             }
-                        else
-                            items(state.groups.size) { index ->
-                                val group = state.groups[index]
-                                GroupListItem(user, group = group) {
-                                    viewModel.showGroup(group.id)
-
-                                }
-                            }
-                        item { 
-                            Box(Modifier.height(80.dp))
                         }
+                    else
+                        items(state.groups.size) { index ->
+                            val group = state.groups[index]
+                            GroupListItem(user, group = group) {
+                                groupsViewModel.showGroup(group)
+                            }
+                        }
+                    item {
+                        Box(Modifier.height(80.dp))
                     }
                 }
         }

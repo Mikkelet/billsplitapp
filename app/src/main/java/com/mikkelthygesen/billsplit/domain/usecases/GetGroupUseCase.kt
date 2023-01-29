@@ -39,8 +39,6 @@ class GetGroupUseCase @Inject constructor(
             val changes: List<Event> =
                 database.eventsDao().getExpenseChanges(groupId).map { it.toExpenseChange() }
             val events = expenses.plus(payments).plus(changes).sortedBy { it.timeStamp }
-            if (events.isEmpty())
-                return execute(groupId, true)
             return group.copy(events = events)
         }
     }

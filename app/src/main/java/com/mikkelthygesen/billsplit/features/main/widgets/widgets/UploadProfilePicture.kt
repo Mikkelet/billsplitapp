@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.features.main.widgets.widgets
 
-import android.net.Uri
+ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -18,9 +18,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.main.MainViewModel
-import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
 import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.features.main.profile.ProfileViewModel
+import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
@@ -28,9 +28,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ProfilePictureWithUpload(
-    user: Person,
-    mainViewModel: MainViewModel = viewModel()
+    user: Person
 ) {
+    val profileViewModel: ProfileViewModel = viewModel()
+
     var selectedImage by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -40,6 +41,16 @@ fun ProfilePictureWithUpload(
     var showConfirmDialog by remember {
         mutableStateOf(false)
     }
+
+    LaunchedEffect(key1 = Unit, block = {
+        profileViewModel.uiEventsState.collect { event ->
+            if (event is ProfileViewModel.ProfilePictureUploaded) {
+                selectedImage = null
+                uploadingImage = false
+            }
+        }
+    })
+
     val coroutineScope = rememberCoroutineScope()
 
     if (showConfirmDialog) {
@@ -51,10 +62,7 @@ fun ProfilePictureWithUpload(
             uploadingImage = true
             showConfirmDialog = false
             coroutineScope.launch {
-                mainViewModel.uploadProfilePhoto(selectedImage!!) {
-                    selectedImage = null
-                    uploadingImage = false
-                }
+                profileViewModel.uploadProfilePhoto(selectedImage!!)
             }
         }
     }
@@ -73,7 +81,7 @@ fun ProfilePictureWithUpload(
     else
         ProfilePicture(
             modifier = Modifier
-                .padding(top = 32.dp)
+                .padding(vertical = 32.dp)
                 .size(100.dp)
                 .clip(CircleShape)
                 .clickable {

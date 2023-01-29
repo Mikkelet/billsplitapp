@@ -41,5 +41,13 @@ interface EventsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpenseChanges(expenseChanges: List<ExpenseChangeDb>)
 
+    @Query("DELETE FROM payments")
+    suspend fun clearPaymentTable()
+
+    @Query("DELETE FROM group_expenses")
+    suspend fun clearExpensesTable()
+
+    @Query("DELETE FROM expense_changes")
+    suspend fun clearChangesTable()
 
 }

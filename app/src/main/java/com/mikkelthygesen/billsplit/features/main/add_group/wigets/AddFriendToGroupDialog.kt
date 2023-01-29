@@ -5,8 +5,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
-import com.mikkelthygesen.billsplit.features.main.profile.widget.ClickableFriendView
-import com.mikkelthygesen.billsplit.features.main.profile.widget.shadowModifier
+import com.mikkelthygesen.billsplit.features.main.friends.views.ClickableFriendView
+import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.widgets.GenericDialog
 

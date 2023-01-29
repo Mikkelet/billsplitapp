@@ -23,33 +23,39 @@ import com.mikkelthygesen.billsplit.ui.widgets.FlatButton
 
 @Composable
 fun SignUpView(
-    mainViewModel: MainViewModel = viewModel()
+    onSignUpWithCredentials: (String, String) -> Unit,
+    onSignUpWithGoogleClicked: () -> Unit,
+    onSignUpWithFacebookClicked: () -> Unit,
+    onAlreadyHaveAccount: () -> Unit,
 ) {
     _SignUpView(
-        onSignUpWithCredentials = mainViewModel::signUpEmail,
-        onSignUpWithGoogleClicked = { },
-        onSignUpWithFacebookClicked = {},
-        onAlreadySignedUpClicked = mainViewModel::showSignIn,
+        onSignUpWithCredentials = onSignUpWithCredentials,
+        onSignUpWithGoogleClicked = onSignUpWithGoogleClicked,
+        onSignUpWithFacebookClicked = onSignUpWithFacebookClicked,
+        onAlreadySignedUpClicked = onAlreadyHaveAccount,
         isSignUp = true
     )
 }
 
 @Composable
 fun SignInView(
-    mainViewModel: MainViewModel = viewModel()
+    onSignInWithCredentials: (String, String) -> Unit,
+    onSignInWithGoogleClicked: () -> Unit,
+    onSignInWithFacebookClicked: () -> Unit,
+    onAlreadySignedUpClicked: () -> Unit,
 ) {
     _SignUpView(
-        onSignUpWithCredentials = mainViewModel::signInEmail,
-        onSignUpWithGoogleClicked = {},
-        onSignUpWithFacebookClicked = {},
-        onAlreadySignedUpClicked = mainViewModel::showSignUp
+        onSignUpWithCredentials = onSignInWithCredentials,
+        onSignUpWithGoogleClicked = onSignInWithGoogleClicked,
+        onSignUpWithFacebookClicked = onSignInWithFacebookClicked,
+        onAlreadySignedUpClicked = onAlreadySignedUpClicked
     )
 }
 
 
 @SuppressLint("ComposableNaming")
 @Composable
-private fun _SignUpView(
+fun _SignUpView(
     onSignUpWithCredentials: (String, String) -> Unit,
     onSignUpWithGoogleClicked: () -> Unit,
     onSignUpWithFacebookClicked: () -> Unit,

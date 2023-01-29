@@ -4,8 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.usecases.AddGroupUseCase
+import com.mikkelthygesen.billsplit.domain.usecases.GetFriendsUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,16 +16,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddGroupViewModel @Inject constructor(
-    private val addGroupUseCase: AddGroupUseCase
+    private val addGroupUseCase: AddGroupUseCase,
+    private val getFriendsUseCase: GetFriendsUseCase,
 ) : BaseViewModel() {
 
     object AddName : UiState
     object AddParticipants : UiState
     object Ready : UiState
 
+    object ShowFriendsPressed : UiEvent
+
     data class GroupAdded(val group: Group) : UiEvent
 
-    fun getNewGroup() =
+    val group : Group by lazy {
         Group(
             id = "",
             name = "",
@@ -33,6 +38,8 @@ class AddGroupViewModel @Inject constructor(
             events = listOf(),
             debts = emptyList()
         )
+    }
+
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(AddName)
 
@@ -63,9 +70,12 @@ class AddGroupViewModel @Inject constructor(
         }
     }
 
-    fun reset() {
-        updateUiState(AddName)
-        submittingGroup = false
+
+    suspend fun getFriends(sync: Boolean = false): List<Friend> {
+        return getFriendsUseCase.execute(sync)
     }
 
+    fun showProfile() {
+        emitUiEvent(ShowFriendsPressed)
+    }
 }

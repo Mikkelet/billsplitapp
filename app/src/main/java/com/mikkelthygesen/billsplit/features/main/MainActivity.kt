@@ -1,172 +1,57 @@
 package com.mikkelthygesen.billsplit.features.main
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.addCallback
-import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.mikkelthygesen.billsplit.BuildConfig
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.group.GroupActivity
-import com.mikkelthygesen.billsplit.features.main.add_group.AddGroupView
-import com.mikkelthygesen.billsplit.features.main.groups.GroupsList
-import com.mikkelthygesen.billsplit.features.main.profile.ProfileView
-import com.mikkelthygesen.billsplit.features.main.signup.SignInView
-import com.mikkelthygesen.billsplit.features.main.signup.SignUpView
-import com.mikkelthygesen.billsplit.features.main.widgets.dialogs.ErrorDialog
-import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
-import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
-
-    init {
-        onBackPressedDispatcher.addCallback(this) {
-            when (viewModel.uiStateFlow.value) {
-                !is MainViewModel.Main -> viewModel.showMyGroups()
-                else -> finish()
-            }
-        }
-    }
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            val uiStateFlow = viewModel.uiStateFlow.collectAsState()
+        setContentView(R.layout.activity_main)
+        navController = findNavController(R.id.nav_host_fragment)
 
-            BillSplitTheme {
+        lifecycleScope.launch {
+            delay(1000)
+            listenToAuth()
+        }
 
-                when (val state = viewModel.dialogState) {
-                    is BaseViewModel.DialogState.Error -> ErrorDialog(
-                        exception = state.exception,
-                        onDismiss = viewModel::dismissDialog
-                    )
-                    is BaseViewModel.DialogState.DismissDialogs -> Unit
-                }
-
-                LaunchedEffect(Unit) {
-                    viewModel.uiEventsState.collect { event ->
-                        when (event) {
-                            is BaseViewModel.UiEvent.OnBackPressed -> onBackPressedDispatcher.onBackPressed()
-                            is MainViewModel.ShowGroup -> {
-                                val intent = Intent(this@MainActivity, GroupActivity::class.java)
-                                intent.putExtra("group_id", event.groupId)
-                                startActivity(intent)
-                            }
-                        }
-                    }
-                }
-
-                Scaffold(
-                    backgroundColor = MaterialTheme.colors.background,
-                    floatingActionButton = {
-                        Crossfade(targetState = uiStateFlow.value) { uiState ->
-                            when(uiState){
-                                is MainViewModel.MyGroups -> FloatingActionButton(onClick = {
-                                    viewModel.showAddGroup()
-                                }) {
-                                    Icon(Icons.Filled.Add, contentDescription = "Add Group")
-                                }
-                            }
-                        }
-                    },
-                    bottomBar = { if (showNavigation(uiStateFlow.value)) BottomNavBar() },
-                    topBar = {
-                        if (BuildConfig.DEBUG)
-                            TopAppBar {
-                                Column {
-                                    Text(text = "flavor=${BuildConfig.FLAVOR}")
-                                    Text(text = "uid=${viewModel.loggedIdUser}")
-                                }
-                            }
-                    }
-                ) { padding ->
-                    Crossfade(
-                        modifier = Modifier.padding(padding),
-                        targetState = uiStateFlow.value
-                    ) { uiState ->
-                        when (uiState) {
-                            is BaseViewModel.UiState.Loading -> LoadingView()
-                            is BaseViewModel.UiState.SignIn -> SignInView()
-                            is BaseViewModel.UiState.SignUp -> SignUpView()
-                            is MainViewModel.AddGroup -> AddGroupView()
-                            is MainViewModel.MyGroups -> GroupsList()
-                            is MainViewModel.ShowProfile -> ProfileView()
-                            else -> Unit
-                        }
-                    }
-                }
+        lifecycleScope.launch {
+            viewModel.uiEventsState.collect { event ->
+                if(event is BaseViewModel.UiEvent.OnBackPressed)
+                    onBackPressedDispatcher.onBackPressed()
             }
         }
     }
-}
 
-private fun showNavigation(uiState: BaseViewModel.UiState): Boolean {
-    return when (uiState) {
-        is BaseViewModel.UiState.SignUp,
-        BaseViewModel.UiState.SignIn -> false
-        else -> true
+    private fun listenToAuth() {
+        viewModel.authProvider.userLiveData.observe(this) {
+            if (it == null && !isLandingDestination()) {
+                navController.navigate(R.id.action_global_landingFragment)
+            }
+        }
     }
-}
 
-@Composable
-private fun BottomNavBar(
-    viewModel: MainViewModel = viewModel()
-) {
-    val uiStateFlow = viewModel.uiStateFlow.collectAsState()
-    val uiState = uiStateFlow.value
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setNavigationBarColor(
-        color = MaterialTheme.colors.background,
-    )
-    BottomAppBar(
-        modifier = Modifier,
-        backgroundColor = MaterialTheme.colors.background,
-        elevation = 0.dp
-    ) {
-        BottomNavigationItem(
-            selected = uiState is MainViewModel.ShowProfile,
-            selectedContentColor = MaterialTheme.colors.primary,
-            unselectedContentColor = Color.Gray,
-            onClick = viewModel::showProfile,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_person_24),
-                    contentDescription = ""
-                )
-            }
-        )
-        BottomNavigationItem(
-            selected = uiState is MainViewModel.MyGroups,
-            onClick = viewModel::showMyGroups,
-            selectedContentColor = MaterialTheme.colors.primary,
-            unselectedContentColor = Color.Gray,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_groups_24),
-                    contentDescription = ""
-                )
-            }
-        )
+    private fun isLandingDestination() =
+        navController.currentDestination?.id == R.id.landingFragment
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        when (navController.currentDestination?.id) {
+            R.id.landingFragment -> Unit
+            else -> onBackPressedDispatcher.onBackPressed()
+        }
     }
 }
