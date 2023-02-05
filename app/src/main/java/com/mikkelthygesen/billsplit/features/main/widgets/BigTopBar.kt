@@ -10,14 +10,13 @@ import androidx.compose.ui.unit.dp
 fun BigTopBar(
     modifier: Modifier = Modifier,
     leadingContent: @Composable () -> Unit = {},
-    trailingContent: @Composable () -> Unit = {}
+    trailingContent: @Composable () -> Unit = {},
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .height(80.dp)
-        ,
+            .height(80.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

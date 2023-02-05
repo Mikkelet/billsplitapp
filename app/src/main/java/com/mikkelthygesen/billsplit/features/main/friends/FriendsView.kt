@@ -18,8 +18,10 @@ import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.main.profile.widget.AddFriendEmailTextField
 import com.mikkelthygesen.billsplit.features.main.friends.views.FriendView
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
+import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.FutureState
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
@@ -44,15 +46,22 @@ fun FriendsView() {
         }
     ) { state, refresh ->
         when (state) {
-            is FutureState.Loading -> FriendsListWithTitle(friends = emptyList(), sync) {}
+            is FutureState.Loading -> FriendsListWithTitle(
+                friends = emptyList(),
+                showLoading = sync,
+                onRefreshClick = {},
+                onBackClicked = friendsViewModel::onBackButtonPressed
+            )
             else -> {
                 if (state is FutureState.Failure)
                     friendsViewModel.handleError(state.error)
                 else if (state is FutureState.Success)
                     friends = state.data
-                FriendsListWithTitle(friends = friends.sortedBy { it.javaClass.simpleName }) {
-                    refresh()
-                }
+                FriendsListWithTitle(
+                    friends = friends.sortedBy { it.javaClass.simpleName },
+                    onRefreshClick = refresh,
+                    onBackClicked = friendsViewModel::onBackButtonPressed
+                )
             }
         }
 
@@ -63,13 +72,19 @@ fun FriendsView() {
 private fun FriendsListWithTitle(
     friends: List<Friend>,
     showLoading: Boolean = false,
-    onRefreshClick: () -> Unit
+    onRefreshClick: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
     Column(
         Modifier
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        BigTopBar(leadingContent = {
+            BackButton {
+                onBackClicked()
+            }
+        })
         Box(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -131,7 +146,5 @@ private fun Preview() {
         val person = Person("$it", "Person $it")
         Friend.FriendAccepted(person)
     }
-    FriendsListWithTitle(friends = friends) {
-
-    }
+    FriendsListWithTitle(friends = friends, onBackClicked = {}, onRefreshClick = {})
 }

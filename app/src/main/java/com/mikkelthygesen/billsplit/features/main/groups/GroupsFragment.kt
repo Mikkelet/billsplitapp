@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -22,9 +20,7 @@ import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.*
-import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.features.main.widgets.dialogs.ErrorDialog
-import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,22 +40,6 @@ class GroupsFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 BaseScaffold(
-                    topBar = {
-                        BigTopBar(
-                            trailingContent = {
-                                if (groupsViewModel.loggedIdUser != null)
-                                    ProfilePicture(
-                                        modifier = Modifier
-                                            .padding(8.dp)
-                                            .size(64.dp)
-                                            .clickable {
-                                                groupsViewModel.onProfilePictureClicked()
-                                            },
-                                        person = groupsViewModel.requireLoggedInUser
-                                    )
-                            }
-                        )
-                    },
                     floatingActionButton = {
                         FloatingActionButton(
                             modifier = Modifier.padding(32.dp), onClick = {

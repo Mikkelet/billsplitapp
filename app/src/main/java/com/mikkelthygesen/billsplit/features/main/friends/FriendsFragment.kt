@@ -11,8 +11,6 @@ import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.popBackStack
-import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
-import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,13 +26,6 @@ class FriendsFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 BaseScaffold(
-                    topBar = {
-                        BigTopBar(leadingContent = {
-                            BackButton {
-                                friendsViewModel.onBackButtonPressed()
-                            }
-                        })
-                    },
                     content = {
                         FriendsView()
                     })
