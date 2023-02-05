@@ -31,13 +31,13 @@ android {
     flavorDimensions "version"
     productFlavors {
         production {
-            buildConfigField("String", "HOST_NAME", "\"https://us-central1-billsplittapp.cloudfunctions.net/\"")
+            buildConfigField("String", "HOST_NAME", "\"https://us-central1-billsplittapp.cloudfunctions.net/v1/\"")
         }
         develop {
-            buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5000/billsplittapp/us-central1/\"")
+            buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5000/billsplittapp/us-central1/v1/\"")
         }
         emulator {
-            buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5001/billsplittapp/us-central1/\"")
+            buildConfigField("String", "HOST_NAME", "\"http://10.0.2.2:5001/billsplittapp/us-central1/v1/\"")
         }
     }
     compileOptions {
