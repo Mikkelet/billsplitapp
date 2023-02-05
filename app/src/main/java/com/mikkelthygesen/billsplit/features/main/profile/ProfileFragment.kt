@@ -32,9 +32,7 @@ class ProfileFragment : Fragment() {
                     topBar = {
                         BigTopBar(
                             leadingContent = {
-                                BackButton {
-                                    popBackStack()
-                                }
+                                BackButton(onClick = ::popBackStack)
                             }
                         )
                     },
