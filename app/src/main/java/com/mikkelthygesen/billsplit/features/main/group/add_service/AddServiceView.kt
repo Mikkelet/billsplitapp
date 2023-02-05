@@ -31,7 +31,7 @@ fun AddServiceView(service: SubscriptionService) {
 
     val groupViewModel: GroupViewModel = viewModel()
     var monthlyExpense by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("${service.monthlyExpenseState}")
     }
     var loading by rememberSaveable {
         mutableStateOf(false)

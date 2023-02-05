@@ -14,7 +14,8 @@ data class Group(
     val createdBy: Person = Person(),
     val timeStamp: Long = System.currentTimeMillis(),
     val events: List<Event> = emptyList(),
-    private var debts: List<Pair<String, Float>>
+    val services: List<SubscriptionService> = emptyList(),
+    private var debts: List<Pair<String, Float>>,
 ) {
     var nameState by mutableStateOf(name)
     var peopleState by mutableStateOf(people)

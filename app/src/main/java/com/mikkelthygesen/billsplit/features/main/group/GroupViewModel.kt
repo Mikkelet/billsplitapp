@@ -60,6 +60,7 @@ class GroupViewModel @Inject constructor(
                 this@GroupViewModel.group = group
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events
+                _mutableServicesStateFlow.value = group.services
                 updateUiState(Chat)
             }
 
@@ -72,6 +73,7 @@ class GroupViewModel @Inject constructor(
                 _people.clear()
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events
+                _mutableServicesStateFlow.value = group.services
             }
             showChatLoader = false
         }
@@ -230,6 +232,10 @@ class GroupViewModel @Inject constructor(
             imageUrl = "",
             participants = people
         )
+        updateUiState(AddService(subscriptionService))
+    }
+
+    fun onServiceClicked(subscriptionService: SubscriptionService){
         updateUiState(AddService(subscriptionService))
     }
 

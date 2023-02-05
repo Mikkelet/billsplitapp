@@ -18,6 +18,12 @@ data class Person(
         pfpUrl = personDTO.pfpUrl
     )
 
+    constructor(personDb: PersonDb) : this(
+        uid = personDb.uid,
+        name = personDb.name,
+        pfpUrl = personDb.pfpUrl
+    )
+
     var nameState by mutableStateOf(name.ifBlank { "Splitsby User" })
     var pfpUrlState by mutableStateOf(pfpUrl)
 

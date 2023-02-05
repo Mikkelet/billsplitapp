@@ -3,6 +3,7 @@ package com.mikkelthygesen.billsplit.domain.models
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.mikkelthygesen.billsplit.data.local.database.model.SubscriptionServiceDb
 import com.mikkelthygesen.billsplit.data.remote.dto.ServiceDTO
 
 data class SubscriptionService(
@@ -23,6 +24,16 @@ data class SubscriptionService(
         monthlyExpense = serviceDTO.monthlyExpense,
         payer = Person(serviceDTO.payer),
         participants = serviceDTO.participants.map { Person(it) }
+    )
+
+    constructor(serviceDb: SubscriptionServiceDb): this(
+        id = serviceDb.id,
+        name = serviceDb.name,
+        createdBy = Person(serviceDb.createdBy),
+        imageUrl = serviceDb.imageUrl,
+        monthlyExpense = serviceDb.monthlyExpense,
+        payer = Person(serviceDb.payer),
+        participants = serviceDb.participants.map { Person(it) }
     )
 
     var payerState by mutableStateOf(payer)

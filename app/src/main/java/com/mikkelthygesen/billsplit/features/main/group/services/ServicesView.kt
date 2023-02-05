@@ -17,7 +17,9 @@ fun ServicesView() {
     LazyColumn(Modifier.fillMaxSize()) {
         items(services.size) { index ->
             val service = services[index]
-            ServiceListItem(service = service)
+            ServiceListItem(service = service) {
+                groupViewModel.onServiceClicked(service)
+            }
         }
     }
 }

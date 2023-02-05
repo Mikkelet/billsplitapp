@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.features.main.group.services.views
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -10,9 +11,10 @@ import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
 import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 
 @Composable
-fun ServiceListItem(service: SubscriptionService) {
+fun ServiceListItem(service: SubscriptionService, onClick: () -> Unit) {
     Row(
         Modifier
+            .clickable { onClick() }
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
