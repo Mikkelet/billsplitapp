@@ -10,6 +10,7 @@ import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.usecases.AddSubscriptionServiceUseCase
 import com.mikkelthygesen.billsplit.toNewIndividualExpenses
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,14 +21,19 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupViewModel @Inject constructor(
     private val addEventUseCase: AddEventUseCase,
-    private val getGroupUseCase: GetGroupUseCase
+    private val getGroupUseCase: GetGroupUseCase,
+    private val addSubscriptionServiceUseCase: AddSubscriptionServiceUseCase
 ) : BaseViewModel() {
 
     object Chat : UiState
     object ShowDebt : UiState
     object Services : UiState
+    data class AddService(val subscriptionService: SubscriptionService) : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
+    object SaveServiceClicked : UiEvent
+    object ServiceSaved : UiEvent
+    object SaveServiceFailed : UiEvent
 
     var showChatLoader by mutableStateOf(false)
         private set
@@ -40,6 +46,8 @@ class GroupViewModel @Inject constructor(
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Chat)
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
+    private val _mutableServicesStateFlow = MutableStateFlow<List<SubscriptionService>>(emptyList())
+    val servicesStateFlow: StateFlow<List<SubscriptionService>> = _mutableServicesStateFlow
 
     fun getGroup(groupId: String) {
         viewModelScope.launch {
@@ -92,6 +100,16 @@ class GroupViewModel @Inject constructor(
         group.debtsState = getCalculator(payment).calculateEffectiveDebtForGroup()
         val paymentResponse = addEventUseCase.execute(group, payment)
         _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
+    }
+
+    suspend fun addSubscriptionService(service: SubscriptionService) {
+        viewModelScope.launch {
+            val response = runCatching { addSubscriptionServiceUseCase.execute(group.id, service) }
+            response.foldSuccess {
+                _mutableServicesStateFlow.value = _mutableServicesStateFlow.value.plus(it)
+                emitUiEvent(ServiceSaved)
+            }
+        }
     }
 
     fun addPerson(name: String) {
@@ -166,6 +184,27 @@ class GroupViewModel @Inject constructor(
         updateUiState(Chat)
     }
 
+    fun handleBack(): Boolean {
+        return when (val uiState = uiStateFlow.value) {
+            is EditExpense -> {
+                if (uiState.groupExpense.isChanged())
+                    showConfirmChangesDialog(uiState.groupExpense)
+                else showChat()
+                true
+            }
+            is AddService -> {
+                showServices()
+                true
+            }
+            is ShowDebt,
+            is Services -> {
+                showChat()
+                true
+            }
+            else -> false
+        }
+    }
+
     private fun getCalculator(withEvent: Event? = null): DebtCalculator {
         val events = eventStateFlow.value
         val payments: List<Payment> = events.filterIsInstance<Payment>().let {
@@ -179,5 +218,22 @@ class GroupViewModel @Inject constructor(
             else it
         }
         return DebtCalculator(group.peopleState, groupExpenses, payments)
+    }
+
+    fun onAddServicePressed() {
+        val subscriptionService = SubscriptionService(
+            id = "",
+            name = "",
+            createdBy = requireLoggedInUser,
+            monthlyExpense = 0f,
+            payer = requireLoggedInUser,
+            imageUrl = "",
+            participants = people
+        )
+        updateUiState(AddService(subscriptionService))
+    }
+
+    fun addServiceClicked() {
+        emitUiEvent(SaveServiceClicked)
     }
 }

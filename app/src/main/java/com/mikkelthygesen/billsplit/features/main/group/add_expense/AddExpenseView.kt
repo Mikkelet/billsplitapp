@@ -22,7 +22,7 @@ import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import kotlin.math.roundToInt
 
 
-private val SCROLL_OFFSET = 200.dp.value
+internal val SCROLL_OFFSET = 200.dp.value
 
 @Composable
 fun ExpenseView(

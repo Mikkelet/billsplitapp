@@ -25,7 +25,7 @@ abstract class BaseViewModel : ViewModel() {
         get() = authProvider.userState
 
     val requireLoggedInUser: Person
-        get() = authProvider.userState!!
+        get() = authProvider.userState ?: throw NetworkExceptions.UserLoggedOutException
 
     interface DialogState {
         object DismissDialogs : DialogState

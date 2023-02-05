@@ -9,6 +9,13 @@ data class PersonDTO(
     val name: String,
     val pfpUrl: String
 ) {
+
+    constructor(person: Person) : this(
+        id = person.uid,
+        name = person.nameState,
+        pfpUrl = person.pfpUrlState
+    )
+
     fun toPerson() = Person(
         uid = id,
         name = name,

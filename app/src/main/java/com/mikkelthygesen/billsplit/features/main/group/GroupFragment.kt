@@ -7,6 +7,10 @@ import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +21,7 @@ import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.group.add_expense.ExpenseView
+import com.mikkelthygesen.billsplit.features.main.group.add_service.AddServiceView
 import com.mikkelthygesen.billsplit.features.main.group.group_view.GroupEventsView
 import com.mikkelthygesen.billsplit.features.main.group.services.ServicesView
 import com.mikkelthygesen.billsplit.features.main.group.view_expenses.ViewDebt
@@ -47,7 +52,8 @@ class GroupFragment : Fragment() {
                 val uiState = groupUiState.value
 
                 BackHandler {
-                    handleBack(uiState)
+                    val popped = viewModel.handleBack()
+                    if (!popped) popBackStack()
                 }
 
                 when (val state = viewModel.dialogState) {
@@ -63,7 +69,15 @@ class GroupFragment : Fragment() {
 
                 BaseScaffold(
                     bottomBar = { GroupBottomBar(uiState) },
-                    topBar = { GroupTopBar2() }
+                    topBar = { GroupTopBar2() },
+                    floatingActionButton = {
+                        if (uiState is GroupViewModel.Services)
+                            FloatingActionButton(onClick = {
+                                viewModel.onAddServicePressed()
+                            }) {
+                                Icon(Icons.Filled.Add, contentDescription = "")
+                            }
+                    }
                 ) {
                     Box {
                         Crossfade(
@@ -74,6 +88,7 @@ class GroupFragment : Fragment() {
                                 is GroupViewModel.Chat -> GroupEventsView()
                                 is GroupViewModel.ShowDebt -> ViewDebt()
                                 is GroupViewModel.Services -> ServicesView()
+                                is GroupViewModel.AddService -> AddServiceView(state.subscriptionService)
                                 is GroupViewModel.EditExpense -> ExpenseView(
                                     groupExpense = state.groupExpense,
                                 )
@@ -94,18 +109,6 @@ class GroupFragment : Fragment() {
         collectEvents(viewModel.uiEventsState) { uiEvent ->
             if (uiEvent is BaseViewModel.UiEvent.OnBackPressed)
                 requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-    }
-
-    private fun handleBack(uiState: BaseViewModel.UiState) {
-        when (uiState) {
-            is GroupViewModel.EditExpense -> {
-                if (uiState.groupExpense.isChanged())
-                    viewModel.showConfirmChangesDialog(uiState.groupExpense)
-                else viewModel.showChat()
-            }
-            is GroupViewModel.ShowDebt -> viewModel.showChat()
-            else -> popBackStack()
         }
     }
 

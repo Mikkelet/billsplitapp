@@ -41,7 +41,6 @@ fun GroupBottomBar(
             },
             icon = {
                 Icon(Icons.Filled.Add, contentDescription = "")
-
             })
         BottomNavigationItem(
             selected = uiState is GroupViewModel.Services,

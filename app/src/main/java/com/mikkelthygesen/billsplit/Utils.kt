@@ -3,7 +3,6 @@ package com.mikkelthygesen.billsplit
 import android.util.Patterns
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavDestination
 import com.mikkelthygesen.billsplit.domain.models.IndividualExpense
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
@@ -22,6 +21,19 @@ fun tryParseToFloat(expenseHolder: IndividualExpense, value: String) = try {
     true
 } catch (e: Exception) {
     false
+}
+
+fun String.isFloat(): Boolean = try {
+    toFloat()
+    true
+} catch (e: Exception) {
+    false
+}
+
+fun String.parseToFloat(): Float = try {
+    toFloat()
+} catch (e: Exception) {
+    0F
 }
 
 fun List<Float>.reduceOrZero() = if (isEmpty()) 0F else reduce { acc, fl -> acc + fl }
@@ -43,5 +55,3 @@ fun Fragment.collectEvents(
         }
     }
 }
-
-fun NavDestination.simpleName() = displayName.split("/")[1]

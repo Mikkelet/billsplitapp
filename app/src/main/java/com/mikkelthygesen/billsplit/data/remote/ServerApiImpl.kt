@@ -2,10 +2,7 @@ package com.mikkelthygesen.billsplit.data.remote
 
 import com.mikkelthygesen.billsplit.data.remote.dto.*
 import com.mikkelthygesen.billsplit.data.remote.requests.*
-import com.mikkelthygesen.billsplit.domain.models.Group
-import com.mikkelthygesen.billsplit.domain.models.GroupExpense
-import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.*
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import io.ktor.client.*
 import javax.inject.Inject
@@ -66,8 +63,12 @@ class ServerApiImpl @Inject constructor(
         return serverApi.addFriend(request).friend
     }
 
-
     suspend fun getFriends(): List<FriendDTO> {
         return serverApi.getFriends().friends
+    }
+
+    suspend fun addSubscriptionService(groupId: String, service: SubscriptionService) : ServiceDTO {
+        val request = AddSubscriptionService.Request(groupId, service = ServiceDTO(service))
+        return serverApi.addSubscriptionService(request).service
     }
 }
