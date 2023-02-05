@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.main.profile.views.ProfileMenuButton
@@ -34,6 +35,7 @@ fun ProfileView(
         ProfileMenuButton(text = "Friends") {
             profileViewModel.showFriends()
         }
+        Divider(modifier = Modifier.padding(32.dp))
         SignOutButton()
     }
 }

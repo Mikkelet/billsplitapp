@@ -4,18 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TopAppBar
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.popBackStack
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,19 +27,17 @@ class FriendsFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                BaseScaffold(topBar = {
-                    TopAppBar(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = 0.dp,
-                        backgroundColor = MaterialTheme.colors.background
-                    ) {
-                        BackButton {
-                            friendsViewModel.onBackButtonPressed()
-                        }
-                    }
-                }) {
-                    FriendsView()
-                }
+                BaseScaffold(
+                    topBar = {
+                        BigTopBar(leadingContent = {
+                            BackButton {
+                                friendsViewModel.onBackButtonPressed()
+                            }
+                        })
+                    },
+                    content = {
+                        FriendsView()
+                    })
             }
         }
     }

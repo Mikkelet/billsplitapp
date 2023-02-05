@@ -33,6 +33,7 @@ import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.add_group.wigets.FutureAddFriendDialog
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
@@ -48,7 +49,6 @@ fun AddGroupView(
     showSubmitLoader: Boolean
 ) {
     val focusRequester = androidx.compose.ui.platform.LocalFocusManager.current
-
 
     val animateState by animateAlignmentAsState(
         targetAlignment =
@@ -67,17 +67,18 @@ fun AddGroupView(
     }
 
     Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            BackButton(Modifier.padding(8.dp)) {
-                onBack()
+        BigTopBar(
+            leadingContent = {
+                BackButton(Modifier.padding(8.dp)) {
+                    onBack()
+                }
+            },
+            trailingContent = {
+                CloseButton(Modifier.padding(8.dp)) {
+                    onClose()
+                }
             }
-            CloseButton(Modifier.padding(8.dp)) {
-                onClose()
-            }
-        }
+        )
         Text(
             modifier = Modifier
                 .padding(

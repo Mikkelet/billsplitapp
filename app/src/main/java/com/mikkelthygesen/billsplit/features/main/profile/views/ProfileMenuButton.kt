@@ -10,11 +10,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 
 @Composable
-fun ProfileMenuButton(text: String, onClick: () -> Unit) {
+fun ProfileMenuButton(
+    text: String,
+    style: TextStyle = TextStyle(),
+    onClick: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -23,7 +28,7 @@ fun ProfileMenuButton(text: String, onClick: () -> Unit) {
                 onClick = { onClick() }),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = text)
+        Text(text = text, style = style)
         Icon(Icons.Filled.ArrowForward, contentDescription = text)
     }
 }

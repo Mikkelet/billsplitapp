@@ -39,7 +39,12 @@ fun ExpandableView(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(modifier = Modifier.weight(5f)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(5f),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 title()
             }
             if (expanded)

@@ -67,7 +67,7 @@ private fun FriendsListWithTitle(
 ) {
     Column(
         Modifier
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Box(
@@ -75,7 +75,7 @@ private fun FriendsListWithTitle(
         ) {
             Text(
                 modifier = Modifier
-                    .padding(bottom = 32.dp),
+                    .padding(bottom = 32.dp, start = 16.dp),
                 text = "Friends",
                 style = MaterialTheme.typography.h4
             )
