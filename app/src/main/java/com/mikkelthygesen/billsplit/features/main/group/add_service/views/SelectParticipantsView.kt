@@ -19,7 +19,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
-import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.add_service.AddServiceViewModel
 import com.mikkelthygesen.billsplit.features.main.widgets.dialogs.PersonListItem
 import com.mikkelthygesen.billsplit.features.main.widgets.dialogs.PersonPicker
 import com.mikkelthygesen.billsplit.ui.shadowModifier
@@ -29,8 +29,8 @@ import com.mikkelthygesen.billsplit.ui.widgets.FlatButton
 @Composable
 fun SelectParticipantsView(subscriptionService: SubscriptionService) {
 
-    val groupViewModel: GroupViewModel = viewModel()
-    val group = groupViewModel.group
+    val addServiceViewModel: AddServiceViewModel = viewModel()
+    val group = addServiceViewModel.group
     var showPeoplePicker by rememberSaveable {
         mutableStateOf(false)
     }
@@ -51,11 +51,12 @@ fun SelectParticipantsView(subscriptionService: SubscriptionService) {
                     .listItemColor()
             )
     ) {
-        val showAddButton = subscriptionService.participantsState.size < groupViewModel.people.size
+        val showAddButton =
+            subscriptionService.participantsState.size < addServiceViewModel.group.peopleState.size
         subscriptionService.participantsState.map { person ->
             val text =
                 if (subscriptionService.payerState == person) "${person.nameState} is paying" else person.nameState
-            val showRemoveButton = person != groupViewModel.requireLoggedInUser &&
+            val showRemoveButton = person != addServiceViewModel.requireLoggedInUser &&
                     person != subscriptionService.payerState
             val showPayerIcon = person == subscriptionService.payerState
             PersonListItem(

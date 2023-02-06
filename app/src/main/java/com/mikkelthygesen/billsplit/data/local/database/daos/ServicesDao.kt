@@ -15,8 +15,11 @@ interface ServicesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(subscriptionServiceDbs: List<SubscriptionServiceDb>)
 
-    @Query("SELECT * FROM services")
-    suspend fun getServices() : List<SubscriptionServiceDb>
+    @Query("SELECT * FROM services WHERE :groupId == groupId")
+    suspend fun getServices(groupId: String): List<SubscriptionServiceDb>
+
+    @Query("SELECT * FROM services WHERE :groupId == id")
+    suspend fun getService(groupId: String): SubscriptionServiceDb
 
     @Query("DELETE FROM services")
     suspend fun clearTable()

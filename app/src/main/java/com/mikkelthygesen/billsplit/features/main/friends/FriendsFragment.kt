@@ -17,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class FriendsFragment : Fragment() {
 
     private val friendsViewModel: FriendsViewModel by viewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,10 +24,9 @@ class FriendsFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                BaseScaffold(
-                    content = {
-                        FriendsView()
-                    })
+                BaseScaffold(friendsViewModel) {
+                    FriendsView()
+                }
             }
         }
     }

@@ -17,6 +17,14 @@ data class Group(
     val services: List<SubscriptionService> = emptyList(),
     private var debts: List<Pair<String, Float>>,
 ) {
+    constructor(groupDb: GroupDb):this(
+        id = groupDb.id,
+        name = groupDb.name,
+        timeStamp = groupDb.timestamp,
+        people = groupDb.people.map { Person(it) },
+        debts = groupDb.debts.map { it.toDebt() }
+    )
+
     var nameState by mutableStateOf(name)
     var peopleState by mutableStateOf(people)
     var debtsState by mutableStateOf(debts)

@@ -15,6 +15,15 @@ data class SubscriptionService(
     private val payer: Person,
     private val participants: List<Person>
 ) {
+    constructor(payer: Person, participants: List<Person>) : this(
+        id = "",
+        name = "",
+        createdBy = payer,
+        imageUrl = "",
+        monthlyExpense = 0f,
+        payer = payer,
+        participants = participants
+    )
 
     constructor(serviceDTO: ServiceDTO): this(
         id = serviceDTO.id,

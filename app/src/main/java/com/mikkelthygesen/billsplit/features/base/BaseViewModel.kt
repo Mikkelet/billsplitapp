@@ -83,7 +83,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     fun handleError(exception: Throwable) {
-        Timber.e(exception)
+        Timber.e("qqq error=$exception")
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
             is NetworkExceptions.UserLoggedOutException -> emitUiEvent(UiEvent.UserLoggedOut)

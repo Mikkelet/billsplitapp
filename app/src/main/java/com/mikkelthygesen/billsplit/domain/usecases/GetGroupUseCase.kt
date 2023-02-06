@@ -23,7 +23,6 @@ class GetGroupUseCase @Inject constructor(
             val eventDtos = getGroupResponse.events
             val serviceDTOs = getGroupResponse.services
 
-
             // Insert to db
             val groupExpensesDb = eventDtos.filterIsInstance<EventDTO.ExpenseDTO>()
             val paymentsDb = eventDtos.filterIsInstance<EventDTO.PaymentDTO>()
@@ -32,7 +31,7 @@ class GetGroupUseCase @Inject constructor(
             database.eventsDao().insertGroupExpenses(groupExpensesDb.map { it.toDb(groupDto.id) })
             database.eventsDao().insertPayments(paymentsDb.map { it.toDb(groupId) })
             database.eventsDao().insertExpenseChanges(expenseChangesDb.map { it.toDb(groupDto.id) })
-            database.servicesDao().insert(serviceDTOs.map { SubscriptionServiceDb(it) })
+            database.servicesDao().insert(serviceDTOs.map { SubscriptionServiceDb(groupId, it) })
 
             val events = eventDtos.map { it.toEvent() }
             val services = serviceDTOs.map { SubscriptionService(it) }
@@ -46,7 +45,7 @@ class GetGroupUseCase @Inject constructor(
             val changes: List<Event> =
                 database.eventsDao().getExpenseChanges(groupId).map { it.toExpenseChange() }
             val events = expenses.plus(payments).plus(changes).sortedBy { it.timeStamp }
-            val services = database.servicesDao().getServices().map { SubscriptionService(it) }
+            val services = database.servicesDao().getServices(groupId).map { SubscriptionService(it) }
             return group.copy(events = events, services = services)
         }
     }

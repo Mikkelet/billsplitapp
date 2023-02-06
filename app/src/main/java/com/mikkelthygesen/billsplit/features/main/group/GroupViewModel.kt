@@ -11,11 +11,9 @@ import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.Payment
 import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
-import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
-import com.mikkelthygesen.billsplit.domain.usecases.AddSubscriptionServiceUseCase
+import com.mikkelthygesen.billsplit.domain.usecases.*
 import com.mikkelthygesen.billsplit.toNewIndividualExpenses
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +25,7 @@ import javax.inject.Inject
 class GroupViewModel @Inject constructor(
     private val addEventUseCase: AddEventUseCase,
     private val getGroupUseCase: GetGroupUseCase,
-    private val addSubscriptionServiceUseCase: AddSubscriptionServiceUseCase
+    private val getServicesFromLocalUseCase: GetServicesFromLocalUseCase
 ) : BaseViewModel() {
 
     object Chat : UiState
@@ -37,6 +35,7 @@ class GroupViewModel @Inject constructor(
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
     object SaveServiceClicked : UiEvent
+    data class OnServiceClicked(val service: SubscriptionService) : UiEvent
     object ServiceSaved : UiEvent
     object SaveServiceFailed : UiEvent
 
@@ -52,9 +51,9 @@ class GroupViewModel @Inject constructor(
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
     private val _mutableServicesStateFlow = MutableStateFlow<List<SubscriptionService>>(emptyList())
-    val servicesStateFlow: StateFlow<List<SubscriptionService>> = _mutableServicesStateFlow
 
     fun getGroup(groupId: String) {
+        if (this::group.isInitialized) return
         viewModelScope.launch {
             updateUiState(UiState.Loading)
             // call get cached group
@@ -84,6 +83,9 @@ class GroupViewModel @Inject constructor(
         }
     }
 
+    suspend fun getLocalServices(): List<SubscriptionService> =
+        getServicesFromLocalUseCase.execute(group.id)
+
     fun addExpense() {
         requireLoggedInUser {
             val groupExpense = GroupExpense(
@@ -107,16 +109,6 @@ class GroupViewModel @Inject constructor(
         group.debtsState = getCalculator(payment).calculateEffectiveDebtForGroup()
         val paymentResponse = addEventUseCase.execute(group, payment)
         _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
-    }
-
-    suspend fun addSubscriptionService(service: SubscriptionService) {
-        viewModelScope.launch {
-            val response = runCatching { addSubscriptionServiceUseCase.execute(group.id, service) }
-            response.foldSuccess {
-                _mutableServicesStateFlow.value = _mutableServicesStateFlow.value.plus(it)
-                emitUiEvent(ServiceSaved)
-            }
-        }
     }
 
     fun addPerson(name: String) {
@@ -227,21 +219,8 @@ class GroupViewModel @Inject constructor(
         return DebtCalculator(group.peopleState, groupExpenses, payments)
     }
 
-    fun onAddServicePressed() {
-        val subscriptionService = SubscriptionService(
-            id = "",
-            name = "",
-            createdBy = requireLoggedInUser,
-            monthlyExpense = 0f,
-            payer = requireLoggedInUser,
-            imageUrl = "",
-            participants = people
-        )
-        updateUiState(AddService(subscriptionService))
-    }
-
-    fun onServiceClicked(subscriptionService: SubscriptionService){
-        updateUiState(AddService(subscriptionService))
+    fun onServiceClicked(subscriptionService: SubscriptionService) {
+        emitUiEvent(OnServiceClicked(subscriptionService))
     }
 
     fun addServiceClicked() {

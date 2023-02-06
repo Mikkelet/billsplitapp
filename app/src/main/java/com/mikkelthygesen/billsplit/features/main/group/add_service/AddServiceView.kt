@@ -1,8 +1,6 @@
 package com.mikkelthygesen.billsplit.features.main.group.add_service
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -18,18 +16,22 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
+import com.mikkelthygesen.billsplit.features.main.add_service.AddServiceViewModel
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.group.add_service.views.SelectParticipantsView
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.isFloat
 import com.mikkelthygesen.billsplit.parseToFloat
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
+import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
 @Composable
 fun AddServiceView(service: SubscriptionService) {
 
-    val groupViewModel: GroupViewModel = viewModel()
+    val addServiceViewModel: AddServiceViewModel = viewModel()
     var monthlyExpense by rememberSaveable {
         mutableStateOf("${service.monthlyExpenseState}")
     }
@@ -38,17 +40,17 @@ fun AddServiceView(service: SubscriptionService) {
     }
 
     LaunchedEffect(key1 = Unit, block = {
-        groupViewModel.uiEventsState.collect { event ->
+        addServiceViewModel.uiEventsState.collect { event ->
             when (event) {
                 is GroupViewModel.SaveServiceClicked -> {
-                    groupViewModel.addSubscriptionService(service)
+                    addServiceViewModel.addSubscriptionService()
                     loading = true
                 }
                 is GroupViewModel.SaveServiceFailed -> {
                     loading = false
                 }
                 is GroupViewModel.ServiceSaved -> {
-                    groupViewModel.onBackButtonPressed()
+                    addServiceViewModel.onBackButtonPressed()
                 }
             }
         }
@@ -62,6 +64,18 @@ fun AddServiceView(service: SubscriptionService) {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
+            BigTopBar(
+                leadingContent = {
+                    BackButton {
+                        addServiceViewModel.onBackButtonPressed()
+                    }
+                },
+                trailingContent = {
+                    SimpleIconButton(iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_check) {
+                        addServiceViewModel.addSubscriptionService()
+                    }
+                }
+            )
             Text(
                 modifier = Modifier.padding(32.dp),
                 text = "Add new Service",
@@ -107,5 +121,6 @@ fun AddServiceView(service: SubscriptionService) {
             // Select Participants
             SelectParticipantsView(subscriptionService = service)
             // Submit
+            Box(modifier = Modifier.height(80.dp))
         }
 }

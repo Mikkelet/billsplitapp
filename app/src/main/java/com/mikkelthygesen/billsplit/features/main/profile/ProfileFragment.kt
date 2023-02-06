@@ -29,6 +29,7 @@ class ProfileFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 BaseScaffold(
+                    baseViewModel = profileViewModel,
                     topBar = {
                         BigTopBar(
                             leadingContent = {
