@@ -71,4 +71,15 @@
         app:exitAnim="@anim/scale_down"
         app:popEnterAnim="@anim/scale_up"
         app:popExitAnim="@anim/slide_down" />
+    <fragment
+        android:id="@+id/addServiceFragment"
+        android:name="com.mikkelthygesen.billsplit.features.main.add_service.AddServiceFragment"
+        android:label="AddServiceFragment" />
+    <action
+        android:id="@+id/action_global_addServiceFragment"
+        app:destination="@id/addServiceFragment"
+        app:enterAnim="@anim/slide_up"
+        app:exitAnim="@anim/scale_down"
+        app:popEnterAnim="@anim/scale_up"
+        app:popExitAnim="@anim/slide_down" />
 </navigation>

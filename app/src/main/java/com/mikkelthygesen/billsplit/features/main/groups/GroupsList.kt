@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.features.main.groups
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
@@ -16,6 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.groups.views.GroupsTitle
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
@@ -28,8 +30,9 @@ fun GroupsList(
     val groupsViewModel: GroupsViewModel = viewModel()
 
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = uiState is BaseViewModel.UiState.Loading,
-        onRefresh = { groupsViewModel.getGroups(true) }
+        refreshing = false,
+        onRefresh = { groupsViewModel.getGroups(true) },
+        refreshingOffset = 80.dp
     )
 
     Box(
@@ -48,6 +51,9 @@ fun GroupsList(
                 LoadingView()
             else if (state is GroupsViewModel.ShowGroups)
                 LazyColumn {
+                    item {
+                        GroupsTopBar()
+                    }
                     item {
                         GroupsTitle(user = user)
                     }
@@ -70,6 +76,26 @@ fun GroupsList(
                 }
         }
     }
+}
+
+@Composable
+private fun GroupsTopBar() {
+    val groupsViewModel: GroupsViewModel = viewModel()
+    BigTopBar(
+        trailingContent = {
+            if (groupsViewModel.loggedIdUser != null)
+                ProfilePicture(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(64.dp)
+                        .clickable {
+                            groupsViewModel.onProfilePictureClicked()
+                        },
+                    person = groupsViewModel.requireLoggedInUser
+                )
+        }
+    )
+
 }
 
 @Composable

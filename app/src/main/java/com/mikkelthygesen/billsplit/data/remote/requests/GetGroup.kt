@@ -2,6 +2,7 @@ package com.mikkelthygesen.billsplit.data.remote.requests
 
 import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
 import com.mikkelthygesen.billsplit.data.remote.dto.GroupDTO
+import com.mikkelthygesen.billsplit.data.remote.dto.ServiceDTO
 import com.mikkelthygesen.billsplit.domain.models.Group
 
 object GetGroup {
@@ -14,6 +15,7 @@ object GetGroup {
     data class Response(
         val group: GroupDTO,
         val events: List<EventDTO>,
+        val services: List<ServiceDTO>
     ) {
 
         fun toGroup(): Group {

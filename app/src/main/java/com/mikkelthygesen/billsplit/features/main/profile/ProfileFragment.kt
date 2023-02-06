@@ -4,16 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TopAppBar
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.main.navigateToFriends
 import com.mikkelthygesen.billsplit.features.main.popBackStack
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,15 +29,13 @@ class ProfileFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 BaseScaffold(
+                    baseViewModel = profileViewModel,
                     topBar = {
-                        TopAppBar(
-                            backgroundColor = MaterialTheme.colors.background,
-                            elevation = 0.dp
-                        ) {
-                            BackButton {
-                                popBackStack()
+                        BigTopBar(
+                            leadingContent = {
+                                BackButton(onClick = ::popBackStack)
                             }
-                        }
+                        )
                     },
                 ) {
                     RequireUserView(baseViewModel = profileViewModel) { user ->

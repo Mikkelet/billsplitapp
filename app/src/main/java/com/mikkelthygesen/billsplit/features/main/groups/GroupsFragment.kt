@@ -18,7 +18,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
-import com.mikkelthygesen.billsplit.features.main.*
+import com.mikkelthygesen.billsplit.features.main.MainViewModel
+import com.mikkelthygesen.billsplit.features.main.navigateToAddGroup
+import com.mikkelthygesen.billsplit.features.main.navigateToGroup
+import com.mikkelthygesen.billsplit.features.main.navigateToProfile
 import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,11 +36,12 @@ class GroupsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        groupsViewModel.getGroups(false)
-
         return ComposeView(requireContext()).apply {
             setContent {
+                groupsViewModel.getGroups(false)
+                val uiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
                 BaseScaffold(
+                    baseViewModel = groupsViewModel,
                     floatingActionButton = {
                         FloatingActionButton(
                             modifier = Modifier.padding(32.dp), onClick = {
@@ -47,7 +51,6 @@ class GroupsFragment : Fragment() {
                         }
                     },
                 ) {
-                    val uiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
                     RequireUserView(baseViewModel = mainViewModel) { user ->
                         GroupsList(
                             uiState = uiStateFlow.value,

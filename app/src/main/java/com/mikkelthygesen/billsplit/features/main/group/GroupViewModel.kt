@@ -5,11 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.DebtCalculator
-import com.mikkelthygesen.billsplit.domain.models.*
-import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
-import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
+import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
+import com.mikkelthygesen.billsplit.domain.usecases.*
 import com.mikkelthygesen.billsplit.toNewIndividualExpenses
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,13 +24,20 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupViewModel @Inject constructor(
     private val addEventUseCase: AddEventUseCase,
-    private val getGroupUseCase: GetGroupUseCase
+    private val getGroupUseCase: GetGroupUseCase,
+    private val getServicesFromLocalUseCase: GetServicesFromLocalUseCase
 ) : BaseViewModel() {
 
     object Chat : UiState
     object ShowDebt : UiState
+    object Services : UiState
+    data class AddService(val subscriptionService: SubscriptionService) : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
+    object SaveServiceClicked : UiEvent
+    data class OnServiceClicked(val service: SubscriptionService) : UiEvent
+    object ServiceSaved : UiEvent
+    object SaveServiceFailed : UiEvent
 
     var showChatLoader by mutableStateOf(false)
         private set
@@ -39,8 +50,10 @@ class GroupViewModel @Inject constructor(
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Chat)
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
+    private val _mutableServicesStateFlow = MutableStateFlow<List<SubscriptionService>>(emptyList())
 
     fun getGroup(groupId: String) {
+        if (this::group.isInitialized) return
         viewModelScope.launch {
             updateUiState(UiState.Loading)
             // call get cached group
@@ -51,6 +64,7 @@ class GroupViewModel @Inject constructor(
                 this@GroupViewModel.group = group
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events
+                _mutableServicesStateFlow.value = group.services
                 updateUiState(Chat)
             }
 
@@ -63,10 +77,14 @@ class GroupViewModel @Inject constructor(
                 _people.clear()
                 _people.addAll(group.peopleState)
                 _mutableEventsStateFlow.value = group.events
+                _mutableServicesStateFlow.value = group.services
             }
             showChatLoader = false
         }
     }
+
+    suspend fun getLocalServices(): List<SubscriptionService> =
+        getServicesFromLocalUseCase.execute(group.id)
 
     fun addExpense() {
         requireLoggedInUser {
@@ -127,13 +145,13 @@ class GroupViewModel @Inject constructor(
     }
 
     private fun handleEditExpense(originalCopy: GroupExpense, updatedCopy: GroupExpense) {
-        val groupExpensesChanged = GroupExpensesChanged(
-            id = originalCopy.id,
-            createdBy = originalCopy.createdBy,
-            groupExpenseOriginal = originalCopy,
-            groupExpenseEdited = updatedCopy
-        )
         viewModelScope.launch {
+            val groupExpensesChanged = GroupExpensesChanged(
+                id = "",
+                createdBy = requireLoggedInUser,
+                groupExpenseOriginal = originalCopy,
+                groupExpenseEdited = updatedCopy
+            )
             val response = runCatching {
                 group.debtsState = getCalculator().calculateEffectiveDebtForGroup()
                 addEventUseCase.execute(group, groupExpensesChanged)
@@ -153,12 +171,37 @@ class GroupViewModel @Inject constructor(
         updateUiState(ShowDebt)
     }
 
+    fun showServices() {
+        updateUiState(Services)
+    }
+
     fun editSharedExpense(sharedExpense: GroupExpense) {
         updateUiState(EditExpense(sharedExpense))
     }
 
     fun showChat() {
         updateUiState(Chat)
+    }
+
+    fun handleBack(): Boolean {
+        return when (val uiState = uiStateFlow.value) {
+            is EditExpense -> {
+                if (uiState.groupExpense.isChanged())
+                    showConfirmChangesDialog(uiState.groupExpense)
+                else showChat()
+                true
+            }
+            is AddService -> {
+                showServices()
+                true
+            }
+            is ShowDebt,
+            is Services -> {
+                showChat()
+                true
+            }
+            else -> false
+        }
     }
 
     private fun getCalculator(withEvent: Event? = null): DebtCalculator {
@@ -174,5 +217,13 @@ class GroupViewModel @Inject constructor(
             else it
         }
         return DebtCalculator(group.peopleState, groupExpenses, payments)
+    }
+
+    fun onServiceClicked(subscriptionService: SubscriptionService) {
+        emitUiEvent(OnServiceClicked(subscriptionService))
+    }
+
+    fun addServiceClicked() {
+        emitUiEvent(SaveServiceClicked)
     }
 }

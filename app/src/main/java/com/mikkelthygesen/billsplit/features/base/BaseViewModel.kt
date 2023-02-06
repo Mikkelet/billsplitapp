@@ -25,7 +25,7 @@ abstract class BaseViewModel : ViewModel() {
         get() = authProvider.userState
 
     val requireLoggedInUser: Person
-        get() = authProvider.userState!!
+        get() = authProvider.userState ?: throw NetworkExceptions.UserLoggedOutException
 
     interface DialogState {
         object DismissDialogs : DialogState
@@ -83,7 +83,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     fun handleError(exception: Throwable) {
-        Timber.e(exception)
+        Timber.e("qqq error=$exception")
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
             is NetworkExceptions.UserLoggedOutException -> emitUiEvent(UiEvent.UserLoggedOut)

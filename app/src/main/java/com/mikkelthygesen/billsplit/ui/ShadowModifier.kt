@@ -24,9 +24,7 @@ fun Modifier.shadowModifier(
         start = 16.dp,
         end = 16.dp
     )
-) =
-
-    padding(outerPadding)
+) = padding(outerPadding)
         .clip(cornerShape)
         .background(backgroundColor)
         .let {

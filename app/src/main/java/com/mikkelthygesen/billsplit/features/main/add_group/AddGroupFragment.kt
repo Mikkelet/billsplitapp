@@ -31,7 +31,9 @@ class AddGroupFragment : Fragment() {
             setContent {
                 val uiStateFlow = addGroupViewModel.uiStateFlow.collectAsState()
                 val uiState = uiStateFlow.value
-                BaseScaffold {
+                BaseScaffold(
+                    baseViewModel = addGroupViewModel
+                ) {
                     AddGroupView(
                         uiState = uiState,
                         group = group,

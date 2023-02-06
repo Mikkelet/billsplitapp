@@ -2,7 +2,6 @@ package com.mikkelthygesen.billsplit.features.main
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -16,8 +15,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.main.widgets.dialogs.ErrorDialog
 import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 
@@ -28,20 +27,11 @@ fun MainView() {
     val uiStateFlow = viewModel.uiStateFlow.collectAsState()
 
     BillSplitTheme {
-
-        when (val state = viewModel.dialogState) {
-            is BaseViewModel.DialogState.Error -> ErrorDialog(
-                exception = state.exception,
-                onDismiss = viewModel::dismissDialog
-            )
-            is BaseViewModel.DialogState.DismissDialogs -> Unit
-        }
-
-        Scaffold(
-            backgroundColor = MaterialTheme.colors.background,
+        BaseScaffold(
+            baseViewModel = viewModel,
             floatingActionButton = {
                 Crossfade(targetState = uiStateFlow.value) { uiState ->
-                    when(uiState){
+                    when (uiState) {
                         is MainViewModel.MyGroups -> FloatingActionButton(onClick = {
                             viewModel.showAddGroup()
                         }) {
@@ -59,9 +49,8 @@ fun MainView() {
                         }
                     }
             }
-        ) { padding ->
+        ) {
             Crossfade(
-                modifier = Modifier.padding(padding),
                 targetState = uiStateFlow.value
             ) { uiState ->
                 when (uiState) {
@@ -94,7 +83,7 @@ private fun BottomNavBar(
             selected = true,
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = Color.Gray,
-            onClick = {  },
+            onClick = { },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_person_24),

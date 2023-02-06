@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
@@ -34,6 +35,17 @@ fun ViewDebt(
             people = groupViewModel.people
         )
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun TestPreview(){
+    Test(user = Person())
+}
+
+@Composable
+fun Test(user: Person, viewModel:GroupViewModel = hiltViewModel()){
+    Text(text = "hello world")
 }
 
 

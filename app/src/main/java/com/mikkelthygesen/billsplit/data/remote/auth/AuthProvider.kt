@@ -21,6 +21,8 @@ class AuthProvider @Inject constructor() {
 
     var userState: Person? by mutableStateOf(null)
     var userLiveData = MutableLiveData<Person?>(null)
+    val requireLoggedInUser: Person
+        get() = userState!!
 
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
@@ -49,7 +51,7 @@ class AuthProvider @Inject constructor() {
         firebase.removeAuthStateListener(authListener)
     }
 
-    fun signOut(){
+    fun signOut() {
         firebase.signOut()
         userState = null
         userLiveData.value = null
@@ -91,8 +93,14 @@ class AuthProvider @Inject constructor() {
     }
 
     suspend fun getAuthToken(force: Boolean): String {
-        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
-        val result = currentUser.getIdToken(force).await()
-        return result.token ?: throw NetworkExceptions.UserLoggedOutException
+        try {
+            val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
+            val result = currentUser.getIdToken(force).await()
+            return result.token ?: throw NetworkExceptions.UserLoggedOutException
+        } catch (e: Exception) {
+            userLiveData.value = null
+            userState = null
+            throw NetworkExceptions.UserLoggedOutException
+        }
     }
 }

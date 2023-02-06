@@ -15,8 +15,8 @@ import com.mikkelthygesen.billsplit.ui.shadowModifier
 import java.lang.Exception
 
 @Composable
-fun <T : Throwable> ErrorDialog(
-    exception: T,
+fun ErrorDialog(
+    exception: Throwable,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {

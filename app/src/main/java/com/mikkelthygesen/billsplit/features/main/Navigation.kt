@@ -20,6 +20,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.features.main.add_service.AddServiceFragment
 import com.mikkelthygesen.billsplit.features.main.group.GroupFragment
 import com.mikkelthygesen.billsplit.features.main.profile.ProfileFragment
 
@@ -32,6 +33,13 @@ fun Fragment.navigateToGroup(groupId: String) {
     val args = Bundle()
     args.putString(GroupFragment.ARG_GROUP_ID, groupId)
     findNavController().navigate(R.id.action_global_groupFragment, args)
+}
+
+fun Fragment.navigateToAddService(groupId: String, serviceId: String) {
+    val args = Bundle()
+    args.putString(AddServiceFragment.ARG_GROUP_ID, groupId)
+    args.putString(AddServiceFragment.ARG_SERVICE_ID, serviceId)
+    findNavController().navigate(R.id.action_global_addServiceFragment, args)
 }
 
 fun Fragment.navigateToFriends() {
