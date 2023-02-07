@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.RoomWarnings
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
+import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
 import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 
 @Entity(tableName = "expense_changes")
@@ -22,6 +23,14 @@ data class ExpenseChangeDb(
     val timeStamp: Long,
 ) {
 
+    constructor(groupId: String, changeDTO: EventDTO.ChangeDTO):this(
+        groupId = groupId,
+        id = changeDTO.id,
+        timeStamp = changeDTO.timeStamp,
+        createdBy = PersonDb(changeDTO.createdBy),
+        groupExpenseOriginal = GroupExpenseDb(groupId, changeDTO.groupExpenseOriginal as EventDTO.ExpenseDTO),
+        groupExpenseEdited = GroupExpenseDb(groupId, changeDTO.groupExpenseEdited as EventDTO.ExpenseDTO),
+    )
     fun toExpenseChange() = GroupExpensesChanged(
         id = id,
         createdBy = createdBy.toPerson(),

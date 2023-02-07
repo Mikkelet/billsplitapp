@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.IndividualExpenseDb
-import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
+import com.mikkelthygesen.billsplit.data.remote.dto.IndividualExpenseDTO
 
 
 data class IndividualExpense(
@@ -16,6 +16,12 @@ data class IndividualExpense(
         person = person,
         expense = 0f,
         isParticipant = true
+    )
+
+    constructor(individualExpenseDTO: IndividualExpenseDTO) : this(
+        expense = individualExpenseDTO.expense,
+        person = Person(individualExpenseDTO.person),
+        isParticipant = individualExpenseDTO.isParticipant
     )
 
     constructor(individualExpense: IndividualExpenseDb) : this(
@@ -45,12 +51,6 @@ data class IndividualExpense(
     }
 
     fun isShared() = person.uid == getSharedExpenseHolder().person.uid
-
-    fun toDb() = IndividualExpenseDb(
-        person = PersonDb(person.uid, person.nameState, person.pfpUrlState),
-        expense = expense,
-        isParticipant = isParticipant
-    )
 
     companion object {
         private const val SHARED_ID = "-1"

@@ -1,6 +1,9 @@
 package com.mikkelthygesen.billsplit.domain.usecases
 
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
+import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
+import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
+import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
 import com.mikkelthygesen.billsplit.data.local.database.model.SubscriptionServiceDb
 import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
 import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
@@ -22,13 +25,22 @@ class GetGroupUseCase @Inject constructor(
             val serviceDTOs = getGroupResponse.services
 
             // Insert to db
-            val groupExpensesDb = eventDtos.filterIsInstance<EventDTO.ExpenseDTO>()
-            val paymentsDb = eventDtos.filterIsInstance<EventDTO.PaymentDTO>()
-            val expenseChangesDb = eventDtos.filterIsInstance<EventDTO.ChangeDTO>()
+            val groupExpensesDTO = eventDtos.filterIsInstance<EventDTO.ExpenseDTO>()
+            val paymentsDTO = eventDtos.filterIsInstance<EventDTO.PaymentDTO>()
+            val expenseChangesDTO = eventDtos.filterIsInstance<EventDTO.ChangeDTO>()
+            // Clear
+            database.groupsDao().clearTable()
+            database.eventsDao().clearChangesTable()
+            database.eventsDao().clearExpensesTable()
+            database.eventsDao().clearPaymentTable()
+            database.servicesDao().clearTable()
+            // Add new
             database.groupsDao().insert(groupDto.toDB())
-            database.eventsDao().insertGroupExpenses(groupExpensesDb.map { it.toDb(groupDto.id) })
-            database.eventsDao().insertPayments(paymentsDb.map { it.toDb(groupId) })
-            database.eventsDao().insertExpenseChanges(expenseChangesDb.map { it.toDb(groupDto.id) })
+            database.eventsDao()
+                .insertGroupExpenses(groupExpensesDTO.map { GroupExpenseDb(groupId, it) })
+            database.eventsDao().insertPayments(paymentsDTO.map { PaymentDb(groupId, it) })
+            database.eventsDao()
+                .insertExpenseChanges(expenseChangesDTO.map { ExpenseChangeDb(groupId, it) })
             database.servicesDao().insert(serviceDTOs.map { SubscriptionServiceDb(groupId, it) })
 
             return Group(groupDto)
