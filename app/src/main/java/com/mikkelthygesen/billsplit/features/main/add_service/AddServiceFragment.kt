@@ -34,13 +34,6 @@ class AddServiceFragment : Fragment() {
                 val uiStateFlow = addServiceViewModel.uiStateFlow.collectAsState()
                 addServiceViewModel.loadService(groupId, serviceId)
 
-                collectEvents(addServiceViewModel.uiEventsState) {
-                    when (it) {
-                        is AddServiceViewModel.ServiceAdded,
-                        is BaseViewModel.UiEvent.OnBackPressed -> popBackStack()
-                    }
-                }
-
                 BaseScaffold(addServiceViewModel) {
                     Crossfade(targetState = uiStateFlow.value) { uiState ->
                         when (uiState) {
@@ -53,6 +46,16 @@ class AddServiceFragment : Fragment() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        collectEvents(addServiceViewModel.uiEventsState) {
+            when (it) {
+                is AddServiceViewModel.ServiceAdded,
+                is BaseViewModel.UiEvent.OnBackPressed -> popBackStack()
             }
         }
     }

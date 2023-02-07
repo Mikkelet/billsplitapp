@@ -34,16 +34,6 @@ class AddExpenseFragment : Fragment() {
                 addExpenseViewModel.loadExpense(groupId, expenseId)
                 val uiStateFlow = addExpenseViewModel.uiStateFlow.collectAsState()
 
-                collectEvents(addExpenseViewModel.uiEventsState) { event ->
-                    when (event) {
-                        is BaseViewModel.UiEvent.OnBackPressed ->
-                            if (!addExpenseViewModel.handleBack()) popBackStack()
-                        is AddExpenseViewModel.ExpenseSaved -> {
-                            popBackStack()
-                        }
-                    }
-                }
-
                 when (addExpenseViewModel.dialogState) {
                     is AddExpenseViewModel.ConfirmDialog ->
                         ConfirmChangesDialog()
@@ -54,9 +44,24 @@ class AddExpenseFragment : Fragment() {
                         when (uiState) {
                             is BaseViewModel.UiState.Loading -> LoadingView()
                             is AddExpenseViewModel.ExpenseLoaded -> ExpenseView()
-
                         }
                     }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        collectEvents(addExpenseViewModel.uiEventsState) { event ->
+            when (event) {
+                is BaseViewModel.UiEvent.OnBackPressed -> {
+                    if (!addExpenseViewModel.handleBack()) {
+                        popBackStack()
+                    }
+                }
+                is AddExpenseViewModel.ExpenseSaved -> {
+                    popBackStack()
                 }
             }
         }
