@@ -12,7 +12,6 @@ import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.main.group.add_service.AddServiceView
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +37,7 @@ class AddServiceFragment : Fragment() {
                     Crossfade(targetState = uiStateFlow.value) { uiState ->
                         when (uiState) {
                             is AddServiceViewModel.ServiceLoaded -> {
-                                AddServiceView(service = uiState.service)
+                                AddServiceView()
                             }
                             is BaseViewModel.UiState.Loading -> {
                                 LoadingView()
