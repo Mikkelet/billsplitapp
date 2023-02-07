@@ -29,11 +29,10 @@ class GetGroupUseCase @Inject constructor(
             val paymentsDTO = eventDtos.filterIsInstance<EventDTO.PaymentDTO>()
             val expenseChangesDTO = eventDtos.filterIsInstance<EventDTO.ChangeDTO>()
             // Clear
-            database.groupsDao().clearTable()
-            database.eventsDao().clearChangesTable()
-            database.eventsDao().clearExpensesTable()
-            database.eventsDao().clearPaymentTable()
-            database.servicesDao().clearTable()
+            database.eventsDao().clearChangesTable(groupId)
+            database.eventsDao().clearExpensesTable(groupId)
+            database.eventsDao().clearPaymentTable(groupId)
+            database.servicesDao().clearTable(groupId)
             // Add new
             database.groupsDao().insert(groupDto.toDB())
             database.eventsDao()

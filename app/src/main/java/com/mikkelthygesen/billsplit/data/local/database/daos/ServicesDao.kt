@@ -23,4 +23,7 @@ interface ServicesDao {
 
     @Query("DELETE FROM services")
     suspend fun clearTable()
+
+    @Query("DELETE FROM services WHERE :groupId == groupid")
+    suspend fun clearTable(groupId: String)
 }

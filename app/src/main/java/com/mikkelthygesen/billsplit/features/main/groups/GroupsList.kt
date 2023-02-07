@@ -28,6 +28,7 @@ fun GroupsList(
     user: Person,
 ) {
     val groupsViewModel: GroupsViewModel = viewModel()
+    val groups = groupsViewModel.groups
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = false,
@@ -57,15 +58,15 @@ fun GroupsList(
                         item {
                             GroupsTitle(user = user)
                         }
-                        if (state.groups.isEmpty())
+                        if (groups.isEmpty())
                             item {
                                 EmptyGroupList {
                                     groupsViewModel.addGroup()
                                 }
                             }
                         else
-                            items(state.groups.size) { index ->
-                                val group = state.groups[index]
+                            items(groups.size) { index ->
+                                val group = groups[index]
                                 GroupListItem(user, group = group) {
                                     groupsViewModel.showGroup(group)
                                 }
@@ -74,9 +75,7 @@ fun GroupsList(
                             Box(Modifier.height(80.dp))
                         }
                     }
-
                 }
-
             }
         }
     }

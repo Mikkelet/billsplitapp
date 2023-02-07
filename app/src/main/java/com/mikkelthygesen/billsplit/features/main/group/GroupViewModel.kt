@@ -10,7 +10,6 @@ import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.Payment
-import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.domain.usecases.*
@@ -31,14 +30,9 @@ class GroupViewModel @Inject constructor(
     object Chat : UiState
     object ShowDebt : UiState
     object Services : UiState
-    class EditExpense(val groupExpense: GroupExpense) : UiState
-    class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
-    object SaveServiceClicked : UiEvent
     object OnAddExpenseClicked : UiEvent
     data class OnEditExpenseClicked(val expenseId: String) : UiEvent
     data class OnServiceClicked(val service: SubscriptionService) : UiEvent
-    object ServiceSaved : UiEvent
-    object SaveServiceFailed : UiEvent
 
     var showChatLoader by mutableStateOf(false)
         private set
@@ -98,62 +92,6 @@ class GroupViewModel @Inject constructor(
         _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
     }
 
-    fun addPerson(name: String) {
-        val pId = (people.size + 1) + 1
-        val person = Person("id$pId", name)
-        _people.add(person)
-    }
-
-    fun saveGroupExpense(groupExpense: GroupExpense) {
-        updateUiState(UiState.Loading)
-        // save original in case of edit
-        val originalCopy = groupExpense.copy()
-        // apply changes
-        groupExpense.saveChanges()
-        // if expense doesn't appear in list, add it, else assume it's an edit and log the change
-        if (!eventStateFlow.value.contains(groupExpense)) {
-            handleNewExpense(groupExpense)
-        } else if (originalCopy != groupExpense) {
-            handleEditExpense(originalCopy, groupExpense)
-        }
-    }
-
-    private fun handleNewExpense(groupExpense: GroupExpense) {
-        viewModelScope.launch {
-            val response = runCatching {
-                group.debtsState = getCalculator(groupExpense).calculateEffectiveDebtForGroup()
-                addEventUseCase.execute(group, groupExpense)
-            }
-            response.foldSuccess {
-                _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                showChat()
-            }
-        }
-    }
-
-    private fun handleEditExpense(originalCopy: GroupExpense, updatedCopy: GroupExpense) {
-        viewModelScope.launch {
-            val groupExpensesChanged = GroupExpensesChanged(
-                id = "",
-                createdBy = requireLoggedInUser,
-                groupExpenseOriginal = originalCopy,
-                groupExpenseEdited = updatedCopy
-            )
-            val response = runCatching {
-                group.debtsState = getCalculator().calculateEffectiveDebtForGroup()
-                addEventUseCase.execute(group, groupExpensesChanged)
-            }
-            response.foldSuccess {
-                _mutableEventsStateFlow.value = eventStateFlow.value.plus(it)
-                showChat()
-            }
-        }
-    }
-
-    fun showConfirmChangesDialog(groupExpense: GroupExpense) {
-        showDialog(ConfirmChangesDialog(groupExpense))
-    }
-
     fun showDebt() {
         updateUiState(ShowDebt)
     }
@@ -163,7 +101,7 @@ class GroupViewModel @Inject constructor(
     }
 
     fun editSharedExpense(sharedExpense: GroupExpense) {
-        updateUiState(EditExpense(sharedExpense))
+        emitUiEvent(OnEditExpenseClicked(sharedExpense.id))
     }
 
     fun showChat() {
@@ -171,13 +109,7 @@ class GroupViewModel @Inject constructor(
     }
 
     fun handleBack(): Boolean {
-        return when (val uiState = uiStateFlow.value) {
-            is EditExpense -> {
-                if (uiState.groupExpense.isChanged())
-                    showConfirmChangesDialog(uiState.groupExpense)
-                else showChat()
-                true
-            }
+        return when (uiStateFlow.value) {
             is ShowDebt,
             is Services -> {
                 showChat()
@@ -204,9 +136,5 @@ class GroupViewModel @Inject constructor(
 
     fun onServiceClicked(subscriptionService: SubscriptionService) {
         emitUiEvent(OnServiceClicked(subscriptionService))
-    }
-
-    fun addServiceClicked() {
-        emitUiEvent(SaveServiceClicked)
     }
 }

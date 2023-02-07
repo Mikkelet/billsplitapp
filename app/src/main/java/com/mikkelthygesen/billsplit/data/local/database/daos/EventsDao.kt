@@ -53,4 +53,13 @@ interface EventsDao {
     @Query("DELETE FROM expense_changes")
     suspend fun clearChangesTable()
 
+    @Query("DELETE FROM payments WHERE :groupId == groupid")
+    suspend fun clearPaymentTable(groupId: String)
+
+    @Query("DELETE FROM group_expenses WHERE :groupId == groupid")
+    suspend fun clearExpensesTable(groupId: String)
+
+    @Query("DELETE FROM expense_changes WHERE :groupId == groupid")
+    suspend fun clearChangesTable(groupId: String)
+
 }
