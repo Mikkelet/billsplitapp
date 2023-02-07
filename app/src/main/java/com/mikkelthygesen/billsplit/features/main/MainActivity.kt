@@ -50,7 +50,7 @@ class MainActivity : FragmentActivity() {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         when (navController.currentDestination?.id) {
-            R.id.landingFragment -> Unit
+            R.id.landingFragment, R.id.groupsFragment -> finish()
             else -> onBackPressedDispatcher.onBackPressed()
         }
     }
