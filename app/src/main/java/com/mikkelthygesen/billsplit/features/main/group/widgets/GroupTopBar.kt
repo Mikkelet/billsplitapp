@@ -87,6 +87,7 @@ fun GroupTopBar2(){
     val uiState = uiStateFlow.value
 
     TopAppBar(
+        backgroundColor = MaterialTheme.colors.background,
         title = {
             if (uiState is BaseViewModel.UiState.Loading)
                 Text(text = "")

@@ -41,39 +41,43 @@ fun GroupsList(
             .pullRefresh(pullRefreshState)
     ) {
         PullRefreshIndicator(
-            refreshing = uiState is BaseViewModel.UiState.Loading,
+            refreshing = false,
             state = pullRefreshState,
             modifier = Modifier
                 .align(Alignment.TopCenter),
         )
         Crossfade(targetState = uiState) { state ->
-            if (state is BaseViewModel.UiState.Loading)
-                LoadingView()
-            else if (state is GroupsViewModel.ShowGroups)
-                LazyColumn {
-                    item {
-                        GroupsTopBar()
-                    }
-                    item {
-                        GroupsTitle(user = user)
-                    }
-                    if (state.groups.isEmpty())
+            when (state) {
+                is BaseViewModel.UiState.Loading -> LoadingView()
+                is GroupsViewModel.ShowGroups -> {
+                    LazyColumn {
                         item {
-                            EmptyGroupList {
-                                groupsViewModel.addGroup()
-                            }
+                            GroupsTopBar()
                         }
-                    else
-                        items(state.groups.size) { index ->
-                            val group = state.groups[index]
-                            GroupListItem(user, group = group) {
-                                groupsViewModel.showGroup(group)
-                            }
+                        item {
+                            GroupsTitle(user = user)
                         }
-                    item {
-                        Box(Modifier.height(80.dp))
+                        if (state.groups.isEmpty())
+                            item {
+                                EmptyGroupList {
+                                    groupsViewModel.addGroup()
+                                }
+                            }
+                        else
+                            items(state.groups.size) { index ->
+                                val group = state.groups[index]
+                                GroupListItem(user, group = group) {
+                                    groupsViewModel.showGroup(group)
+                                }
+                            }
+                        item {
+                            Box(Modifier.height(80.dp))
+                        }
                     }
+
                 }
+
+            }
         }
     }
 }

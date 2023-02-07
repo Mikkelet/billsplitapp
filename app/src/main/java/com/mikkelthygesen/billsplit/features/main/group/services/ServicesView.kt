@@ -1,6 +1,5 @@
 package com.mikkelthygesen.billsplit.features.main.group.services
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.group.services.views.CenteredMessage
 import com.mikkelthygesen.billsplit.features.main.group.services.views.ServiceListItem
@@ -33,7 +31,7 @@ fun ServicesView() {
         )
         FutureComposable(asyncCallback = {
             groupViewModel.getLocalServices()
-        }) { state: FutureState<List<SubscriptionService>>, _: () -> Unit ->
+        }) { state, _ ->
             when (state) {
                 is FutureState.Loading -> LoadingView()
                 is FutureState.Failure -> ErrorView(error = state.error)
@@ -43,7 +41,6 @@ fun ServicesView() {
                         CenteredMessage("You have not added any subscription services")
                     else
                         LazyColumn(Modifier.fillMaxSize()) {
-                            item { Box(modifier = Modifier.padding(top = 32.dp)) }
                             items(services.size) { index ->
                                 val service = services[index]
                                 ServiceListItem(service = service) {
