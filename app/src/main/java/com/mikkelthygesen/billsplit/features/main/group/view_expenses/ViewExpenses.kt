@@ -19,6 +19,7 @@ import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.Payment
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
+import com.mikkelthygesen.billsplit.features.main.group.services.views.CenteredMessage
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.widgets.*
@@ -71,26 +72,28 @@ private fun _ViewDebt(
     calculator.logDebt(user)
     Column(
         Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
             modifier = Modifier
-                .padding(bottom = 16.dp, start = 16.dp),
+                .padding(32.dp),
             text = "Debts",
             style = MaterialTheme.typography.h5
         )
-        (debtForPerson)
-            .sortedBy { it.second }
-            .reversed().map {
-                Box(
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    if (it.second != 0F)
-                        DebtView(debt = it)
+        if (debtForPerson.isEmpty())
+            CenteredMessage("All debts are settled")
+        else
+            (debtForPerson)
+                .sortedBy { it.second }
+                .reversed().map {
+                    Box(
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (it.second != 0F)
+                            DebtView(debt = it)
+                    }
                 }
-            }
     }
 }
 
