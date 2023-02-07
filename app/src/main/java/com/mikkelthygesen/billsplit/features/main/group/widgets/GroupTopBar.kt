@@ -100,26 +100,12 @@ fun GroupTopBar2(){
             }
         },
         actions = {
-            if (uiState is GroupViewModel.EditExpense)
-                SimpleIconButton(
-                    iconResId = R.drawable.ic_check,
-                    tint = MaterialTheme.colors.onBackground
-                ) {
-                    groupViewModel.saveGroupExpense(uiState.groupExpense)
-                }
             if (uiState is GroupViewModel.Chat)
                 SimpleIconButton(
                     iconResId = R.drawable.ic_baseline_settings_24,
-                    tint = MaterialTheme.colors.onBackground
                 ) {
                     // show settings
                 }
-            if (uiState is GroupViewModel.Chat)
-                SimpleIconButton(
-                    iconResId = R.drawable.ic_money,
-                    tint = MaterialTheme.colors.onBackground,
-                    onClick = groupViewModel::showDebt
-                )
         }
     )
 }

@@ -17,7 +17,6 @@ data class GroupDTO(
         name = name,
         createdBy = createdBy.toPerson(),
         timeStamp = timeStamp,
-        events = emptyList(),
         people = people.map { it.toPerson() },
         debts = debts.map { it.toDebt() }
     )

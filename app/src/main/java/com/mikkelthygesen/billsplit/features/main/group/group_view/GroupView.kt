@@ -34,7 +34,7 @@ fun GroupEventsView(
 
     RequireUserView(baseViewModel = viewModel) { user ->
         FutureComposable(asyncCallback = {
-            viewModel.getLocalEvents(groupId)
+            viewModel.getLocalEvents()
         }) { state: FutureState<List<Event>>, _: () -> Unit ->
             when (state) {
                 is FutureState.Loading -> LoadingView()

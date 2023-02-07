@@ -35,8 +35,6 @@ class AddGroupViewModel @Inject constructor(
             people = listOf(requireLoggedInUser),
             createdBy = requireLoggedInUser,
             timeStamp = 0,
-            events = listOf(),
-            debts = emptyList()
         )
     }
 

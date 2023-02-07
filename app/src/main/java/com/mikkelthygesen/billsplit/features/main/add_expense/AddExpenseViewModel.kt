@@ -1,9 +1,13 @@
 package com.mikkelthygesen.billsplit.features.main.add_expense
 
 import androidx.lifecycle.viewModelScope
+import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
+import com.mikkelthygesen.billsplit.domain.usecases.GetEventsFromLocalUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetExpenseFromLocalUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
@@ -16,7 +20,8 @@ import javax.inject.Inject
 class AddExpenseViewModel @Inject constructor(
     private val getExpenseFromLocalUseCase: GetExpenseFromLocalUseCase,
     private val getGroupUseCase: GetGroupUseCase,
-    private val addEventUseCase: AddEventUseCase
+    private val addEventUseCase: AddEventUseCase,
+    private val getEventsFromLocalUseCase: GetEventsFromLocalUseCase,
 ) : BaseViewModel() {
 
     object ExpenseLoaded : UiState
@@ -51,7 +56,10 @@ class AddExpenseViewModel @Inject constructor(
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val response =
-                runCatching { addEventUseCase.execute(group = group, event = groupExpense) }
+                runCatching {
+                    group.debtsState = getCalculator(groupExpense).calculateEffectiveDebtForGroup()
+                    addEventUseCase.execute(group = group, event = groupExpense)
+                }
             response.fold(
                 onSuccess = {
                     emitUiEvent(ExpenseSaved)
@@ -64,6 +72,17 @@ class AddExpenseViewModel @Inject constructor(
         }
     }
 
+    private suspend fun getCalculator(withEvent: Event? = null): DebtCalculator {
+        val events = getEventsFromLocalUseCase.execute(group.id)
+        val payments: List<Payment> = events.filterIsInstance<Payment>().let {
+            if (withEvent is Payment) it.plus(withEvent) else it
+        }
+        val groupExpenses: List<GroupExpense> = events.filterIsInstance<GroupExpense>().let {
+            if (withEvent is GroupExpense) it.plus(withEvent) else it
+        }
+        return DebtCalculator(group.peopleState, groupExpenses, payments)
+    }
+
     fun handleBack(): Boolean {
         return when {
             groupExpense.isChanged() -> {
@@ -72,6 +91,5 @@ class AddExpenseViewModel @Inject constructor(
             }
             else -> false
         }
-
     }
 }

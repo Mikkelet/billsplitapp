@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,7 +35,15 @@ fun ServicesView() {
                     NoServicesText()
                 else
                     LazyColumn(Modifier.fillMaxSize()) {
-                        item { Box(modifier = Modifier.padding(top = 16.dp)) }
+                        item { Box(modifier = Modifier.padding(top = 32.dp)) }
+                        item {
+                            Text(
+                                modifier = Modifier
+                                    .padding(bottom = 16.dp, start = 16.dp),
+                                text = "Services",
+                                style = MaterialTheme.typography.h5
+                            )
+                        }
                         items(services.size) { index ->
                             val service = services[index]
                             ServiceListItem(service = service) {

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,6 +55,22 @@ fun GroupBottomBar(
             },
             icon = {
                 Icon(Icons.Filled.MoreVert, contentDescription = "")
+            })
+        BottomNavigationItem(
+            selected = uiState is GroupViewModel.ShowDebt,
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = Color.Gray,
+            label = {
+                Text(text = "Debts")
+            },
+            onClick = {
+                groupViewModel.showDebt()
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(id = com.mikkelthygesen.billsplit.R.drawable.ic_money),
+                    contentDescription = ""
+                )
             })
     }
 }

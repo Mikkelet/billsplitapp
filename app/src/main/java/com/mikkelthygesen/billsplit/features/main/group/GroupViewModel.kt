@@ -52,8 +52,8 @@ class GroupViewModel @Inject constructor(
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
 
-    suspend fun getLocalEvents(groupId: String): List<Event> {
-        return getEventsFromLocalUseCase.execute(groupId)
+    suspend fun getLocalEvents(): List<Event> {
+        return getEventsFromLocalUseCase.execute(group.id)
     }
 
     fun getGroup(groupId: String) {

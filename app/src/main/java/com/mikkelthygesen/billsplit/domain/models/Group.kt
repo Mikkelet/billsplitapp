@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.DebtDb
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupDb
-import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
+import com.mikkelthygesen.billsplit.data.remote.dto.GroupDTO
 
 data class Group(
     val id: String,
@@ -13,9 +13,7 @@ data class Group(
     private var people: List<Person> = emptyList(),
     val createdBy: Person = Person(),
     val timeStamp: Long = System.currentTimeMillis(),
-    private val events: List<Event> = emptyList(),
-    private val services: List<SubscriptionService> = emptyList(),
-    private var debts: List<Pair<String, Float>>,
+    private var debts: List<Pair<String, Float>> = emptyList(),
 ) {
     constructor(groupDb: GroupDb) : this(
         id = groupDb.id,
@@ -25,17 +23,21 @@ data class Group(
         debts = groupDb.debts.map { it.toDebt() }
     )
 
+    constructor(groupDTO: GroupDTO) : this(
+        id = groupDTO.id,
+        name = groupDTO.name,
+        timeStamp = groupDTO.timeStamp,
+        people = groupDTO.people.map { Person(it) },
+        debts = groupDTO.debts.map { it.toDebt() }
+    )
+
     var nameState by mutableStateOf(name)
     var peopleState by mutableStateOf(people)
     var debtsState by mutableStateOf(debts)
-    var eventsState by mutableStateOf(events)
-    var servicesState by mutableStateOf(services)
 
     fun updateGroup(group: Group) {
         nameState = group.nameState
         peopleState = group.peopleState
-        eventsState = group.eventsState
-        servicesState = group.servicesState
     }
 
     fun addPerson(person: Person) {

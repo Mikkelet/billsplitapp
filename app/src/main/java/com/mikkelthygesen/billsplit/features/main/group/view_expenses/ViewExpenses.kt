@@ -21,30 +21,37 @@ import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.samplePeopleShera
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
-import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
+import com.mikkelthygesen.billsplit.ui.widgets.*
 
 @Composable
 fun ViewDebt(
     groupViewModel: GroupViewModel = viewModel(),
 ) {
-    val eventsFlow = groupViewModel.eventStateFlow.collectAsState()
-    RequireUserView(baseViewModel = groupViewModel) {
-        _ViewDebt(
-            events = eventsFlow.value,
-            user = it,
-            people = groupViewModel.people
-        )
+    FutureComposable(asyncCallback = {
+        groupViewModel.getLocalEvents()
+    }) { state: FutureState<List<Event>>, _: () -> Unit ->
+        when (state) {
+            is FutureState.Loading -> LoadingView()
+            is FutureState.Failure -> ErrorView(error = state.error)
+            is FutureState.Success -> {
+                _ViewDebt(
+                    events = state.data,
+                    user = groupViewModel.requireLoggedInUser,
+                    people = groupViewModel.group.peopleState
+                )
+            }
+        }
     }
 }
 
 @Preview(showSystemUi = true)
 @Composable
-fun TestPreview(){
+fun TestPreview() {
     Test(user = Person())
 }
 
 @Composable
-fun Test(user: Person, viewModel:GroupViewModel = hiltViewModel()){
+fun Test(user: Person, viewModel: GroupViewModel = hiltViewModel()) {
     Text(text = "hello world")
 }
 
@@ -66,10 +73,11 @@ private fun _ViewDebt(
         Modifier
             .fillMaxWidth()
             .padding(top = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
         Text(
-            modifier = Modifier.padding(top = 32.dp, bottom = 16.dp),
+            modifier = Modifier
+                .padding(bottom = 16.dp, start = 16.dp),
             text = "Debts",
             style = MaterialTheme.typography.h5
         )

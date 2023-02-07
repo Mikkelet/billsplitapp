@@ -20,7 +20,7 @@ class GetGroupsUseCase @Inject constructor(
             val groupsDb = database.groupsDao().getGroups()
             if (groupsDb.isEmpty())
                 execute(true)
-            else groupsDb.map { it.toGroup() }.sortedBy { it.nameState }
+            else groupsDb.map { Group(it) }.sortedBy { it.nameState }
         }
     }
 }
