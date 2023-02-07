@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
 import com.mikkelthygesen.billsplit.features.main.add_service.AddServiceViewModel
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
-import com.mikkelthygesen.billsplit.features.main.group.add_service.views.SelectParticipantsView
+import com.mikkelthygesen.billsplit.features.main.add_service.views.SelectParticipantsView
 import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.isFloat
 import com.mikkelthygesen.billsplit.parseToFloat

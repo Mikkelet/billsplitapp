@@ -15,6 +15,9 @@ interface EventsDao {
     @Query("SELECT * FROM group_expenses WHERE :groupId == groupId")
     suspend fun getGroupExpenses(groupId: String): List<GroupExpenseDb>
 
+    @Query("SELECT * FROM group_expenses WHERE id == :expenseId")
+    suspend fun getGroupExpense(expenseId: String): GroupExpenseDb
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGroupExpense(groupExpenseDb: GroupExpenseDb)
 

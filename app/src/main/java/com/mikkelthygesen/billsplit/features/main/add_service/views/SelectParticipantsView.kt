@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.main.group.add_service.views
+package com.mikkelthygesen.billsplit.features.main.add_service.views
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column

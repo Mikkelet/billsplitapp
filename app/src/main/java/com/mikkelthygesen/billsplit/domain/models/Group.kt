@@ -13,11 +13,11 @@ data class Group(
     private var people: List<Person> = emptyList(),
     val createdBy: Person = Person(),
     val timeStamp: Long = System.currentTimeMillis(),
-    val events: List<Event> = emptyList(),
-    val services: List<SubscriptionService> = emptyList(),
+    private val events: List<Event> = emptyList(),
+    private val services: List<SubscriptionService> = emptyList(),
     private var debts: List<Pair<String, Float>>,
 ) {
-    constructor(groupDb: GroupDb):this(
+    constructor(groupDb: GroupDb) : this(
         id = groupDb.id,
         name = groupDb.name,
         timeStamp = groupDb.timestamp,
@@ -28,6 +28,15 @@ data class Group(
     var nameState by mutableStateOf(name)
     var peopleState by mutableStateOf(people)
     var debtsState by mutableStateOf(debts)
+    var eventsState by mutableStateOf(events)
+    var servicesState by mutableStateOf(services)
+
+    fun updateGroup(group: Group) {
+        nameState = group.nameState
+        peopleState = group.peopleState
+        eventsState = group.eventsState
+        servicesState = group.servicesState
+    }
 
     fun addPerson(person: Person) {
         peopleState = peopleState.plus(person)

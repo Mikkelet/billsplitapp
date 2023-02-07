@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.features.base
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,10 @@ fun BaseScaffold(
                     exception = dialogState.exception,
                     onDismiss = baseViewModel::dismissDialog
                 )
+        }
+
+        BackHandler {
+            baseViewModel.onBackButtonPressed()
         }
 
         Scaffold(

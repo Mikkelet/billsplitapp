@@ -14,7 +14,6 @@ import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.domain.usecases.*
-import com.mikkelthygesen.billsplit.toNewIndividualExpenses
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,16 +24,18 @@ import javax.inject.Inject
 class GroupViewModel @Inject constructor(
     private val addEventUseCase: AddEventUseCase,
     private val getGroupUseCase: GetGroupUseCase,
-    private val getServicesFromLocalUseCase: GetServicesFromLocalUseCase
+    private val getServicesFromLocalUseCase: GetServicesFromLocalUseCase,
+    private val getEventsFromLocalUseCase: GetEventsFromLocalUseCase
 ) : BaseViewModel() {
 
     object Chat : UiState
     object ShowDebt : UiState
     object Services : UiState
-    data class AddService(val subscriptionService: SubscriptionService) : UiState
     class EditExpense(val groupExpense: GroupExpense) : UiState
     class ConfirmChangesDialog(val groupExpense: GroupExpense) : DialogState
     object SaveServiceClicked : UiEvent
+    object OnAddExpenseClicked : UiEvent
+    data class OnEditExpenseClicked(val expenseId: String) : UiEvent
     data class OnServiceClicked(val service: SubscriptionService) : UiEvent
     object ServiceSaved : UiEvent
     object SaveServiceFailed : UiEvent
@@ -47,24 +48,23 @@ class GroupViewModel @Inject constructor(
     lateinit var group: Group
         private set
 
-    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Chat)
+    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
     val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
-    private val _mutableServicesStateFlow = MutableStateFlow<List<SubscriptionService>>(emptyList())
+
+    suspend fun getLocalEvents(groupId: String): List<Event> {
+        return getEventsFromLocalUseCase.execute(groupId)
+    }
 
     fun getGroup(groupId: String) {
         if (this::group.isInitialized) return
         viewModelScope.launch {
-            updateUiState(UiState.Loading)
             // call get cached group
             val cacheResponse = runCatching {
                 getGroupUseCase.execute(groupId, false)
             }
             cacheResponse.foldSuccess { group ->
                 this@GroupViewModel.group = group
-                _people.addAll(group.peopleState)
-                _mutableEventsStateFlow.value = group.events
-                _mutableServicesStateFlow.value = group.services
                 updateUiState(Chat)
             }
 
@@ -74,10 +74,7 @@ class GroupViewModel @Inject constructor(
                 getGroupUseCase.execute(groupId, true)
             }
             syncResponse.foldSuccess { group ->
-                _people.clear()
-                _people.addAll(group.peopleState)
-                _mutableEventsStateFlow.value = group.events
-                _mutableServicesStateFlow.value = group.services
+                this@GroupViewModel.group.updateGroup(group)
             }
             showChatLoader = false
         }
@@ -87,17 +84,7 @@ class GroupViewModel @Inject constructor(
         getServicesFromLocalUseCase.execute(group.id)
 
     fun addExpense() {
-        requireLoggedInUser {
-            val groupExpense = GroupExpense(
-                id = group.id,
-                createdBy = it,
-                description = "",
-                payee = it,
-                sharedExpense = 0F,
-                individualExpenses = people.toNewIndividualExpenses(),
-            )
-            _mutableUiStateFlow.value = EditExpense(groupExpense)
-        }
+        emitUiEvent(OnAddExpenseClicked)
     }
 
     suspend fun addPayment(paidTo: Person, amount: Float) {
@@ -189,10 +176,6 @@ class GroupViewModel @Inject constructor(
                 if (uiState.groupExpense.isChanged())
                     showConfirmChangesDialog(uiState.groupExpense)
                 else showChat()
-                true
-            }
-            is AddService -> {
-                showServices()
                 true
             }
             is ShowDebt,

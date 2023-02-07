@@ -12,6 +12,19 @@ data class IndividualExpense(
     private var expense: Float,
     private var isParticipant: Boolean = true
 ) {
+    constructor(person: Person) : this(
+        person = person,
+        expense = 0f,
+        isParticipant = true
+    )
+
+    constructor(individualExpense: IndividualExpenseDb) : this(
+        person = Person(individualExpense.person),
+        expense = individualExpense.expense,
+        isParticipant = individualExpense.isParticipant
+    )
+
+
     var expenseState by mutableStateOf(expense)
     var isParticipantState by mutableStateOf(isParticipant)
 

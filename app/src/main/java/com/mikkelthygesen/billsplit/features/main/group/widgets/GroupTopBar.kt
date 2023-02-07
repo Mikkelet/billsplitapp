@@ -120,13 +120,6 @@ fun GroupTopBar2(){
                     tint = MaterialTheme.colors.onBackground,
                     onClick = groupViewModel::showDebt
                 )
-            if (uiState is GroupViewModel.AddService)
-                SimpleIconButton(
-                    iconResId = R.drawable.ic_check,
-                    tint = MaterialTheme.colors.onBackground
-                ) {
-                    groupViewModel.addServiceClicked()
-                }
         }
     )
 }

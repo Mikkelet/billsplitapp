@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -22,16 +21,15 @@ import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.main.group.add_expense.ExpenseView
-import com.mikkelthygesen.billsplit.features.main.group.add_service.AddServiceView
 import com.mikkelthygesen.billsplit.features.main.group.group_view.GroupEventsView
 import com.mikkelthygesen.billsplit.features.main.group.services.ServicesView
 import com.mikkelthygesen.billsplit.features.main.group.view_expenses.ViewDebt
-import com.mikkelthygesen.billsplit.features.main.group.widgets.ConfirmChangesDialog
 import com.mikkelthygesen.billsplit.features.main.group.widgets.GroupBottomBar
 import com.mikkelthygesen.billsplit.features.main.group.widgets.GroupTopBar2
 import com.mikkelthygesen.billsplit.features.main.group.widgets.TopLoader
+import com.mikkelthygesen.billsplit.features.main.navigateToAddExpense
 import com.mikkelthygesen.billsplit.features.main.navigateToAddService
+import com.mikkelthygesen.billsplit.features.main.navigateToEditExpense
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,22 +46,11 @@ class GroupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel.getGroup(groupId)
+
         return ComposeView(requireContext()).apply {
             setContent {
                 val groupUiState = viewModel.uiStateFlow.collectAsState()
                 val uiState = groupUiState.value
-
-                BackHandler {
-                    val popped = viewModel.handleBack()
-                    if (!popped) popBackStack()
-                }
-
-                when (val state = viewModel.dialogState) {
-                    is GroupViewModel.ConfirmChangesDialog -> ConfirmChangesDialog(
-                        groupExpense = state.groupExpense
-                    )
-                    is BaseViewModel.DialogState.DismissDialogs -> Unit
-                }
 
                 BaseScaffold(
                     baseViewModel = viewModel,
@@ -86,13 +73,9 @@ class GroupFragment : Fragment() {
                         ) { state ->
                             when (state) {
                                 is BaseViewModel.UiState.Loading -> LoadingView()
-                                is GroupViewModel.Chat -> GroupEventsView()
+                                is GroupViewModel.Chat -> GroupEventsView(groupId = groupId)
                                 is GroupViewModel.ShowDebt -> ViewDebt()
                                 is GroupViewModel.Services -> ServicesView()
-                                is GroupViewModel.AddService -> AddServiceView(state.subscriptionService)
-                                is GroupViewModel.EditExpense -> ExpenseView(
-                                    groupExpense = state.groupExpense,
-                                )
                             }
                         }
                         TopLoader(
@@ -108,10 +91,12 @@ class GroupFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         collectEvents(viewModel.uiEventsState) { uiEvent ->
-            if (uiEvent is BaseViewModel.UiEvent.OnBackPressed)
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            if (uiEvent is GroupViewModel.OnServiceClicked)
-                navigateToAddService(groupId, uiEvent.service.id)
+            when (uiEvent) {
+                is BaseViewModel.UiEvent.OnBackPressed -> if(!viewModel.handleBack()) popBackStack()
+                is GroupViewModel.OnServiceClicked -> navigateToAddService(groupId, uiEvent.service.id)
+                is GroupViewModel.OnAddExpenseClicked -> navigateToAddExpense(viewModel.group.id)
+                is GroupViewModel.OnEditExpenseClicked -> navigateToEditExpense(viewModel.group.id, uiEvent.expenseId)
+            }
         }
     }
 
