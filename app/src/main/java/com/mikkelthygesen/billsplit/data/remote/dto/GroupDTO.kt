@@ -15,6 +15,15 @@ data class GroupDTO(
     val timeStamp: Long,
     val debts: List<DebtDTO>
 ) {
+
+    constructor(group: Group):this(
+        id = group.id,
+        name = group.nameState,
+        people = group.peopleState.map { PersonDTO(it) },
+        createdBy = PersonDTO(group.createdBy),
+        timeStamp = group.timeStamp,
+        debts = group.debts.map { DebtDTO(it.first, it.second) }
+    )
     fun toGroup() = Group(
         id = id,
         name = name,
@@ -32,15 +41,4 @@ data class GroupDTO(
         debts = debts.map { DebtDb(it) },
         people = people.map { PersonDb(it) },
     )
-
-    companion object {
-        fun fromGroup(group: Group) = GroupDTO(
-            id = group.id,
-            name = group.nameState,
-            people = group.peopleState.map { PersonDTO(it) },
-            createdBy = PersonDTO(group.createdBy),
-            timeStamp = group.timeStamp,
-            debts = group.debtsState.map { DebtDTO(it.first, it.second) }
-        )
-    }
 }

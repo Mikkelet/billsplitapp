@@ -2,6 +2,7 @@ package com.mikkelthygesen.billsplit.domain.usecases
 
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
 import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
+import com.mikkelthygesen.billsplit.data.local.database.model.GroupDb
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
 import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
 import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
@@ -14,19 +15,21 @@ import javax.inject.Inject
 @ViewModelScoped
 class AddEventUseCase @Inject constructor(
     private val database: BillSplitDb,
-    private val serverApiImpl: ServerApiImpl
+    private val serverApiImpl: ServerApiImpl,
+    private val getDebtForGroupUseCase: GetDebtForGroupUseCase
 ) {
 
     suspend fun execute(group: Group, event: Event): Event {
-        val dto = serverApiImpl.addEvent(group, event)
-        database.groupsDao().insert(group.toDb())
-        when (dto) {
+        val debts = getDebtForGroupUseCase.execute(group.id, event)
+        val eventDTO = serverApiImpl.addEvent(group, event, debts)
+        database.groupsDao().insert(GroupDb(group, debts))
+        when (eventDTO) {
             is EventDTO.ExpenseDTO -> database.groupExpensesDao()
-                .insert(GroupExpenseDb(group.id, dto))
+                .insert(GroupExpenseDb(group.id, eventDTO))
             is EventDTO.ChangeDTO -> database.expenseChangesDao()
-                .insert(ExpenseChangeDb(group.id, dto))
-            is EventDTO.PaymentDTO -> database.paymentsDao().insert(PaymentDb(group.id, dto))
+                .insert(ExpenseChangeDb(group.id, eventDTO))
+            is EventDTO.PaymentDTO -> database.paymentsDao().insert(PaymentDb(group.id, eventDTO))
         }
-        return dto.toEvent()
+        return eventDTO.toEvent()
     }
 }

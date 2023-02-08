@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.mikkelthygesen.billsplit.data.local.database.model.SubscriptionServiceDb
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ServicesDao {
@@ -16,7 +17,7 @@ interface ServicesDao {
     suspend fun insert(subscriptionServiceDbs: List<SubscriptionServiceDb>)
 
     @Query("SELECT * FROM services WHERE :groupId == groupId")
-    suspend fun getServices(groupId: String): List<SubscriptionServiceDb>
+    fun getServicesFlow(groupId: String): Flow<List<SubscriptionServiceDb>>
 
     @Query("SELECT * FROM services WHERE :groupId == id")
     suspend fun getService(groupId: String): SubscriptionServiceDb

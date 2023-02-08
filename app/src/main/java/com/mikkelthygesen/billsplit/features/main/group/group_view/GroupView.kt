@@ -31,23 +31,15 @@ fun GroupEventsView(
     groupId: String
 ) {
     val viewModel: GroupViewModel = viewModel()
-
+    val eventsFlowState = viewModel.eventsFlow().collectAsState(emptyList())
+    val eventsState = eventsFlowState.value
+    println("qqq events=$eventsState")
     RequireUserView(baseViewModel = viewModel) { user ->
-        FutureComposable(asyncCallback = {
-            viewModel.getLocalEvents()
-        }) { state: FutureState<List<Event>>, _: () -> Unit ->
-            when (state) {
-                is FutureState.Loading -> LoadingView()
-                is FutureState.Failure -> ErrorView(error = state.error)
-                is FutureState.Success -> {
-                    _ListViewExpense(
-                        modifier = modifier,
-                        events = state.data,
-                        loggedInUser = user,
-                    )
-                }
-            }
-        }
+        _ListViewExpense(
+            modifier = modifier,
+            events = eventsState,
+            loggedInUser = user,
+        )
     }
 }
 

@@ -21,7 +21,7 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
-    val debt = group.debtsState.find { it.first == user.uid } ?: Pair(user.uid, 0F)
+    val debt = group.debts.find { it.first == user.uid } ?: Pair(user.uid, 0F)
     Row(
         modifier = Modifier
             .fillMaxWidth()

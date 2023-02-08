@@ -15,12 +15,11 @@ class GetEventsFromLocalUseCase @Inject constructor(
 
     suspend fun execute(groupId: String): List<Event> {
         val expenses: List<Event> =
-            database.groupExpensesDao().getAllForGroup(groupId).map { GroupExpense(it) }
+            database.groupExpensesDao().getGroupExpenses(groupId).map { GroupExpense(it) }
         val payments: List<Event> =
             database.paymentsDao().getPayments(groupId).map { Payment(it) }
         val changes: List<Event> =
             database.expenseChangesDao().getExpenseChanges(groupId).map { GroupExpensesChanged(it) }
         return expenses.plus(payments).plus(changes).sortedBy { it.timeStamp }.reversed()
-
     }
 }

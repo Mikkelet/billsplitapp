@@ -8,13 +8,11 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @ViewModelScoped
-class ObserveDatabaseGroupsUseCase @Inject constructor(
+class ObserveLocalGroupsUseCase @Inject constructor(
     private val database: BillSplitDb,
 ) {
     fun execute(): Flow<List<Group>> {
         return database.groupsDao().getGroupsFlow()
-            .map {
-                it.map { groupDb -> Group(groupDb) }
-            }
+            .map { groups -> groups.map { Group(it) } }
     }
 }

@@ -5,13 +5,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupExpenseEventDao {
 
     @Query("SELECT * FROM group_expenses WHERE :groupId == groupId")
-    suspend fun getAllForGroup(groupId: String): List<GroupExpenseDb>
-
+    suspend fun getGroupExpenses(groupId: String): List<GroupExpenseDb>
+    @Query("SELECT * FROM group_expenses WHERE :groupId == groupId")
+    fun getGroupExpensesFlow(groupId: String): Flow<List<GroupExpenseDb>>
     @Query("SELECT * FROM group_expenses WHERE id == :expenseId")
     suspend fun getGroupExpense(expenseId: String): GroupExpenseDb
 

@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.Person
@@ -14,8 +13,8 @@ import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.domain.usecases.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,10 +22,10 @@ import javax.inject.Inject
 class GroupViewModel @Inject constructor(
     private val addEventUseCase: AddEventUseCase,
     private val getGroupUseCase: GetGroupUseCase,
-    private val getServicesFromLocalUseCase: GetServicesFromLocalUseCase,
-    private val getEventsFromLocalUseCase: GetEventsFromLocalUseCase
+    private val observeLocalEventsUseCase: ObserveLocalEventsUseCase,
+    private val observeLocalServicesUseCase: ObserveLocalServicesUseCase,
+    private val getDebtForLoggedInUserUseCase: GetDebtForLoggedInUserUseCase
 ) : BaseViewModel() {
-
     object Chat : UiState
     object ShowDebt : UiState
     object Services : UiState
@@ -37,18 +36,12 @@ class GroupViewModel @Inject constructor(
     var showChatLoader by mutableStateOf(false)
         private set
 
-    private val _people = mutableListOf<Person>()
-    val people: List<Person> = _people
     lateinit var group: Group
         private set
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
-    private val _mutableEventsStateFlow = MutableStateFlow<List<Event>>(emptyList())
-    val eventStateFlow: StateFlow<List<Event>> = _mutableEventsStateFlow
 
-    suspend fun getLocalEvents(): List<Event> {
-        return getEventsFromLocalUseCase.execute(group.id)
-    }
+    fun eventsFlow(): Flow<List<Event>> = observeLocalEventsUseCase.observe(group.id)
 
     fun getGroup(groupId: String) {
         if (this::group.isInitialized) return
@@ -74,8 +67,11 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-    suspend fun getLocalServices(): List<SubscriptionService> =
-        getServicesFromLocalUseCase.execute(group.id)
+    fun servicesFlow(): Flow<List<SubscriptionService>> =
+        observeLocalServicesUseCase.observe(group.id)
+
+    suspend fun getDebtForLoggedInUser(): List<Pair<Person, Float>> =
+        getDebtForLoggedInUserUseCase.execute(group.id)
 
     fun addExpense() {
         emitUiEvent(OnAddExpenseClicked)
@@ -87,9 +83,7 @@ class GroupViewModel @Inject constructor(
             paidTo = paidTo,
             amount = amount
         )
-        group.debtsState = getCalculator(payment).calculateEffectiveDebtForGroup()
-        val paymentResponse = addEventUseCase.execute(group, payment)
-        _mutableEventsStateFlow.value = eventStateFlow.value.plus(paymentResponse)
+        addEventUseCase.execute(group, payment)
     }
 
     fun showDebt() {
@@ -117,21 +111,6 @@ class GroupViewModel @Inject constructor(
             }
             else -> false
         }
-    }
-
-    private fun getCalculator(withEvent: Event? = null): DebtCalculator {
-        val events = eventStateFlow.value
-        val payments: List<Payment> = events.filterIsInstance<Payment>().let {
-            if (withEvent is Payment)
-                it.plus(withEvent)
-            else it
-        }
-        val groupExpenses: List<GroupExpense> = events.filterIsInstance<GroupExpense>().let {
-            if (withEvent is GroupExpense)
-                it.plus(withEvent)
-            else it
-        }
-        return DebtCalculator(group.peopleState, groupExpenses, payments)
     }
 
     fun onServiceClicked(subscriptionService: SubscriptionService) {
