@@ -11,7 +11,7 @@ import javax.inject.Inject
 class ObserveLocalGroupsUseCase @Inject constructor(
     private val database: BillSplitDb,
 ) {
-    fun execute(): Flow<List<Group>> {
+    fun observe(): Flow<List<Group>> {
         return database.groupsDao().getGroupsFlow()
             .map { groups -> groups.map { Group(it) } }
     }
