@@ -1,5 +1,6 @@
 package com.mikkelthygesen.billsplit.domain.models
 
+import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 
 data class GroupExpensesChanged(
@@ -8,4 +9,12 @@ data class GroupExpensesChanged(
     val groupExpenseOriginal: GroupExpense,
     val groupExpenseEdited: GroupExpense,
     override val timeStamp: Long = System.currentTimeMillis(),
-) : Event
+) : Event{
+    constructor(expenseChangeDb: ExpenseChangeDb):this(
+        id = expenseChangeDb.id,
+        createdBy = Person(expenseChangeDb.createdBy),
+        groupExpenseOriginal = expenseChangeDb.groupExpenseOriginal.toGroupExpense(),
+        groupExpenseEdited = expenseChangeDb.groupExpenseEdited.toGroupExpense(),
+        timeStamp = expenseChangeDb.timeStamp
+    )
+}

@@ -81,7 +81,7 @@ private fun _ViewDebt(
             text = "Debts",
             style = MaterialTheme.typography.h5
         )
-        if (debtForPerson.isEmpty())
+        if (debtForPerson.none { it.second != 0F })
             CenteredMessage("All debts are settled")
         else
             (debtForPerson)

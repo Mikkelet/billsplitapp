@@ -21,9 +21,11 @@ class AddEventUseCase @Inject constructor(
         val dto = serverApiImpl.addEvent(group, event)
         database.groupsDao().insert(group.toDb())
         when (dto) {
-            is EventDTO.ExpenseDTO -> database.eventsDao().insertGroupExpense(GroupExpenseDb(group.id, dto))
-            is EventDTO.ChangeDTO -> database.eventsDao().insertExpenseChange(ExpenseChangeDb(group.id, dto))
-            is EventDTO.PaymentDTO -> database.eventsDao().insertPayment(PaymentDb(group.id, dto))
+            is EventDTO.ExpenseDTO -> database.groupExpensesDao()
+                .insert(GroupExpenseDb(group.id, dto))
+            is EventDTO.ChangeDTO -> database.expenseChangesDao()
+                .insert(ExpenseChangeDb(group.id, dto))
+            is EventDTO.PaymentDTO -> database.paymentsDao().insert(PaymentDb(group.id, dto))
         }
         return dto.toEvent()
     }

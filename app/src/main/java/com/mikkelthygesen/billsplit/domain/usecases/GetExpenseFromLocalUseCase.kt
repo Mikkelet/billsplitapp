@@ -26,7 +26,7 @@ class GetExpenseFromLocalUseCase @Inject constructor(
                 individualExpenses = group.peopleState.map { IndividualExpense(it) },
             )
         }
-        val groupExpenseDb = database.eventsDao().getGroupExpense(expenseId)
+        val groupExpenseDb = database.groupExpensesDao().getGroupExpense(expenseId)
         return GroupExpense(groupExpenseDb)
     }
 }

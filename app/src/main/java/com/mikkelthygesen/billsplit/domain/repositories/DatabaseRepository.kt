@@ -9,9 +9,9 @@ class DatabaseRepository @Inject constructor(
     private val billSplitDb: BillSplitDb
 ) {
     suspend fun clearDatabase() {
-        billSplitDb.eventsDao().clearPaymentTable()
-        billSplitDb.eventsDao().clearChangesTable()
-        billSplitDb.eventsDao().clearExpensesTable()
+        billSplitDb.paymentsDao().clearTable()
+        billSplitDb.groupExpensesDao().clearTable()
+        billSplitDb.expenseChangesDao().clearTable()
         billSplitDb.groupsDao().clearTable()
         billSplitDb.friendsDao().clearTable()
         billSplitDb.servicesDao().clearTable()

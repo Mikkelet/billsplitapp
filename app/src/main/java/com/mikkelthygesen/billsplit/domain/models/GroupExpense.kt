@@ -39,7 +39,6 @@ data class GroupExpense(
     private val participants: Int
         get() = individualExpenses.count { it.isParticipantState }
 
-
     fun getParticipants() = individualExpenses.filter { it.isParticipantState }.map { it.person }
 
     fun getIndividualExpensesWithShared() = individualExpenses.map { ie ->
