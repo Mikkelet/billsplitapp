@@ -12,8 +12,10 @@ interface GroupExpenseEventDao {
 
     @Query("SELECT * FROM group_expenses WHERE :groupId == groupId")
     suspend fun getGroupExpenses(groupId: String): List<GroupExpenseDb>
+
     @Query("SELECT * FROM group_expenses WHERE :groupId == groupId")
     fun getGroupExpensesFlow(groupId: String): Flow<List<GroupExpenseDb>>
+
     @Query("SELECT * FROM group_expenses WHERE id == :expenseId")
     suspend fun getGroupExpense(expenseId: String): GroupExpenseDb
 

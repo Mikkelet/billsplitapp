@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.main.profile.widget
+package com.mikkelthygesen.billsplit.features.main.friends.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
@@ -24,14 +24,10 @@ import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
 import io.ktor.utils.io.core.*
 
 @Composable
-fun AddFriendEmailTextField(
-    onFriendAdded: (Friend) -> Unit
-) {
+fun AddFriendEmailTextField() {
     val friendsViewModel: FriendsViewModel = viewModel()
     _AddFriendTextField {
-        val friend = friendsViewModel.addFriend(it.trim().lowercase())
-        onFriendAdded(friend)
-        friend
+        friendsViewModel.addFriend(it.trim().lowercase())
     }
 }
 

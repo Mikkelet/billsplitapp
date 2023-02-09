@@ -16,56 +16,28 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Person
-import com.mikkelthygesen.billsplit.features.main.profile.widget.AddFriendEmailTextField
+import com.mikkelthygesen.billsplit.features.main.friends.views.AddFriendEmailTextField
 import com.mikkelthygesen.billsplit.features.main.friends.views.FriendView
 import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
-import com.mikkelthygesen.billsplit.ui.widgets.FutureComposable
-import com.mikkelthygesen.billsplit.ui.widgets.FutureState
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
 @Composable
 fun FriendsView() {
     val friendsViewModel: FriendsViewModel = viewModel()
-    var sync by remember {
-        mutableStateOf(false)
-    }
-    var friends: List<Friend> by remember {
-        mutableStateOf(emptyList())
-    }
-    FutureComposable(
-        asyncCallback = {
-            sync = false
-            friendsViewModel.getFriends(false)
+    val friendsFlow = friendsViewModel.observeLocalFriends().collectAsState(initial = emptyList())
+    val friendsState = friendsFlow.value
+    FriendsListWithTitle(
+        friends = if (friendsViewModel.syncingFriends)
+            emptyList() else friendsState.sortedBy { it.javaClass.simpleName },
+        showLoading = friendsViewModel.syncingFriends,
+        onRefreshClick = {
+            friendsViewModel.getFriends()
         },
-        refreshCallback = {
-            sync = true
-            friendsViewModel.getFriends(true)
-        }
-    ) { state, refresh ->
-        when (state) {
-            is FutureState.Loading -> FriendsListWithTitle(
-                friends = emptyList(),
-                showLoading = sync,
-                onRefreshClick = {},
-                onBackClicked = friendsViewModel::onBackButtonPressed
-            )
-            else -> {
-                if (state is FutureState.Failure)
-                    friendsViewModel.handleError(state.error)
-                else if (state is FutureState.Success)
-                    friends = state.data
-                FriendsListWithTitle(
-                    friends = friends.sortedBy { it.javaClass.simpleName },
-                    onRefreshClick = refresh,
-                    onBackClicked = friendsViewModel::onBackButtonPressed
-                )
-            }
-        }
-
-    }
+        onBackClicked = friendsViewModel::onBackButtonPressed
+    )
 }
 
 @Composable
@@ -112,22 +84,17 @@ private fun _FriendsListView(
     friends: List<Friend>,
     showLoading: Boolean = false
 ) {
-    var friendsState by remember {
-        mutableStateOf(friends)
-    }
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .padding(bottom = 32.dp)
+            .padding(bottom = 80.dp)
             .shadowModifier(
                 backgroundColor = MaterialTheme.colors.listItemColor(),
                 outerPadding = PaddingValues(0.dp)
             ),
     ) {
-        AddFriendEmailTextField {
-            friendsState = friendsState.plus(it)
-        }
-        friendsState.map {
+        AddFriendEmailTextField()
+        friends.map {
             FriendView(it)
         }
         if (showLoading)
