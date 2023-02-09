@@ -1,12 +1,6 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
-import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
-import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
-import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
-import com.mikkelthygesen.billsplit.domain.models.GroupExpense
-import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
-import com.mikkelthygesen.billsplit.domain.models.Payment
-import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.domain.models.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.*
@@ -30,19 +24,7 @@ sealed class EventDTO {
         val payee: PersonDTO,
         val sharedExpense: Float,
         val individualExpenses: List<IndividualExpenseDTO>,
-    ) : EventDTO() {
-
-        fun toDb(groupId: String) = GroupExpenseDb(
-            groupId = groupId,
-            id = id,
-            createdBy = createdBy.toDB(),
-            description = description,
-            payee = payee.toDB(),
-            sharedExpense = sharedExpense,
-            individualExpenses = individualExpenses.map { it.toDb()  },
-            timeStamp = timeStamp
-        )
-    }
+    ) : EventDTO()
 
     @kotlinx.serialization.Serializable
     @SerialName(TYPE_PAYMENT)
@@ -52,17 +34,7 @@ sealed class EventDTO {
         val timeStamp: Long,
         val paidTo: PersonDTO,
         val amount: Float,
-    ) : EventDTO() {
-
-        fun toDb(groupId: String) = PaymentDb(
-            groupId = groupId,
-            id = id,
-            createdBy = createdBy.toDB(),
-            timeStamp = timeStamp,
-            paidTo = paidTo.toDB(),
-            amount = amount,
-        )
-    }
+    ) : EventDTO()
 
     @kotlinx.serialization.Serializable
     @SerialName(TYPE_CHANGE)
@@ -72,49 +44,37 @@ sealed class EventDTO {
         val timeStamp: Long,
         val groupExpenseOriginal: EventDTO,
         val groupExpenseEdited: EventDTO
-    ) : EventDTO() {
-
-        fun toDb(groupId: String) = ExpenseChangeDb(
-            groupId = groupId,
-            id = id,
-            timeStamp = timeStamp,
-            createdBy = createdBy.toDB(),
-            groupExpenseOriginal = (groupExpenseOriginal as ExpenseDTO).toDb(groupId),
-            groupExpenseEdited = (groupExpenseEdited as ExpenseDTO).toDb(groupId),
-        )
-    }
+    ) : EventDTO()
 
     companion object {
         const val TYPE_PAYMENT = "payment"
         const val TYPE_CHANGE = "change"
         const val TYPE_EXPENSE = "expense"
 
-        private fun Person.toPersonDTO() = PersonDTO.fromPerson(this)
-
         fun fromExpense(expense: GroupExpense): ExpenseDTO = ExpenseDTO(
             id = expense.id,
             description = expense.descriptionState,
-            createdBy = expense.createdBy.toPersonDTO(),
+            createdBy = PersonDTO(expense.createdBy),
             sharedExpense = expense.sharedExpenseState,
             individualExpenses = expense.individualExpenses.map {
-                IndividualExpenseDTO.fromIndividualExpense(it)
+                IndividualExpenseDTO(it)
             },
-            payee = expense.payeeState.toPersonDTO(),
+            payee = PersonDTO(expense.payeeState),
             timeStamp = expense.timeStamp,
         )
 
         fun fromPayment(payment: Payment): PaymentDTO = PaymentDTO(
             id = payment.id,
             timeStamp = payment.timeStamp,
-            createdBy = payment.createdBy.toPersonDTO(),
+            createdBy = PersonDTO(payment.createdBy),
             amount = payment.amount,
-            paidTo = payment.paidTo.toPersonDTO()
+            paidTo = PersonDTO(payment.paidTo)
         )
 
         fun fromChange(expensesChanged: GroupExpensesChanged): ChangeDTO = ChangeDTO(
             id = expensesChanged.id,
             timeStamp = expensesChanged.timeStamp,
-            createdBy = expensesChanged.createdBy.toPersonDTO(),
+            createdBy = PersonDTO(expensesChanged.createdBy),
             groupExpenseEdited = fromExpense(expensesChanged.groupExpenseEdited),
             groupExpenseOriginal = fromExpense(expensesChanged.groupExpenseOriginal)
         )
@@ -123,18 +83,18 @@ sealed class EventDTO {
     fun toEvent() = when (this) {
         is ChangeDTO -> GroupExpensesChanged(
             id = id,
-            createdBy = createdBy.toPerson(),
+            createdBy = Person(createdBy),
             timeStamp = timeStamp,
             groupExpenseOriginal = let {
                 val expense = groupExpenseOriginal as ExpenseDTO
                 GroupExpense(
                     id = expense.id,
                     timeStamp = expense.timeStamp,
-                    createdBy = expense.createdBy.toPerson(),
+                    createdBy = Person(expense.createdBy),
                     description = expense.description,
                     sharedExpense = expense.sharedExpense,
-                    payee = expense.payee.toPerson(),
-                    individualExpenses = expense.individualExpenses.map { it.toIndividualExpense() }
+                    payee = Person(expense.payee),
+                    individualExpenses = expense.individualExpenses.map { IndividualExpense(it) }
                 )
             },
             groupExpenseEdited = let {
@@ -142,27 +102,27 @@ sealed class EventDTO {
                 GroupExpense(
                     id = expense.id,
                     timeStamp = expense.timeStamp,
-                    createdBy = expense.createdBy.toPerson(),
+                    createdBy = Person(expense.createdBy),
                     description = expense.description,
                     sharedExpense = expense.sharedExpense,
-                    payee = expense.payee.toPerson(),
-                    individualExpenses = groupExpenseEdited.individualExpenses.map { it.toIndividualExpense() }
+                    payee = Person(expense.payee),
+                    individualExpenses = groupExpenseEdited.individualExpenses.map { IndividualExpense(it) }
                 )
             }
         )
         is PaymentDTO -> Payment(
             id = id,
-            createdBy = createdBy.toPerson(),
+            createdBy = Person(createdBy),
             timeStamp = timeStamp,
-            paidTo = paidTo.toPerson(),
+            paidTo = Person(paidTo),
             amount = amount
         )
         is ExpenseDTO -> GroupExpense(
             id = id,
             timeStamp = timeStamp,
-            createdBy = createdBy.toPerson(),
-            payee = payee.toPerson(),
-            individualExpenses = individualExpenses.map { it.toIndividualExpense() },
+            createdBy = Person(createdBy),
+            payee = Person(payee),
+            individualExpenses = individualExpenses.map { IndividualExpense(it) },
             sharedExpense = sharedExpense,
             description = description
         )

@@ -4,19 +4,16 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.domain.models.GroupExpense
-import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
+import com.mikkelthygesen.billsplit.features.main.add_expense.AddExpenseViewModel
 import com.mikkelthygesen.billsplit.ui.widgets.GenericDialog
 
 @Composable
-fun ConfirmChangesDialog(
-    viewModel: GroupViewModel = viewModel(),
-    groupExpense: GroupExpense
-) {
+fun ConfirmChangesDialog() {
+    val viewModel: AddExpenseViewModel = viewModel()
     _ConfirmChangesDialog(
         dismiss = viewModel::dismissDialog,
         revert = {
-            groupExpense.revertChanges()
+            viewModel.groupExpense.revertChanges()
             viewModel.dismissDialog()
             viewModel.onBackButtonPressed()
         })

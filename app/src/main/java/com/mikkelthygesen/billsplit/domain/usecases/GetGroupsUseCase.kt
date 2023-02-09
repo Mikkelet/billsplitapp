@@ -14,13 +14,14 @@ class GetGroupsUseCase @Inject constructor(
     suspend fun execute(sync: Boolean): List<Group> {
         return if (sync) {
             val dtos = serverApiImpl.getGroups()
+            database.groupsDao().clearTable()
             database.groupsDao().insert(dtos.map { it.toDB() })
-            dtos.map { it.toGroup() }
+            dtos.map { it.toGroup() }.sortedBy { it.nameState }
         } else {
             val groupsDb = database.groupsDao().getGroups()
             if (groupsDb.isEmpty())
                 execute(true)
-            else groupsDb.map { it.toGroup() }
+            else groupsDb.map { Group(it) }.sortedBy { it.nameState }
         }
     }
 }

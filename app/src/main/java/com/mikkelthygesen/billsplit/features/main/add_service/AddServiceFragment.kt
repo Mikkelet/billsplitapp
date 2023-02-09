@@ -12,7 +12,6 @@ import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffold
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import com.mikkelthygesen.billsplit.features.main.group.add_service.AddServiceView
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,18 +33,11 @@ class AddServiceFragment : Fragment() {
                 val uiStateFlow = addServiceViewModel.uiStateFlow.collectAsState()
                 addServiceViewModel.loadService(groupId, serviceId)
 
-                collectEvents(addServiceViewModel.uiEventsState) {
-                    when (it) {
-                        is AddServiceViewModel.ServiceAdded,
-                        is BaseViewModel.UiEvent.OnBackPressed -> popBackStack()
-                    }
-                }
-
                 BaseScaffold(addServiceViewModel) {
                     Crossfade(targetState = uiStateFlow.value) { uiState ->
                         when (uiState) {
                             is AddServiceViewModel.ServiceLoaded -> {
-                                AddServiceView(service = uiState.service)
+                                AddServiceView()
                             }
                             is BaseViewModel.UiState.Loading -> {
                                 LoadingView()
@@ -53,6 +45,16 @@ class AddServiceFragment : Fragment() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        collectEvents(addServiceViewModel.uiEventsState) {
+            when (it) {
+                is AddServiceViewModel.ServiceAdded,
+                is BaseViewModel.UiEvent.OnBackPressed -> popBackStack()
             }
         }
     }

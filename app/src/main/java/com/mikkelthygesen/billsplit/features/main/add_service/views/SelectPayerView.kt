@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.main.group.add_service.views
+package com.mikkelthygesen.billsplit.features.main.add_service.views
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable

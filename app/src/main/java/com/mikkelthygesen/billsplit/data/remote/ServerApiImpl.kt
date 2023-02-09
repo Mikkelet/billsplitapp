@@ -15,7 +15,7 @@ class ServerApiImpl @Inject constructor(
 ) {
 
     suspend fun addGroup(group: Group): GroupDTO {
-        val groupDTO = GroupDTO.fromGroup(group)
+        val groupDTO = GroupDTO(group)
         val addGroupDTO = AddGroup.Request(groupDTO)
         return serverApi.addGroup(addGroupDTO).group
     }
@@ -23,6 +23,7 @@ class ServerApiImpl @Inject constructor(
     suspend fun addEvent(
         group: Group,
         event: Event,
+        debts: List<Pair<String, Float>>
     ): EventDTO {
         val eventDto: EventDTO = when (event) {
             is GroupExpense -> EventDTO.fromExpense(event)
@@ -30,7 +31,7 @@ class ServerApiImpl @Inject constructor(
             is GroupExpensesChanged -> EventDTO.fromChange(event)
             else -> throw Exception("Invalid event")
         }
-        val debtsDto = group.debtsState.map {
+        val debtsDto = debts.map {
             DebtDTO(
                 userId = it.first,
                 owes = it.second
@@ -66,7 +67,7 @@ class ServerApiImpl @Inject constructor(
         return serverApi.getFriends().friends
     }
 
-    suspend fun addSubscriptionService(groupId: String, service: SubscriptionService) : ServiceDTO {
+    suspend fun addSubscriptionService(groupId: String, service: SubscriptionService): ServiceDTO {
         val request = AddSubscriptionService.Request(groupId, service = ServiceDTO(service))
         return serverApi.addSubscriptionService(request).service
     }

@@ -3,6 +3,7 @@ package com.mikkelthygesen.billsplit.domain.models
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
@@ -16,6 +17,16 @@ data class GroupExpense(
     val individualExpenses: List<IndividualExpense>,
     override val timeStamp: Long = System.currentTimeMillis()
 ) : Event {
+
+    constructor(expenseDb: GroupExpenseDb) : this(
+        id = expenseDb.id,
+        createdBy = Person(expenseDb.createdBy),
+        description = expenseDb.description,
+        payee = Person(expenseDb.payee),
+        sharedExpense = expenseDb.sharedExpense,
+        individualExpenses = expenseDb.individualExpenses.map { IndividualExpense(it) },
+        timeStamp = expenseDb.timeStamp,
+    )
 
     var descriptionState by mutableStateOf(description)
     var payeeState by mutableStateOf(payee)

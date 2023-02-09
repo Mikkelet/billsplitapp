@@ -19,7 +19,7 @@ class AddServiceViewModel @Inject constructor(
     private val getGroupUseCase: GetGroupUseCase,
 ) : BaseViewModel() {
 
-    data class ServiceLoaded(val service: SubscriptionService) : UiState
+    object ServiceLoaded : UiState
     object ServiceAdded : UiEvent
 
     lateinit var service: SubscriptionService
@@ -38,7 +38,7 @@ class AddServiceViewModel @Inject constructor(
             response.foldSuccess {
                 service = it.first
                 group = it.second
-                updateUiState(ServiceLoaded(service))
+                updateUiState(ServiceLoaded)
             }
         }
     }

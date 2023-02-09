@@ -1,12 +1,13 @@
 package com.mikkelthygesen.billsplit.domain.usecases
 
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
+import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
+import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
+import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
 import com.mikkelthygesen.billsplit.data.local.database.model.SubscriptionServiceDb
 import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
 import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
 import com.mikkelthygesen.billsplit.domain.models.Group
-import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
-import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
@@ -24,29 +25,26 @@ class GetGroupUseCase @Inject constructor(
             val serviceDTOs = getGroupResponse.services
 
             // Insert to db
-            val groupExpensesDb = eventDtos.filterIsInstance<EventDTO.ExpenseDTO>()
-            val paymentsDb = eventDtos.filterIsInstance<EventDTO.PaymentDTO>()
-            val expenseChangesDb = eventDtos.filterIsInstance<EventDTO.ChangeDTO>()
+            val groupExpensesDTO = eventDtos.filterIsInstance<EventDTO.ExpenseDTO>()
+            val paymentsDTO = eventDtos.filterIsInstance<EventDTO.PaymentDTO>()
+            val expenseChangesDTO = eventDtos.filterIsInstance<EventDTO.ChangeDTO>()
+            // Clear
+            database.expenseChangesDao().clearTableForGroup(groupId)
+            database.paymentsDao().clearTableForGroup(groupId)
+            database.groupExpensesDao().clearTableForGroup(groupId)
+            database.servicesDao().clearTable(groupId)
+            // Add new
             database.groupsDao().insert(groupDto.toDB())
-            database.eventsDao().insertGroupExpenses(groupExpensesDb.map { it.toDb(groupDto.id) })
-            database.eventsDao().insertPayments(paymentsDb.map { it.toDb(groupId) })
-            database.eventsDao().insertExpenseChanges(expenseChangesDb.map { it.toDb(groupDto.id) })
+            database.groupExpensesDao().insert(groupExpensesDTO.map { GroupExpenseDb(groupId, it) })
+            database.paymentsDao().insert(paymentsDTO.map { PaymentDb(groupId, it) })
+            database.expenseChangesDao()
+                .insert(expenseChangesDTO.map { ExpenseChangeDb(groupId, it) })
             database.servicesDao().insert(serviceDTOs.map { SubscriptionServiceDb(groupId, it) })
 
-            val events = eventDtos.map { it.toEvent() }
-            val services = serviceDTOs.map { SubscriptionService(it) }
-            return groupDto.toGroup().copy(events = events, services = services)
+            return Group(groupDto)
         } else {
-            val group = database.groupsDao().getGroup(groupId).toGroup()
-            val expenses: List<Event> =
-                database.eventsDao().getGroupExpenses(groupId).map { it.toGroupExpense() }
-            val payments: List<Event> =
-                database.eventsDao().getPayments(groupId).map { it.toPayment() }
-            val changes: List<Event> =
-                database.eventsDao().getExpenseChanges(groupId).map { it.toExpenseChange() }
-            val events = expenses.plus(payments).plus(changes).sortedBy { it.timeStamp }
-            val services = database.servicesDao().getServices(groupId).map { SubscriptionService(it) }
-            return group.copy(events = events, services = services)
+            val groupDb = database.groupsDao().getGroup(groupId)
+            return Group(groupDb)
         }
     }
 }

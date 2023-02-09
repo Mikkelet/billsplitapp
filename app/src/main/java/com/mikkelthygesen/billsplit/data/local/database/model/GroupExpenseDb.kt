@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.IndividualExpenseDb
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
+import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 
 @Entity(tableName = "group_expenses")
@@ -21,6 +22,17 @@ class GroupExpenseDb(
     val individualExpenses: List<IndividualExpenseDb>,
     val timeStamp: Long
 ) {
+
+    constructor(groupId: String, expenseDTO: EventDTO.ExpenseDTO):this(
+        groupId = groupId,
+        id = expenseDTO.id,
+        createdBy = PersonDb(expenseDTO.createdBy),
+        description = expenseDTO.description,
+        payee = expenseDTO.payee.toDB(),
+        sharedExpense = expenseDTO.sharedExpense,
+        individualExpenses = expenseDTO.individualExpenses.map { IndividualExpenseDb(it) },
+        timeStamp = expenseDTO.timeStamp
+    )
 
     fun toGroupExpense() = GroupExpense(
         id = id,

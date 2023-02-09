@@ -22,8 +22,7 @@ class AuthProvider @Inject constructor() {
     var userState: Person? by mutableStateOf(null)
     var userLiveData = MutableLiveData<Person?>(null)
     val requireLoggedInUser: Person
-        get() = userState!!
-
+        get() = userLiveData.value!!
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
             if (BuildConfig.FLAVOR == "emulator")

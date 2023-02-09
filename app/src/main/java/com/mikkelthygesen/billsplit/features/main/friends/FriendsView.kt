@@ -77,7 +77,6 @@ private fun FriendsListWithTitle(
 ) {
     Column(
         Modifier
-            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         BigTopBar(leadingContent = {
@@ -90,7 +89,7 @@ private fun FriendsListWithTitle(
         ) {
             Text(
                 modifier = Modifier
-                    .padding(bottom = 32.dp, start = 16.dp),
+                    .padding(bottom = 32.dp, start = 32.dp),
                 text = "Friends",
                 style = MaterialTheme.typography.h4
             )
@@ -117,11 +116,13 @@ private fun _FriendsListView(
         mutableStateOf(friends)
     }
     Column(
-        modifier =
-        Modifier.shadowModifier(
-            MaterialTheme.colors.listItemColor(),
-            outerPadding = PaddingValues(0.dp)
-        ),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 32.dp)
+            .shadowModifier(
+                backgroundColor = MaterialTheme.colors.listItemColor(),
+                outerPadding = PaddingValues(0.dp)
+            ),
     ) {
         AddFriendEmailTextField {
             friendsState = friendsState.plus(it)

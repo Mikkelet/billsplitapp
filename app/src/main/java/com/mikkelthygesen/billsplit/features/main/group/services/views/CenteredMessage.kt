@@ -12,10 +12,10 @@ import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.ui.widgets.Center
 
 @Composable
-fun NoServicesText() {
+fun CenteredMessage(text: String) {
     Center(Modifier.padding(16.dp)) {
         Text(
-            text = "You have not added any subscription services",
+            text = text,
             style = TextStyle(
                 fontStyle = FontStyle.Italic,
                 color = Color.Gray,

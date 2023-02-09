@@ -15,7 +15,6 @@ val sampleGroup = Group(
     people = samplePeopleShera,
     createdBy = samplePeopleShera.first(),
     timeStamp = 0,
-    events = listOf(),
     debts = emptyList()
 )
 

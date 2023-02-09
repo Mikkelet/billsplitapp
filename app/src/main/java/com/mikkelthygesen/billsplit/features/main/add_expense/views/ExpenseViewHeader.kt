@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.main.group.widgets
+package com.mikkelthygesen.billsplit.features.main.add_expense.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -10,21 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.features.main.add_expense.AddExpenseViewModel
+import com.mikkelthygesen.billsplit.features.main.group.widgets.DescriptionTextField
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 
 
 @Composable
 fun ExpenseViewHeader(
     groupExpense: GroupExpense,
-    groupViewModel: GroupViewModel = viewModel()
+    addExpenseViewModel: AddExpenseViewModel = viewModel()
 ) {
     _ExpenseViewHeader(groupExpense = groupExpense) {
-        if (groupExpense.isChanged())
-            groupViewModel.showConfirmChangesDialog(groupExpense)
-        else
-            groupViewModel.showChat()
+        addExpenseViewModel.onBackButtonPressed()
     }
 }
 

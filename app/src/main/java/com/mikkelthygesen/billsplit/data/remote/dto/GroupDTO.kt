@@ -1,7 +1,10 @@
 package com.mikkelthygesen.billsplit.data.remote.dto
 
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupDb
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.DebtDb
+import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
 import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.domain.models.Person
 
 @kotlinx.serialization.Serializable
 data class GroupDTO(
@@ -12,33 +15,30 @@ data class GroupDTO(
     val timeStamp: Long,
     val debts: List<DebtDTO>
 ) {
+
+    constructor(group: Group):this(
+        id = group.id,
+        name = group.nameState,
+        people = group.peopleState.map { PersonDTO(it) },
+        createdBy = PersonDTO(group.createdBy),
+        timeStamp = group.timeStamp,
+        debts = group.debts.map { DebtDTO(it.first, it.second) }
+    )
     fun toGroup() = Group(
         id = id,
         name = name,
-        createdBy = createdBy.toPerson(),
+        createdBy = Person(createdBy),
         timeStamp = timeStamp,
-        events = emptyList(),
-        people = people.map { it.toPerson() },
+        people = people.map { Person(it) },
         debts = debts.map { it.toDebt() }
     )
 
     fun toDB() = GroupDb(
         id = id,
         name = name,
-        createdBy = createdBy.toDB(),
+        createdBy = PersonDb(createdBy),
         timestamp = timeStamp,
-        debts = debts.map { it.toDb() },
-        people = people.map { it.toDB() },
+        debts = debts.map { DebtDb(it) },
+        people = people.map { PersonDb(it) },
     )
-
-    companion object {
-        fun fromGroup(group: Group) = GroupDTO(
-            id = group.id,
-            name = group.nameState,
-            people = group.peopleState.map { PersonDTO.fromPerson(it) },
-            createdBy = PersonDTO.fromPerson(group.createdBy),
-            timeStamp = group.timeStamp,
-            debts = group.debtsState.map { DebtDTO(it.first, it.second) }
-        )
-    }
 }

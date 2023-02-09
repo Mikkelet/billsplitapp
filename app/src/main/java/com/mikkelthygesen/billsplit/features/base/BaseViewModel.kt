@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.data.remote.auth.AuthProvider
 import com.mikkelthygesen.billsplit.data.remote.exceptions.NetworkExceptions
 import com.mikkelthygesen.billsplit.domain.models.Person
@@ -78,12 +79,17 @@ abstract class BaseViewModel : ViewModel() {
         else handleError(NetworkExceptions.UserLoggedOutException)
     }
 
-    fun showLanding(){
+    fun showLanding() {
         emitUiEvent(UiEvent.UserLoggedOut)
     }
 
     fun handleError(exception: Throwable) {
-        Timber.e("qqq error=$exception")
+        if (BuildConfig.DEBUG) {
+            Timber.e("error=$exception")
+            val stacktrace = exception.stackTrace.map { "$it" }
+                .reduce { acc, stackTraceElement -> "$acc\n$stackTraceElement" }
+            Timber.e("stacktrace=$stacktrace")
+        }
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
             is NetworkExceptions.UserLoggedOutException -> emitUiEvent(UiEvent.UserLoggedOut)

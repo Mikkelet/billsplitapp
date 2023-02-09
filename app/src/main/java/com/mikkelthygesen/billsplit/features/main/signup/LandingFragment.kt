@@ -23,11 +23,9 @@ class LandingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         return ComposeView(requireContext()).apply {
             setContent {
                 BillSplitTheme {
-
                     val uiStateFlow = viewModel.uiStateFlow.collectAsState()
                     val uiState = uiStateFlow.value
                     Crossfade(targetState = uiState) { state ->

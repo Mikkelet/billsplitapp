@@ -1,6 +1,5 @@
 package com.mikkelthygesen.billsplit.features.main.groups
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,9 +27,11 @@ fun GroupsList(
     user: Person,
 ) {
     val groupsViewModel: GroupsViewModel = viewModel()
+    val groupsFlow = groupsViewModel.observeGroups().collectAsState(initial = emptyList())
+    val groups = groupsFlow.value
 
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = false,
+        refreshing = uiState is BaseViewModel.UiState.Loading,
         onRefresh = { groupsViewModel.getGroups(true) },
         refreshingOffset = 80.dp
     )
@@ -43,37 +44,31 @@ fun GroupsList(
         PullRefreshIndicator(
             refreshing = uiState is BaseViewModel.UiState.Loading,
             state = pullRefreshState,
-            modifier = Modifier
-                .align(Alignment.TopCenter),
+            modifier = Modifier.align(Alignment.TopCenter),
         )
-        Crossfade(targetState = uiState) { state ->
-            if (state is BaseViewModel.UiState.Loading)
-                LoadingView()
-            else if (state is GroupsViewModel.ShowGroups)
-                LazyColumn {
-                    item {
-                        GroupsTopBar()
-                    }
-                    item {
-                        GroupsTitle(user = user)
-                    }
-                    if (state.groups.isEmpty())
-                        item {
-                            EmptyGroupList {
-                                groupsViewModel.addGroup()
-                            }
-                        }
-                    else
-                        items(state.groups.size) { index ->
-                            val group = state.groups[index]
-                            GroupListItem(user, group = group) {
-                                groupsViewModel.showGroup(group)
-                            }
-                        }
-                    item {
-                        Box(Modifier.height(80.dp))
+        LazyColumn {
+            item {
+                GroupsTopBar()
+            }
+            item {
+                GroupsTitle(user = user)
+            }
+            if (groups.isEmpty())
+                item {
+                    EmptyGroupList {
+                        groupsViewModel.addGroup()
                     }
                 }
+            else
+                items(groups.size) { index ->
+                    val group = groups[index]
+                    GroupListItem(user, group = group) {
+                        groupsViewModel.showGroup(group)
+                    }
+                }
+            item {
+                Box(Modifier.height(80.dp))
+            }
         }
     }
 }

@@ -20,6 +20,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.features.main.add_expense.AddExpenseFragment
 import com.mikkelthygesen.billsplit.features.main.add_service.AddServiceFragment
 import com.mikkelthygesen.billsplit.features.main.group.GroupFragment
 import com.mikkelthygesen.billsplit.features.main.profile.ProfileFragment
@@ -41,6 +42,14 @@ fun Fragment.navigateToAddService(groupId: String, serviceId: String) {
     args.putString(AddServiceFragment.ARG_SERVICE_ID, serviceId)
     findNavController().navigate(R.id.action_global_addServiceFragment, args)
 }
+fun Fragment.navigateToEditExpense(groupId: String, expenseId: String) {
+    val args = Bundle()
+    args.putString(AddExpenseFragment.ARG_GROUP_ID, groupId)
+    args.putString(AddExpenseFragment.ARG_EXPENSE_ID, expenseId)
+    findNavController().navigate(R.id.action_global_addExpenseFragment, args)
+}
+
+fun Fragment.navigateToAddExpense(groupId: String) = navigateToEditExpense(groupId, "")
 
 fun Fragment.navigateToFriends() {
     when (this) {
