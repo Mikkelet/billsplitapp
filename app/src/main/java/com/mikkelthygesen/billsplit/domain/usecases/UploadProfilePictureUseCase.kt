@@ -8,13 +8,14 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @ViewModelScoped
-class UploadProfilePictureUseCase @Inject  constructor(
+class UploadProfilePictureUseCase @Inject constructor(
     private val authProvider: AuthProvider,
     private val storageProvider: StorageProvider
 ) {
 
-    suspend fun execute(uri: Uri){
-        val loggedInUser = authProvider.userState ?: throw NetworkExceptions.UserLoggedOutException
+    suspend fun execute(uri: Uri) {
+        val loggedInUser =
+            authProvider.userLiveData.value ?: throw NetworkExceptions.UserLoggedOutException
         val downloadUrl = storageProvider.uploadPhoto(loggedInUser.uid, uri)
         authProvider.updateProfilePicture(downloadUrl)
         loggedInUser.pfpUrlState = downloadUrl.toString()

@@ -23,10 +23,10 @@ abstract class BaseViewModel : ViewModel() {
     lateinit var authProvider: AuthProvider
 
     val loggedIdUser: Person?
-        get() = authProvider.userState
+        get() = authProvider.userLiveData.value
 
     val requireLoggedInUser: Person
-        get() = authProvider.userState ?: throw NetworkExceptions.UserLoggedOutException
+        get() = authProvider.userLiveData.value ?: throw NetworkExceptions.UserLoggedOutException
 
     interface DialogState {
         object DismissDialogs : DialogState
@@ -106,5 +106,10 @@ abstract class BaseViewModel : ViewModel() {
     protected fun <T> Result<T>.foldSuccess(onSuccess: (T) -> Unit) = fold(
         onSuccess = onSuccess,
         onFailure = ::handleError
+    )
+
+    protected fun <T> Result<T>.foldError(onError: (Throwable) -> Unit) = fold(
+        onSuccess = {},
+        onFailure = { onError(it) }
     )
 }

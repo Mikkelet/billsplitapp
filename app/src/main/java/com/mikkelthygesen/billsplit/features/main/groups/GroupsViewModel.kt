@@ -36,25 +36,25 @@ class GroupsViewModel @Inject constructor(
     fun observeGroups(): Flow<List<Group>> = observeLocalGroupsUseCase.observe()
 
     private fun syncFriends() {
+        isFriendsSynchronized = true
         viewModelScope.launch {
             val response = runCatching { getFriendsUseCase() }
-            response.foldSuccess {
-                isFriendsSynchronized = true
-            }
+            response.foldError { isFriendsSynchronized = false }
         }
     }
 
     fun syncGroups() {
         updateUiState(UiState.Loading)
+        isGroupsSynchronized = true
         viewModelScope.launch {
             val response = runCatching { getGroupsUseCase() }
             response.fold(
                 onSuccess = {
-                    isGroupsSynchronized = true
                     updateUiState(ShowGroups)
                 },
                 onFailure = {
                     updateUiState(ShowGroups)
+                    isGroupsSynchronized = false
                 }
             )
         }
