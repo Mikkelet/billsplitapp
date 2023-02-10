@@ -9,8 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.mikkelthygesen.billsplit.features.main.popBackStack
-import com.mikkelthygesen.billsplit.ui.theme.BillSplitTheme
+import com.mikkelthygesen.billsplit.features.base.BaseScaffold
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
+import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,7 +26,7 @@ class LandingFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                BillSplitTheme {
+                BaseScaffold(baseViewModel = viewModel) {
                     val uiStateFlow = viewModel.uiStateFlow.collectAsState()
                     val uiState = uiStateFlow.value
                     Crossfade(targetState = uiState) { state ->
@@ -42,18 +43,11 @@ class LandingFragment : Fragment() {
                                 onSignUpWithFacebookClicked = { },
                                 onAlreadyHaveAccount = viewModel::showSignIn
                             )
+                            is BaseViewModel.UiState.Loading -> LoadingView()
                         }
                     }
                 }
             }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.authProvider.userLiveData.observe(requireActivity()) {
-            if(it != null)
-                popBackStack()
         }
     }
 }

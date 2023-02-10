@@ -11,9 +11,6 @@ import kotlinx.coroutines.flow.Flow
 interface ExpenseChangeDao {
 
     @Query("SELECT * FROM expense_changes WHERE :groupId == groupId")
-    suspend fun getExpenseChanges(groupId: String): List<ExpenseChangeDb>
-
-    @Query("SELECT * FROM expense_changes WHERE :groupId == groupId")
     fun getExpenseChangesFlow(groupId: String): Flow<List<ExpenseChangeDb>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -86,8 +86,10 @@ class AuthProvider @Inject constructor() {
     private fun onSignIn(authResult: AuthResult) {
         val user = authResult.user
         if (user != null) {
+            println("qqq user=$user")
             val person = Person(user.uid, name = user.displayName ?: "Splitsby user")
             userState = person
+            userLiveData.value = person
         }
     }
 

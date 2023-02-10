@@ -33,6 +33,7 @@ class GroupsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        groupsViewModel.initialize()
         return ComposeView(requireContext()).apply {
             setContent {
                 val uiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
@@ -62,13 +63,13 @@ class GroupsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         collectEvents(groupsViewModel.uiEventsState) { event ->
             when (event) {
-                is GroupsViewModel.ShowProfile -> {
+                is GroupsViewModel.OnProfileClicked -> {
                     navigateToProfile()
                 }
-                is GroupsViewModel.ShowGroup -> {
+                is GroupsViewModel.OnGroupClicked -> {
                     navigateToGroup(event.group.id)
                 }
-                is GroupsViewModel.AddGroup -> {
+                is GroupsViewModel.AddGroupClicked -> {
                     navigateToAddGroup()
                 }
             }

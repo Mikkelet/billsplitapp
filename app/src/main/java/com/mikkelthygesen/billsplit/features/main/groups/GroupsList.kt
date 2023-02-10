@@ -32,7 +32,7 @@ fun GroupsList(
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState is BaseViewModel.UiState.Loading,
-        onRefresh = { groupsViewModel.getGroups(true) },
+        onRefresh = { groupsViewModel.syncGroups() },
         refreshingOffset = 80.dp
     )
 
@@ -56,14 +56,14 @@ fun GroupsList(
             if (groups.isEmpty())
                 item {
                     EmptyGroupList {
-                        groupsViewModel.addGroup()
+                        groupsViewModel.onAddGroupClicked()
                     }
                 }
             else
                 items(groups.size) { index ->
                     val group = groups[index]
                     GroupListItem(user, group = group) {
-                        groupsViewModel.showGroup(group)
+                        groupsViewModel.onGroupClicked(group)
                     }
                 }
             item {

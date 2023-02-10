@@ -17,9 +17,6 @@ interface GroupsDao {
     suspend fun insert(groups: List<GroupDb>)
 
     @Query("SELECT * FROM groups")
-    suspend fun getGroups() : List<GroupDb>
-
-    @Query("SELECT * FROM groups")
     fun getGroupsFlow() : Flow<List<GroupDb>>
 
     @Query("SELECT * FROM groups WHERE :groupId == id")

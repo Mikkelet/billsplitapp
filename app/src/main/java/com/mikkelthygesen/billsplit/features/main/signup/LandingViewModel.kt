@@ -23,7 +23,13 @@ class LandingViewModel @Inject constructor(
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val result = runCatching { signUpWithEmailUseCase.execute(email, password) }
-            result.foldSuccess {  }
+            result.fold(
+                onSuccess = {},
+                onFailure = {
+                    handleError(it)
+                    updateUiState(SignUp)
+                }
+            )
         }
     }
 
@@ -31,7 +37,13 @@ class LandingViewModel @Inject constructor(
         updateUiState(UiState.Loading)
         viewModelScope.launch {
             val result = runCatching { signInWithEmailUseCase.execute(email, password) }
-            result.foldSuccess {  }
+            result.fold(
+                onSuccess = {},
+                onFailure = {
+                    handleError(it)
+                    updateUiState(SignIn)
+                }
+            )
         }
     }
 

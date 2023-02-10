@@ -36,7 +36,7 @@ class FriendsViewModel @Inject constructor(
         viewModelScope.launch {
             syncingFriends = true
             val response = runCatching {
-                getFriendsUseCase.execute(true)
+                getFriendsUseCase()
             }
             response.foldSuccess {
                 syncingFriends = false

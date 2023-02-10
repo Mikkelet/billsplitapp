@@ -17,9 +17,6 @@ interface FriendsDao {
     suspend fun insert(friendDb: List<FriendDb>)
 
     @Query("SELECT * FROM friends")
-    suspend fun getFriends(): List<FriendDb>
-
-    @Query("SELECT * FROM friends")
     fun getFriendsFlow(): Flow<List<FriendDb>>
 
 

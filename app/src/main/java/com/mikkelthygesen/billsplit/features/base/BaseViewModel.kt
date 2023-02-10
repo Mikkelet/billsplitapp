@@ -95,6 +95,8 @@ abstract class BaseViewModel : ViewModel() {
             is NetworkExceptions.UserLoggedOutException -> emitUiEvent(UiEvent.UserLoggedOut)
             is io.ktor.client.network.sockets.SocketTimeoutException ->
                 showDialog(DialogState.Error(Exception("Session timed out")))
+            is com.google.firebase.auth.FirebaseAuthInvalidUserException ->
+                showDialog(DialogState.Error(Exception("User not found")))
             else -> {
                 showDialog(DialogState.Error(exception))
             }

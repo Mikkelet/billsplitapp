@@ -2,6 +2,7 @@ package com.mikkelthygesen.billsplit.features.main.groups
 
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.domain.models.Group
+import com.mikkelthygesen.billsplit.domain.usecases.GetFriendsUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetGroupsUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.ObserveLocalGroupsUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
@@ -14,41 +15,60 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupsViewModel @Inject constructor(
     private val getGroupsUseCase: GetGroupsUseCase,
-    private val observeLocalGroupsUseCase: ObserveLocalGroupsUseCase
+    private val observeLocalGroupsUseCase: ObserveLocalGroupsUseCase,
+    private val getFriendsUseCase: GetFriendsUseCase,
 ) : BaseViewModel() {
 
     object ShowGroups : UiState
-    object ShowProfile : UiEvent
-    data class ShowGroup(val group: Group) : UiEvent
-    object AddGroup : UiEvent
+    object OnProfileClicked : UiEvent
+    data class OnGroupClicked(val group: Group) : UiEvent
+    object AddGroupClicked : UiEvent
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(ShowGroups)
+    private var isGroupsSynchronized = false
+    private var isFriendsSynchronized = false
 
-    init {
-        getGroups(true)
+    fun initialize() {
+        if (!isGroupsSynchronized) syncGroups()
+        if (!isFriendsSynchronized) syncFriends()
     }
 
     fun observeGroups(): Flow<List<Group>> = observeLocalGroupsUseCase.observe()
 
-    fun getGroups(sync: Boolean) {
-        updateUiState(UiState.Loading)
+    private fun syncFriends() {
         viewModelScope.launch {
-            val response = runCatching { getGroupsUseCase.execute(sync) }
+            val response = runCatching { getFriendsUseCase() }
             response.foldSuccess {
-                updateUiState(ShowGroups)
+                isFriendsSynchronized = true
             }
         }
     }
 
+    fun syncGroups() {
+        updateUiState(UiState.Loading)
+        viewModelScope.launch {
+            val response = runCatching { getGroupsUseCase() }
+            response.fold(
+                onSuccess = {
+                    isGroupsSynchronized = true
+                    updateUiState(ShowGroups)
+                },
+                onFailure = {
+                    updateUiState(ShowGroups)
+                }
+            )
+        }
+    }
+
     fun onProfilePictureClicked() {
-        emitUiEvent(ShowProfile)
+        emitUiEvent(OnProfileClicked)
     }
 
-    fun showGroup(group: Group) {
-        emitUiEvent(ShowGroup(group))
+    fun onGroupClicked(group: Group) {
+        emitUiEvent(OnGroupClicked(group))
     }
 
-    fun addGroup() {
-        emitUiEvent(AddGroup)
+    fun onAddGroupClicked() {
+        emitUiEvent(AddGroupClicked)
     }
 }

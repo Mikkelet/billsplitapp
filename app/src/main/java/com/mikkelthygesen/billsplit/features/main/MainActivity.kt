@@ -9,7 +9,6 @@ import androidx.navigation.findNavController
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -24,13 +23,12 @@ class MainActivity : FragmentActivity() {
         navController = findNavController(R.id.nav_host_fragment)
 
         lifecycleScope.launch {
-            delay(1000)
             listenToAuth()
         }
 
         lifecycleScope.launch {
             viewModel.uiEventsState.collect { event ->
-                if(event is BaseViewModel.UiEvent.OnBackPressed)
+                if (event is BaseViewModel.UiEvent.OnBackPressed)
                     onBackPressedDispatcher.onBackPressed()
             }
         }
@@ -38,8 +36,12 @@ class MainActivity : FragmentActivity() {
 
     private fun listenToAuth() {
         viewModel.authProvider.userLiveData.observe(this) {
-            if (it == null && !isLandingDestination()) {
-                navController.navigate(R.id.action_global_landingFragment)
+            if (it == null) {
+                if (!isLandingDestination())
+                    navController.navigate(R.id.action_global_landingFragment)
+            } else {
+                if (isLandingDestination())
+                    navController.popBackStack()
             }
         }
     }
@@ -50,7 +52,7 @@ class MainActivity : FragmentActivity() {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         when (navController.currentDestination?.id) {
-            R.id.landingFragment, R.id.groupsFragment -> finish()
+            R.id.groupsFragment -> finish()
             else -> onBackPressedDispatcher.onBackPressed()
         }
     }
