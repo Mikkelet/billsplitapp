@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.groups.views.GroupsTitle
 import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
@@ -24,11 +23,11 @@ import com.mikkelthygesen.billsplit.ui.widgets.*
 @Composable
 fun GroupsList(
     uiState: BaseViewModel.UiState,
-    user: Person,
 ) {
     val groupsViewModel: GroupsViewModel = viewModel()
     val groupsFlow = groupsViewModel.observeGroups().collectAsState(initial = emptyList())
     val groups = groupsFlow.value.sortedBy { it.nameState }
+    val user = groupsViewModel.requireLoggedInUser
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState is BaseViewModel.UiState.Loading,

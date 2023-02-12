@@ -20,7 +20,6 @@ import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.main.navigateToAddGroup
 import com.mikkelthygesen.billsplit.features.main.navigateToGroup
 import com.mikkelthygesen.billsplit.features.main.navigateToProfile
-import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -47,12 +46,9 @@ class GroupsFragment : Fragment() {
                         }
                     },
                 ) {
-                    RequireUserView(baseViewModel = groupsViewModel) { user ->
-                        GroupsList(
-                            uiState = uiStateFlow.value,
-                            user = user
-                        )
-                    }
+                    GroupsList(
+                        uiState = uiStateFlow.value,
+                    )
                 }
             }
         }

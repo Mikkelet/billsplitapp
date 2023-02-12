@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 fun Modifier.shadowModifier(
     backgroundColor: Color,
     onClick: (() -> Unit)? = null,
-    cornerShape: Shape = RoundedCornerShape(10.dp),
-    innerPadding: PaddingValues = PaddingValues(12.dp),
+    cornerShape: Shape = RoundedCornerShape(30.dp),
+    innerPadding: PaddingValues = PaddingValues(24.dp),
     outerPadding: PaddingValues = PaddingValues(
         top = 4.dp,
         bottom = 4.dp,
@@ -42,10 +42,11 @@ private fun Preview() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(32.dp)
     ) {
         Text(
             modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
                 .padding(
                     PaddingValues(
                         top = 4.dp,
@@ -54,7 +55,7 @@ private fun Preview() {
                         end = 16.dp
                     )
                 )
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(if (isLight) Color(0xFFE3E8E8) else Color(0xFF323232))
                 .padding(PaddingValues(12.dp)),
             text = "Hello worlds"
