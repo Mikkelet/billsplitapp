@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
-import com.mikkelthygesen.billsplit.features.base.BaseScaffold
+import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
@@ -33,7 +33,7 @@ class AddServiceFragment : Fragment() {
                 val uiStateFlow = addServiceViewModel.uiStateFlow.collectAsState()
                 addServiceViewModel.loadService(groupId, serviceId)
 
-                BaseScaffold(addServiceViewModel) {
+                BaseScaffoldWithAuth(addServiceViewModel) {
                     Crossfade(targetState = uiStateFlow.value) { uiState ->
                         when (uiState) {
                             is AddServiceViewModel.ServiceLoaded -> {

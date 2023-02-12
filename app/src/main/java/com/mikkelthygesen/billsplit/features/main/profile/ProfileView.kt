@@ -19,7 +19,6 @@ import com.mikkelthygesen.billsplit.features.main.profile.views.ProfileHeader
 @Composable
 @SuppressLint("ComposableNaming")
 fun ProfileView(
-    user: Person,
     onUpdateUser: suspend () -> Unit,
     onError: (Throwable) -> Unit
 ) {
@@ -31,7 +30,7 @@ fun ProfileView(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ProfileHeader(user, onUpdateUser, onError)
+        ProfileHeader(profileViewModel.requireLoggedInUser, onUpdateUser, onError)
         ProfileMenuButton(text = "Friends") {
             profileViewModel.showFriends()
         }
@@ -44,5 +43,5 @@ fun ProfileView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview() {
-    ProfileView(Person(name = "Catra"), onUpdateUser = {}, onError = {})
+    ProfileView(onUpdateUser = {}, onError = {})
 }

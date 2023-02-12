@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -22,10 +23,11 @@ class MainActivity : FragmentActivity() {
         setContentView(R.layout.activity_main)
         navController = findNavController(R.id.nav_host_fragment)
 
-        lifecycleScope.launch {
-            listenToAuth()
-        }
+        listenToAuth()
+        listenToEvents()
+    }
 
+    private fun listenToEvents() {
         lifecycleScope.launch {
             viewModel.uiEventsState.collect { event ->
                 if (event is BaseViewModel.UiEvent.OnBackPressed)
@@ -35,13 +37,20 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun listenToAuth() {
-        viewModel.authProvider.userLiveData.observe(this) {
-            if (it == null) {
-                if (!isLandingDestination())
-                    navController.navigate(R.id.action_global_landingFragment)
-            } else {
-                if (isLandingDestination())
-                    navController.popBackStack()
+        lifecycleScope.launch {
+            delay(1000)
+            viewModel.loggedInUserFlow.collect {
+                if (it == null) {
+                    if (!isLandingDestination()) {
+                        viewModel.uninitialize()
+                        navController.navigate(R.id.action_global_landingFragment)
+                    }
+                } else {
+                    if (isLandingDestination()) {
+                        viewModel.initialize()
+                        navController.popBackStack()
+                    }
+                }
             }
         }
     }

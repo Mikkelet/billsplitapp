@@ -1,12 +1,13 @@
 package com.mikkelthygesen.billsplit
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.util.Patterns
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.mikkelthygesen.billsplit.domain.models.IndividualExpense
-import com.mikkelthygesen.billsplit.domain.models.Person
-import com.mikkelthygesen.billsplit.features.base.BaseViewModel
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 fun <T> tryCatchDefault(defaultValue: T, callback: () -> T) = try {
@@ -40,18 +41,22 @@ fun List<Float>.reduceOrZero() = if (isEmpty()) 0F else reduce { acc, fl -> acc 
 
 fun Float.fmt2dec() = if (rem(1F) != 0f) String.format("%,.2f", this) else "${this.toInt()}"
 
-fun List<Person>.toNewIndividualExpenses() = map { IndividualExpense(it, 0F, true) }
-
 fun String.matchesEmail(): Boolean =
     this.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
-fun Fragment.collectEvents(
-    flow: SharedFlow<BaseViewModel.UiEvent>,
-    onEvent: (BaseViewModel.UiEvent) -> Unit
+fun <T> Fragment.collectEvents(
+    flow: Flow<T>,
+    onEvent: (T) -> Unit
 ) {
     viewLifecycleOwner.lifecycleScope.launch {
         flow.collect {
             onEvent(it)
         }
     }
+}
+
+fun Context.getActivity(): FragmentActivity? = when (this) {
+    is FragmentActivity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> null
 }

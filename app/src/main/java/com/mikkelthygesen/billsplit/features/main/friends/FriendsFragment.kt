@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
-import com.mikkelthygesen.billsplit.features.base.BaseScaffold
+import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +24,7 @@ class FriendsFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                BaseScaffold(friendsViewModel) {
+                BaseScaffoldWithAuth(friendsViewModel) {
                     FriendsView()
                 }
             }

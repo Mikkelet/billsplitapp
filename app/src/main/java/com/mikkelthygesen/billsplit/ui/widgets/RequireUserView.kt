@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 
@@ -9,9 +10,9 @@ fun RequireUserView(
     baseViewModel: BaseViewModel,
     content: @Composable (Person) -> Unit
 ) {
-    if (baseViewModel.loggedIdUser != null) {
+    val userFlow = baseViewModel.loggedInUserFlow.collectAsState()
+    val userState = userFlow.value
+    if (userState != null) {
         content(baseViewModel.requireLoggedInUser)
-    } else SignedOutWarning {
-        baseViewModel.showLanding()
-    }
+    } else LoadingView()
 }

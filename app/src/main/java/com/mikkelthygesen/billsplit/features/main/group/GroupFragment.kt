@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
-import com.mikkelthygesen.billsplit.features.base.BaseScaffold
+import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.group.group_view.GroupEventsView
 import com.mikkelthygesen.billsplit.features.main.group.services.ServicesView
@@ -52,7 +52,7 @@ class GroupFragment : Fragment() {
                 val groupUiState = viewModel.uiStateFlow.collectAsState()
                 val uiState = groupUiState.value
 
-                BaseScaffold(
+                BaseScaffoldWithAuth(
                     baseViewModel = viewModel,
                     bottomBar = { GroupBottomBar(uiState) },
                     topBar = { GroupTopBar2() },

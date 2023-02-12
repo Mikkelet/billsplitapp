@@ -1,7 +1,6 @@
 package com.mikkelthygesen.billsplit.data.remote.auth
 
 import android.net.Uri
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
@@ -9,6 +8,8 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.data.remote.exceptions.NetworkExceptions
 import com.mikkelthygesen.billsplit.domain.models.Person
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,9 +17,10 @@ import javax.inject.Singleton
 @Singleton
 class AuthProvider @Inject constructor() {
 
-    var userLiveData = MutableLiveData<Person?>(null)
+    private val _mutableUserFlow = MutableStateFlow<Person?>(null)
+    val userStateFlow: StateFlow<Person?> = _mutableUserFlow
     val requireLoggedInUser: Person
-        get() = userLiveData.value!!
+        get() = userStateFlow.value ?: throw NetworkExceptions.UserLoggedOutException
     private val firebase by lazy {
         FirebaseAuth.getInstance().apply {
             if (BuildConfig.FLAVOR == "emulator")
@@ -34,7 +36,7 @@ class AuthProvider @Inject constructor() {
             pfpUrl = fbUser.photoUrl?.toString() ?: "",
             email = fbUser.email ?: ""
         )
-        userLiveData.value = userPerson
+        _mutableUserFlow.value = userPerson
     }
 
     fun onCreate() {
@@ -47,16 +49,15 @@ class AuthProvider @Inject constructor() {
 
     fun signOut() {
         firebase.signOut()
-        userLiveData.value = null
+        _mutableUserFlow.value = null
     }
 
     suspend fun updateUserName() {
         val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
-        val loggedInUser = userLiveData.value ?: throw NetworkExceptions.UserLoggedOutException
         val request = UserProfileChangeRequest.Builder()
-        request.displayName = loggedInUser.nameState
+        request.displayName = requireLoggedInUser.nameState
         currentUser.updateProfile(request.build()).await()
-        loggedInUser.saveChanges()
+        requireLoggedInUser.saveChanges()
     }
 
     @Suppress("KotlinConstantConditions")
@@ -81,7 +82,7 @@ class AuthProvider @Inject constructor() {
         val user = authResult.user
         if (user != null) {
             val person = Person(user.uid, name = user.displayName ?: "Splitsby user")
-            userLiveData.value = person
+            _mutableUserFlow.value = person
         }
     }
 
@@ -91,7 +92,6 @@ class AuthProvider @Inject constructor() {
             val result = currentUser.getIdToken(force).await()
             return result.token ?: throw NetworkExceptions.UserLoggedOutException
         } catch (e: Exception) {
-            userLiveData.value = null
             throw NetworkExceptions.UserLoggedOutException
         }
     }

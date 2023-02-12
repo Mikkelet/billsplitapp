@@ -8,13 +8,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
-import com.mikkelthygesen.billsplit.features.base.BaseScaffold
+import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.navigateToFriends
 import com.mikkelthygesen.billsplit.features.main.popBackStack
 import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
-import com.mikkelthygesen.billsplit.ui.widgets.RequireUserView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,7 +28,7 @@ class ProfileFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                BaseScaffold(
+                BaseScaffoldWithAuth(
                     baseViewModel = profileViewModel,
                     topBar = {
                         BigTopBar(
@@ -39,13 +38,10 @@ class ProfileFragment : Fragment() {
                         )
                     },
                 ) {
-                    RequireUserView(baseViewModel = profileViewModel) { user ->
-                        ProfileView(
-                            user = user,
-                            onUpdateUser = profileViewModel::updateName,
-                            onError = profileViewModel::handleError
-                        )
-                    }
+                    ProfileView(
+                        onUpdateUser = profileViewModel::updateName,
+                        onError = profileViewModel::handleError
+                    )
                 }
             }
         }

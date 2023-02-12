@@ -33,14 +33,11 @@ fun GroupEventsView(
     val viewModel: GroupViewModel = viewModel()
     val eventsFlowState = viewModel.eventsFlow().collectAsState(emptyList())
     val eventsState = eventsFlowState.value
-    println("qqq events=$eventsState")
-    RequireUserView(baseViewModel = viewModel) { user ->
-        _ListViewExpense(
-            modifier = modifier,
-            events = eventsState,
-            loggedInUser = user,
-        )
-    }
+    _ListViewExpense(
+        modifier = modifier,
+        events = eventsState,
+        loggedInUser = viewModel.requireLoggedInUser,
+    )
 }
 
 

@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
-import com.mikkelthygesen.billsplit.features.base.BaseScaffold
+import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.main.navigateToFriends
 import com.mikkelthygesen.billsplit.features.main.navigateToGroup
 import com.mikkelthygesen.billsplit.features.main.popBackStack
@@ -31,7 +31,7 @@ class AddGroupFragment : Fragment() {
             setContent {
                 val uiStateFlow = addGroupViewModel.uiStateFlow.collectAsState()
                 val uiState = uiStateFlow.value
-                BaseScaffold(
+                BaseScaffoldWithAuth(
                     baseViewModel = addGroupViewModel
                 ) {
                     AddGroupView(

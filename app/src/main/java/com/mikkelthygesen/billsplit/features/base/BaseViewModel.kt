@@ -22,11 +22,11 @@ abstract class BaseViewModel : ViewModel() {
     @Inject
     lateinit var authProvider: AuthProvider
 
-    val loggedIdUser: Person?
-        get() = authProvider.userLiveData.value
-
     val requireLoggedInUser: Person
-        get() = authProvider.userLiveData.value ?: throw NetworkExceptions.UserLoggedOutException
+        get() = authProvider.requireLoggedInUser
+
+    val loggedInUserFlow: StateFlow<Person?>
+        get() = authProvider.userStateFlow
 
     interface DialogState {
         object DismissDialogs : DialogState
@@ -74,13 +74,9 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     fun requireLoggedInUser(withUser: (Person) -> Unit) {
-        if (loggedIdUser != null)
+        if (loggedInUserFlow.value != null)
             withUser(requireLoggedInUser)
         else handleError(NetworkExceptions.UserLoggedOutException)
-    }
-
-    fun showLanding() {
-        emitUiEvent(UiEvent.UserLoggedOut)
     }
 
     fun handleError(exception: Throwable) {
@@ -110,6 +106,9 @@ abstract class BaseViewModel : ViewModel() {
 
     protected fun <T> Result<T>.foldError(onError: (Throwable) -> Unit) = fold(
         onSuccess = {},
-        onFailure = { onError(it) }
+        onFailure = {
+            handleError(it)
+            onError(it)
+        }
     )
 }

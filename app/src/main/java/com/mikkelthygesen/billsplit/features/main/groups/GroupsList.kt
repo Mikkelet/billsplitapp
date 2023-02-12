@@ -78,19 +78,17 @@ private fun GroupsTopBar() {
     val groupsViewModel: GroupsViewModel = viewModel()
     BigTopBar(
         trailingContent = {
-            if (groupsViewModel.loggedIdUser != null)
-                ProfilePicture(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(64.dp)
-                        .clickable {
-                            groupsViewModel.onProfilePictureClicked()
-                        },
-                    person = groupsViewModel.requireLoggedInUser
-                )
+            ProfilePicture(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(64.dp)
+                    .clickable {
+                        groupsViewModel.onProfilePictureClicked()
+                    },
+                person = groupsViewModel.requireLoggedInUser
+            )
         }
     )
-
 }
 
 @Composable
