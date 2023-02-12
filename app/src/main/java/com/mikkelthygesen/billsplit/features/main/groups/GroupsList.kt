@@ -28,7 +28,7 @@ fun GroupsList(
 ) {
     val groupsViewModel: GroupsViewModel = viewModel()
     val groupsFlow = groupsViewModel.observeGroups().collectAsState(initial = emptyList())
-    val groups = groupsFlow.value
+    val groups = groupsFlow.value.sortedBy { it.nameState }
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState is BaseViewModel.UiState.Loading,
