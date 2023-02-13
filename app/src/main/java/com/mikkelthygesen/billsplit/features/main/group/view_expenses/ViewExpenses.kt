@@ -13,18 +13,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.Person
-import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.group.services.views.CenteredMessage
 import com.mikkelthygesen.billsplit.features.main.group.view_expenses.widgets.DebtView
-import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
 @Composable
-fun ViewDebt(
-    groupViewModel: GroupViewModel = viewModel(),
-) {
-    val events = groupViewModel.eventsFlow().collectAsState(initial = emptyList())
+fun ViewDebt() {
+    val groupViewModel: GroupViewModel = viewModel()
+    val debts = groupViewModel.debtFlow().collectAsState(initial = emptyList())
     Column {
         Text(
             modifier = Modifier
@@ -32,20 +29,9 @@ fun ViewDebt(
             text = "Debts",
             style = MaterialTheme.typography.h5
         )
-        FutureComposable(asyncCallback = {
-            groupViewModel.getDebtForLoggedInUser()
-        }) { state, _ ->
-            when (state) {
-                is FutureState.Loading -> LoadingView()
-                is FutureState.Failure -> ErrorView(error = state.error)
-                is FutureState.Success -> {
-                    _ViewDebt(
-                        events = events.value,
-                        debt = state.data
-                    )
-                }
-            }
-        }
+        _ViewDebt(
+            debt = debts.value
+        )
     }
 }
 
@@ -64,7 +50,6 @@ fun Test(user: Person, viewModel: GroupViewModel = hiltViewModel()) {
 @Composable
 @SuppressLint("ComposableNaming")
 private fun _ViewDebt(
-    events: List<Event>,
     debt: List<Pair<Person, Float>>
 ) {
     Column(
@@ -92,7 +77,6 @@ private fun _ViewDebt(
 @Composable
 private fun PreviewViewExpense() {
     _ViewDebt(
-        events = sampleSharedExpenses,
         emptyList()
     )
 }

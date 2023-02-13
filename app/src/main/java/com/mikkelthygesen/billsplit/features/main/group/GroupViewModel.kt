@@ -9,8 +9,8 @@ import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.Payment
-import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.usecases.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,7 @@ class GroupViewModel @Inject constructor(
     private val getGroupUseCase: GetGroupUseCase,
     private val observeLocalEventsUseCase: ObserveLocalEventsUseCase,
     private val observeLocalServicesUseCase: ObserveLocalServicesUseCase,
-    private val getDebtForLoggedInUserUseCase: GetDebtForLoggedInUserUseCase
+    private val observeDebtForLoggedInUserUseCase: ObserveDebtForLoggedInUserUseCase
 ) : BaseViewModel() {
     object Chat : UiState
     object ShowDebt : UiState
@@ -40,6 +40,8 @@ class GroupViewModel @Inject constructor(
         private set
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
+
+    fun debtFlow(): Flow<List<Pair<Person, Float>>> = observeDebtForLoggedInUserUseCase.observe(group.id)
 
     fun eventsFlow(): Flow<List<Event>> = observeLocalEventsUseCase.observe(group.id)
 
@@ -69,9 +71,6 @@ class GroupViewModel @Inject constructor(
 
     fun servicesFlow(): Flow<List<SubscriptionService>> =
         observeLocalServicesUseCase.observe(group.id)
-
-    suspend fun getDebtForLoggedInUser(): List<Pair<Person, Float>> =
-        getDebtForLoggedInUserUseCase.execute(group.id)
 
     fun addExpense() {
         emitUiEvent(OnAddExpenseClicked)

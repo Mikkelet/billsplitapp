@@ -71,4 +71,9 @@ class ServerApiImpl @Inject constructor(
         val request = AddSubscriptionService.Request(groupId, service = ServiceDTO(service))
         return serverApi.addSubscriptionService(request).service
     }
+
+    suspend fun updateSubscriptionService(groupId: String, service: SubscriptionService){
+        val request = UpdateSubscriptionService.Request(groupId, ServiceDTO(service))
+        serverApi.updateSubscriptionService(request)
+    }
 }

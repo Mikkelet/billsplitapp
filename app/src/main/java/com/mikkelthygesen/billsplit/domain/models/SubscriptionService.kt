@@ -25,7 +25,7 @@ data class SubscriptionService(
         participants = participants
     )
 
-    constructor(serviceDTO: ServiceDTO): this(
+    constructor(serviceDTO: ServiceDTO) : this(
         id = serviceDTO.id,
         name = serviceDTO.name,
         createdBy = Person(serviceDTO.createdBy),
@@ -35,7 +35,7 @@ data class SubscriptionService(
         participants = serviceDTO.participants.map { Person(it) }
     )
 
-    constructor(serviceDb: SubscriptionServiceDb): this(
+    constructor(serviceDb: SubscriptionServiceDb) : this(
         id = serviceDb.id,
         name = serviceDb.name,
         createdBy = Person(serviceDb.createdBy),
@@ -56,5 +56,12 @@ data class SubscriptionService(
 
     fun addParticipant(person: Person) {
         participantsState = participantsState.plus(person)
+    }
+
+    fun isChanged(): Boolean {
+        return payer != payerState
+                || monthlyExpenseState != monthlyExpense
+                || name != nameState
+                || participantsState != participants
     }
 }

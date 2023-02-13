@@ -61,13 +61,13 @@ fun ExpenseTextField(
                         onScrollPosition()
                 }
             },
+        value = textFieldValue,
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
         textStyle = TextStyle(fontSize = 20.sp),
-        value = textFieldValue,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,

@@ -53,4 +53,10 @@ class ServerApi @Inject constructor(
             setBody(addServiceRequest)
         }.body()
     }
+
+    suspend fun updateSubscriptionService(updateServiceRequest: UpdateSubscriptionService.Request) {
+        return client.put("service") {
+            setBody(updateServiceRequest)
+        }.body()
+    }
 }

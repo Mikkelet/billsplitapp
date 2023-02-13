@@ -6,6 +6,7 @@ import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
 import com.mikkelthygesen.billsplit.domain.usecases.AddSubscriptionServiceUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetServiceFromLocalUseCase
+import com.mikkelthygesen.billsplit.domain.usecases.UpdateSubscriptionServiceUseCase
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class AddServiceViewModel @Inject constructor(
     private val addSubscriptionServiceUseCase: AddSubscriptionServiceUseCase,
     private val getServiceFromLocalUseCase: GetServiceFromLocalUseCase,
+    private val updateSubscriptionServiceUseCase: UpdateSubscriptionServiceUseCase,
     private val getGroupUseCase: GetGroupUseCase,
 ) : BaseViewModel() {
 
@@ -43,13 +45,23 @@ class AddServiceViewModel @Inject constructor(
         }
     }
 
-    fun addSubscriptionService() {
+    fun submitSubscriptionService() {
         updateUiState(UiState.Loading)
         viewModelScope.launch {
-            val response = runCatching { addSubscriptionServiceUseCase.execute(group.id, service) }
-            response.foldSuccess {
-                emitUiEvent(ServiceAdded)
+            val response = runCatching {
+                if (service.id.isBlank())
+                    addSubscriptionServiceUseCase(group.id, service)
+                else updateSubscriptionServiceUseCase(group.id, service)
             }
+            response.fold(
+                onSuccess = {
+                    emitUiEvent(ServiceAdded)
+                },
+                onFailure = {
+                    handleError(it)
+                    updateUiState(ServiceLoaded)
+                }
+            )
         }
     }
 }
