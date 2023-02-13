@@ -3,9 +3,9 @@ package com.mikkelthygesen.billsplit.features.main.add_service.views
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,10 +46,7 @@ fun SelectParticipantsView(subscriptionService: SubscriptionService) {
     Column(
         Modifier
             .animateContentSize()
-            .shadowModifier(
-                MaterialTheme.colors
-                    .listItemColor()
-            )
+            .shadowModifier(listItemColor())
     ) {
         val showAddButton =
             subscriptionService.participantsState.size < addServiceViewModel.group.peopleState.size
@@ -73,7 +70,7 @@ fun SelectParticipantsView(subscriptionService: SubscriptionService) {
                             }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_baseline_remove_24),
-                                tint = MaterialTheme.colors.error,
+                                tint = MaterialTheme.colorScheme.error,
                                 contentDescription = "Remove participant"
                             )
                         }

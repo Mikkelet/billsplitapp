@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.add_expense.views.ExpenseViewHeader
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ParticipantView
-import com.mikkelthygesen.billsplit.features.main.group.widgets.SharedExpensesView
+import com.mikkelthygesen.billsplit.features.main.add_expense.views.SharedExpensesView
 import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton

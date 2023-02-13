@@ -4,8 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
@@ -24,7 +23,7 @@ fun ProfileMenuButton(
         modifier = Modifier
             .fillMaxWidth()
             .shadowModifier(
-                MaterialTheme.colors.listItemColor(),
+                listItemColor(),
                 onClick = { onClick() }),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

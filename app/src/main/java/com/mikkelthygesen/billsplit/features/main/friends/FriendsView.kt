@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,7 +63,7 @@ private fun FriendsListWithTitle(
                 modifier = Modifier
                     .padding(bottom = 32.dp, start = 32.dp),
                 text = "Friends",
-                style = MaterialTheme.typography.h4
+                style = MaterialTheme.typography.headlineMedium
             )
             SimpleIconButton(
                 modifier = Modifier
@@ -89,7 +89,7 @@ private fun _FriendsListView(
             .padding(horizontal = 16.dp)
             .padding(bottom = 80.dp)
             .shadowModifier(
-                backgroundColor = MaterialTheme.colors.listItemColor(),
+                backgroundColor = listItemColor(),
                 outerPadding = PaddingValues(0.dp)
             ),
     ) {

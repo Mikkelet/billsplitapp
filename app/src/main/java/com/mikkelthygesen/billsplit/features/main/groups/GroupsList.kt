@@ -3,10 +3,7 @@ package com.mikkelthygesen.billsplit.features.main.groups
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
+import com.mikkelthygesen.billsplit.features.main.group.services.views.CenteredMessage
 import com.mikkelthygesen.billsplit.features.main.groups.views.GroupsTitle
 import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.features.main.widgets.GroupListItem
@@ -54,9 +52,7 @@ fun GroupsList(
             }
             if (groups.isEmpty())
                 item {
-                    EmptyGroupList {
-                        groupsViewModel.onAddGroupClicked()
-                    }
+                    CenteredMessage(text = "Click below to add a new group!")
                 }
             else
                 items(groups.size) { index ->
@@ -95,13 +91,6 @@ private fun EmptyGroupList(onAddGroup: () -> Unit) {
     Center(
         modifier = Modifier.padding(16.dp),
     ) {
-        Text(
-            modifier = Modifier.padding(bottom = 16.dp),
-            text = "You are not part of any groups yet!",
-            style = MaterialTheme.typography.body1
-        )
-        Button(onClick = onAddGroup) {
-            Text(text = "Add a new group!")
-        }
+
     }
 }

@@ -6,8 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +39,7 @@ private fun _Menu(
             .padding(bottom = 24.dp, top = 8.dp)
             .wrapContentWidth()
             .clip(CircleShape)
-            .background(MaterialTheme.colors.primary)
+            .background(MaterialTheme.colorScheme.primary)
             .clickable { onAddExpense() }
             .padding(vertical = 12.dp, horizontal = 12.dp),
         horizontalArrangement = Arrangement.Center,
@@ -48,10 +48,10 @@ private fun _Menu(
         Icon(
             painter = painterResource(id = R.drawable.ic_add_plus),
             contentDescription = "Add expense",
-            tint = MaterialTheme.colors.onPrimary
+            tint = MaterialTheme.colorScheme.onPrimary
         )
         Box(Modifier.width(8.dp))
-        Text(text = "New Expense", color = MaterialTheme.colors.onPrimary)
+        Text(text = "New Expense", color = MaterialTheme.colorScheme.onPrimary)
     }
 }
 

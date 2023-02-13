@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,15 +23,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
 import com.mikkelthygesen.billsplit.features.main.add_service.views.SelectParticipantsView
-import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.fmt2dec
 import com.mikkelthygesen.billsplit.isFloat
 import com.mikkelthygesen.billsplit.parseToFloat
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
-import com.mikkelthygesen.billsplit.ui.widgets.BackButton
-import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddServiceView() {
 
@@ -43,36 +41,18 @@ fun AddServiceView() {
         else mutableStateOf(service.monthlyExpenseState.fmt2dec())
     }
     val monthlyPerUser = service.monthlyExpenseState / service.participantsState.size
-
     Column(
         Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
-        BigTopBar(
-            leadingContent = {
-                BackButton {
-                    addServiceViewModel.onBackButtonPressed()
-                }
-            },
-            trailingContent = {
-                SimpleIconButton(iconResId = R.drawable.ic_check) {
-                    addServiceViewModel.submitSubscriptionService()
-                }
-            }
-        )
-        Text(
-            modifier = Modifier.padding(32.dp),
-            text = "Add new Service",
-            style = MaterialTheme.typography.h4
-        )
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadowModifier(MaterialTheme.colors.listItemColor()),
+                .shadowModifier(listItemColor()),
             value = service.nameState,
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             ),
@@ -87,13 +67,13 @@ fun AddServiceView() {
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadowModifier(MaterialTheme.colors.listItemColor()),
+                .shadowModifier(listItemColor()),
             placeholder = {
                 Text(text = "Monthly expense", style = TextStyle(fontStyle = FontStyle.Italic))
             },
             value = monthlyExpense,
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 errorIndicatorColor = Color.Transparent
@@ -109,7 +89,7 @@ fun AddServiceView() {
                     painter = painterResource(id = R.drawable.ic_money),
                     contentDescription = "",
                     tint = if (!monthlyExpense.isFloat() && monthlyExpense.isNotBlank())
-                        MaterialTheme.colors.error else MaterialTheme.colors.primary
+                        MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
             },
             isError = !monthlyExpense.isFloat() && monthlyExpense.isNotBlank(),
@@ -121,7 +101,7 @@ fun AddServiceView() {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadowModifier(MaterialTheme.colors.listItemColor()),
+                .shadowModifier(listItemColor()),
             text = "Participants will pay $${monthlyPerUser.fmt2dec()} every month"
         )
         // Select Participants

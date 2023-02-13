@@ -1,7 +1,7 @@
 package com.mikkelthygesen.billsplit.features.main.add_group.wigets
 
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
@@ -37,7 +37,7 @@ fun AddFriendToGroupDialog(
     } else
         Dialog(onDismissRequest = onDismiss) {
             LazyColumn(
-                modifier = Modifier.shadowModifier(MaterialTheme.colors.background)
+                modifier = Modifier.shadowModifier(MaterialTheme.colorScheme.background)
             ) {
                 items(friendsToAdd.size) { index ->
                     val friend = friendsToAdd[index]

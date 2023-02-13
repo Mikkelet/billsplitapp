@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,6 +13,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailTextField(
     value: String,
@@ -34,7 +32,7 @@ fun EmailTextField(
             ),
             isError = hasError.isNotBlank(),
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )
@@ -43,7 +41,7 @@ fun EmailTextField(
             Text(
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
                 text = hasError,
-                style = TextStyle(color = MaterialTheme.colors.error)
+                style = TextStyle(color = MaterialTheme.colorScheme.error)
             )
     }
 }

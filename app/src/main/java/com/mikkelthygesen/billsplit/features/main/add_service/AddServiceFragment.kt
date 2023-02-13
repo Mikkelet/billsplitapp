@@ -9,11 +9,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.popBackStack
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
+import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,8 +36,22 @@ class AddServiceFragment : Fragment() {
             setContent {
                 val uiStateFlow = addServiceViewModel.uiStateFlow.collectAsState()
                 addServiceViewModel.loadService(groupId, serviceId)
-
-                BaseScaffoldWithAuth(addServiceViewModel) {
+                BaseScaffoldWithAuth(addServiceViewModel,
+                    topBar = {
+                        BigTopBar(
+                            title = if(serviceId.isBlank()) "New service" else addServiceViewModel.service.nameState,
+                            leadingContent = {
+                                BackButton {
+                                    addServiceViewModel.onBackButtonPressed()
+                                }
+                            },
+                            trailingContent = {
+                                SimpleIconButton(iconResId = R.drawable.ic_check) {
+                                    addServiceViewModel.submitSubscriptionService()
+                                }
+                            }
+                        )
+                    }) {
                     Crossfade(targetState = uiStateFlow.value) { uiState ->
                         when (uiState) {
                             is AddServiceViewModel.ServiceLoaded -> {

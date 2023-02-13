@@ -3,9 +3,10 @@ package com.mikkelthygesen.billsplit.features.main.friends.views
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +32,7 @@ fun AddFriendEmailTextField() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @SuppressLint("ComposableNaming")
 fun _AddFriendTextField(

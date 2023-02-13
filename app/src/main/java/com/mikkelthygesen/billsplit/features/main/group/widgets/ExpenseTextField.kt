@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -28,6 +28,7 @@ import com.mikkelthygesen.billsplit.tryParseToFloat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseTextField(
     expenseHolder: IndividualExpense,
@@ -63,7 +64,7 @@ fun ExpenseTextField(
             },
         value = textFieldValue,
         colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent,
+            containerColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
@@ -78,7 +79,7 @@ fun ExpenseTextField(
                 painter = painterResource(id = R.drawable.ic_money),
                 contentDescription = "",
                 tint = if (textFieldError(expenseHolder, textFieldValue.text))
-                    MaterialTheme.colors.error else MaterialTheme.colors.primary
+                    MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
             )
         },
         isError = textFieldError(expenseHolder, textFieldValue.text),

@@ -3,7 +3,7 @@ package com.mikkelthygesen.billsplit.ui.widgets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,14 +25,14 @@ fun GenericDialog(
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
-            Modifier.shadowModifier(MaterialTheme.colors.background),
+            Modifier.shadowModifier(MaterialTheme.colorScheme.background),
             Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 modifier = Modifier.padding(bottom = 12.dp),
                 text = dialogText,
-                style = TextStyle(fontSize = 16.sp, color = MaterialTheme.colors.onBackground)
+                style = TextStyle(fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
             )
             Button(onClick = primaryAction) {
                 Text(text = primaryText)

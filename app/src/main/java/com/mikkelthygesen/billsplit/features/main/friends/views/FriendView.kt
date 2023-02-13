@@ -3,7 +3,7 @@ package com.mikkelthygesen.billsplit.features.main.friends.views
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +53,7 @@ fun FriendView(
             is Friend.FriendRequestSent -> {
                 Text(
                     text = "Request sent",
-                    style = MaterialTheme.typography.subtitle1.copy(color = Color.Gray)
+                    style = MaterialTheme.typography.labelLarge.copy(color = Color.Gray)
                 )
             }
             is Friend.FriendAccepted -> {}
@@ -101,7 +101,7 @@ private fun _FriendView(
             Text(
                 modifier = Modifier.padding(start = 16.dp),
                 text = person.nameState,
-                style = MaterialTheme.typography.subtitle2
+                style = MaterialTheme.typography.bodyMedium
             )
         }
         trailingView()

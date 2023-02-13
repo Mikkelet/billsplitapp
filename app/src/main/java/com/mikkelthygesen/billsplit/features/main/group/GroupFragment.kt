@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.collectAsState
@@ -21,16 +21,13 @@ import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
+import com.mikkelthygesen.billsplit.features.main.*
 import com.mikkelthygesen.billsplit.features.main.group.group_view.GroupEventsView
 import com.mikkelthygesen.billsplit.features.main.group.services.ServicesView
 import com.mikkelthygesen.billsplit.features.main.group.view_expenses.ViewDebt
 import com.mikkelthygesen.billsplit.features.main.group.widgets.GroupBottomBar
 import com.mikkelthygesen.billsplit.features.main.group.widgets.GroupTopBar2
 import com.mikkelthygesen.billsplit.features.main.group.widgets.TopLoader
-import com.mikkelthygesen.billsplit.features.main.navigateToAddExpense
-import com.mikkelthygesen.billsplit.features.main.navigateToAddService
-import com.mikkelthygesen.billsplit.features.main.navigateToEditExpense
-import com.mikkelthygesen.billsplit.features.main.popBackStack
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,11 +54,13 @@ class GroupFragment : Fragment() {
                     bottomBar = { GroupBottomBar(uiState) },
                     topBar = { GroupTopBar2() },
                     floatingActionButton = {
-                        if (uiState is GroupViewModel.Services)
+                        if (uiState is GroupViewModel.Services || uiState is GroupViewModel.Chat)
                             FloatingActionButton(
                                 modifier = Modifier.padding(16.dp),
                                 onClick = {
-                                    navigateToAddService(groupId = groupId, serviceId = "")
+                                    if (uiState is GroupViewModel.Services)
+                                        navigateToAddService(groupId = groupId)
+                                    else navigateToAddExpense(groupId)
                                 }) {
                                 Icon(Icons.Filled.Add, contentDescription = "")
                             }
@@ -92,10 +91,16 @@ class GroupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         collectEvents(viewModel.uiEventsState) { uiEvent ->
             when (uiEvent) {
-                is BaseViewModel.UiEvent.OnBackPressed -> if(!viewModel.handleBack()) popBackStack()
-                is GroupViewModel.OnServiceClicked -> navigateToAddService(groupId, uiEvent.service.id)
+                is BaseViewModel.UiEvent.OnBackPressed -> if (!viewModel.handleBack()) popBackStack()
+                is GroupViewModel.OnServiceClicked -> navigateToEditService(
+                    groupId,
+                    uiEvent.service.id
+                )
                 is GroupViewModel.OnAddExpenseClicked -> navigateToAddExpense(viewModel.group.id)
-                is GroupViewModel.OnEditExpenseClicked -> navigateToEditExpense(viewModel.group.id, uiEvent.expenseId)
+                is GroupViewModel.OnEditExpenseClicked -> navigateToEditExpense(
+                    viewModel.group.id,
+                    uiEvent.expenseId
+                )
             }
         }
     }

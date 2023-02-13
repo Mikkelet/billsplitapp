@@ -36,7 +36,10 @@ fun Fragment.navigateToGroup(groupId: String) {
     findNavController().navigate(R.id.action_global_groupFragment, args)
 }
 
-fun Fragment.navigateToAddService(groupId: String, serviceId: String) {
+fun Fragment.navigateToAddService(groupId: String) = navigateToService(groupId, "")
+fun Fragment.navigateToEditService(groupId: String, serviceId: String) = navigateToService(groupId, serviceId)
+
+private fun Fragment.navigateToService(groupId: String, serviceId: String) {
     val args = Bundle()
     args.putString(AddServiceFragment.ARG_GROUP_ID, groupId)
     args.putString(AddServiceFragment.ARG_SERVICE_ID, serviceId)

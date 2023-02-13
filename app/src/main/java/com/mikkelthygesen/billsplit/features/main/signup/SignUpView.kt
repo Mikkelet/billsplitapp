@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,7 +79,7 @@ fun _SignUpView(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.h4.copy(textAlign = TextAlign.Center)
+            style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
         )
         Box(
             modifier = Modifier
@@ -95,7 +95,7 @@ fun _SignUpView(
                     modifier = Modifier
                         .border(
                             width = 2.dp,
-                            color = MaterialTheme.colors.primary,
+                            color = MaterialTheme.colorScheme.primary,
                             RoundedCornerShape(16.dp)
                         )
                         .padding(8.dp)

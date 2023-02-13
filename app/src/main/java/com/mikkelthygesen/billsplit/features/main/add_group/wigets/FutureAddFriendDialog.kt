@@ -3,7 +3,7 @@ package com.mikkelthygesen.billsplit.features.main.add_group.wigets
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -16,7 +16,6 @@ import com.mikkelthygesen.billsplit.features.main.add_group.AddGroupViewModel
 import com.mikkelthygesen.billsplit.sampleFriends
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
-
 
 @Composable
 fun FutureAddFriendDialog(
@@ -69,9 +68,9 @@ fun _FutureAddFriendDialog(
     SimpleIconButton(
         modifier = modifier
             .clip(CircleShape)
-            .background(MaterialTheme.colors.primary),
+            .background(MaterialTheme.colorScheme.primary),
         iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_add_plus,
-        tint = MaterialTheme.colors.onPrimary
+        tint = MaterialTheme.colorScheme.onPrimary
     ) {
         showAddFriendDialog = true
     }

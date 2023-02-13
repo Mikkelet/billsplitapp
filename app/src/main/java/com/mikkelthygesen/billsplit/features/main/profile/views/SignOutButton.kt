@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.features.main.profile.views
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.TextStyle
@@ -34,7 +34,7 @@ fun SignOutButton() {
 
     ProfileMenuButton(
         text = "Sign out",
-        style = TextStyle(color = MaterialTheme.colors.error)
+        style = TextStyle(color = MaterialTheme.colorScheme.error)
     ) {
         showConfirmDialog = true
     }

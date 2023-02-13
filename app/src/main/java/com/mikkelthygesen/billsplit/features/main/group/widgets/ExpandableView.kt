@@ -3,11 +3,10 @@ package com.mikkelthygesen.billsplit.features.main.group.widgets
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,9 +29,9 @@ fun ExpandableView(
         modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colors.primary)
-            .padding(vertical = 12.dp, horizontal = 8.dp),
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(vertical = 16.dp, horizontal = 16.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -57,7 +56,7 @@ fun ExpandableView(
                     Icon(
                         painter = painterResource(id = iconResId),
                         contentDescription = "Edit expense",
-                        tint = MaterialTheme.colors.secondary
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
         }
@@ -77,7 +76,6 @@ private fun PreviewExpanded() {
         ListViewExpense(
             groupExpense = sampleSharedExpenses.first(),
             isFocused = true,
-            isLastMessage = true
         )
     }
 }

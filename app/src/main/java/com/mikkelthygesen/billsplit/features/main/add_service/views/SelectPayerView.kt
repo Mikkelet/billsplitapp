@@ -1,6 +1,5 @@
 package com.mikkelthygesen.billsplit.features.main.add_service.views
 
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,7 +23,7 @@ fun SelectPayerView(
     }
 
     PersonListItem(
-        modifier = Modifier.shadowModifier(MaterialTheme.colors.listItemColor()),
+        modifier = Modifier.shadowModifier(listItemColor()),
         person = subscriptionService.payerState,
         onSelect = {
             showDialog = true

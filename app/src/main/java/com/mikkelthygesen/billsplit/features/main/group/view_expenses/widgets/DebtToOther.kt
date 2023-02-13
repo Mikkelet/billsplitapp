@@ -4,10 +4,9 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +45,7 @@ private fun _DebtView(
 ) {
     val isDebt = debt.second > 0
     Row(
-        modifier = Modifier.shadowModifier(MaterialTheme.colors.listItemColor()),
+        modifier = Modifier.shadowModifier(listItemColor()),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (isDebt)

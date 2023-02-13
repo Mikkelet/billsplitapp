@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,6 +60,7 @@ fun RepeatPasswordTextField(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @SuppressLint("ComposableNaming")
 private fun _PasswordTextField(
@@ -99,7 +100,7 @@ private fun _PasswordTextField(
             ),
             keyboardActions = keyboardActions,
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )
@@ -108,7 +109,7 @@ private fun _PasswordTextField(
             Text(
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
                 text = hasError,
-                style = TextStyle(color = MaterialTheme.colors.error)
+                style = TextStyle(color = MaterialTheme.colorScheme.error)
             )
     }
 

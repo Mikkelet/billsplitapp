@@ -1,4 +1,4 @@
-package com.mikkelthygesen.billsplit.features.main.widgets.widgets
+package com.mikkelthygesen.billsplit.features.main.widgets
 
  import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,7 +96,7 @@ private fun ConfirmPictureDialog(uri: Uri, onDismiss: () -> Unit, onConfirm: () 
 
     Dialog(onDismissRequest = onDismiss) {
         Column(
-            Modifier.shadowModifier(MaterialTheme.colors.background),
+            Modifier.shadowModifier(MaterialTheme.colorScheme.background),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircularUrlImageView(imageUrl = uri.toString())

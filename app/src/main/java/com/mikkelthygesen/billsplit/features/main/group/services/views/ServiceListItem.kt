@@ -1,8 +1,7 @@
 package com.mikkelthygesen.billsplit.features.main.group.services.views
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,7 +15,7 @@ import com.mikkelthygesen.billsplit.ui.widgets.CircularUrlImageView
 fun ServiceListItem(service: SubscriptionService, onClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().shadowModifier(
-            backgroundColor = MaterialTheme.colors.listItemColor(),
+            backgroundColor = listItemColor(),
             onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {

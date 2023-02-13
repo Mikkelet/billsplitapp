@@ -12,12 +12,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.*
+import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
-import com.mikkelthygesen.billsplit.features.main.group.group_view.widgets.Menu
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ChangesListView
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewExpense
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewPayment
-import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.ui.widgets.*
@@ -67,9 +66,7 @@ private fun _ListViewExpense(
         state = lazyListState
     ) {
         item {
-            Row(Modifier.fillMaxWidth(), Arrangement.End) {
-                Menu()
-            }
+            Box(modifier = Modifier.height(64.dp))
         }
         items(
             count = events.size,
@@ -100,17 +97,14 @@ private fun _ListViewExpense(
                         .weight(6f)
                         .fillMaxWidth(),
                 ) {
-                    val isLatestMessage = index == 0
                     when (event) {
                         is GroupExpense -> ListViewExpense(
                             groupExpense = event,
                             isFocused = index == focusListItemIndex,
-                            isLastMessage = isLatestMessage
                         )
                         is Payment -> ListViewPayment(payment = event)
                         is GroupExpensesChanged -> ChangesListView(
                             groupExpensesChanged = event,
-                            isLastMessage = isLatestMessage,
                             onClickGoToExpense = { id ->
                                 coroutineScope.launch {
                                     val groupExpense =

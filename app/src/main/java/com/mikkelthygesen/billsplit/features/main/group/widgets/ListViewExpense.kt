@@ -27,12 +27,10 @@ fun ListViewExpense(
     viewModel: GroupViewModel = viewModel(),
     groupExpense: GroupExpense,
     isFocused: Boolean,
-    isLastMessage: Boolean
 ) {
     _ListViewExpense(
         groupExpense = groupExpense,
         isFocused = isFocused,
-        isLastMessage = isLastMessage,
         onActionClicked = viewModel::editSharedExpense
     )
 }
@@ -43,10 +41,9 @@ private fun _ListViewExpense(
     groupExpense: GroupExpense,
     onActionClicked: (GroupExpense) -> Unit,
     isFocused: Boolean,
-    isLastMessage: Boolean
 ) {
     var expanded by remember {
-        mutableStateOf(isLastMessage)
+        mutableStateOf(false)
     }
     ExpandableView(
         modifier = Modifier
@@ -145,7 +142,7 @@ private fun _ListViewExpense(
 private fun PreviewExpanded() {
     val groupExpense = sampleSharedExpenses.first()
     Box(modifier = Modifier.height(200.dp)) {
-        ListViewExpense(groupExpense = groupExpense, isFocused = false, isLastMessage = true)
+        ListViewExpense(groupExpense = groupExpense, isFocused = false)
     }
 }
 
@@ -154,6 +151,6 @@ private fun PreviewExpanded() {
 private fun Preview() {
     val groupExpense = sampleSharedExpenses.first()
     Box(modifier = Modifier.height(200.dp)) {
-        ListViewExpense(groupExpense = groupExpense, isFocused = false, isLastMessage = false)
+        ListViewExpense(groupExpense = groupExpense, isFocused = false)
     }
 }

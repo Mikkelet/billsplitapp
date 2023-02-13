@@ -4,13 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -25,15 +24,9 @@ fun GroupBottomBar(
     uiState: BaseViewModel.UiState
 ) {
     val groupViewModel: GroupViewModel = viewModel()
-    BottomNavigation(
-        backgroundColor = MaterialTheme.colors.background,
-        contentColor = MaterialTheme.colors.primary,
-        elevation = 0.dp
-    ) {
-        BottomNavigationItem(
+    NavigationBar {
+        NavigationBarItem(
             selected = uiState is GroupViewModel.Chat,
-            selectedContentColor = MaterialTheme.colors.primary,
-            unselectedContentColor = Color.Gray,
             label = {
                 Text(text = "Expenses")
             },
@@ -43,10 +36,8 @@ fun GroupBottomBar(
             icon = {
                 Icon(Icons.Filled.Add, contentDescription = "")
             })
-        BottomNavigationItem(
+        NavigationBarItem(
             selected = uiState is GroupViewModel.Services,
-            selectedContentColor = MaterialTheme.colors.primary,
-            unselectedContentColor = Color.Gray,
             label = {
                 Text(text = "Services")
             },
@@ -56,10 +47,8 @@ fun GroupBottomBar(
             icon = {
                 Icon(Icons.Filled.MoreVert, contentDescription = "")
             })
-        BottomNavigationItem(
+        NavigationBarItem(
             selected = uiState is GroupViewModel.ShowDebt,
-            selectedContentColor = MaterialTheme.colors.primary,
-            unselectedContentColor = Color.Gray,
             label = {
                 Text(text = "Debts")
             },
@@ -80,17 +69,17 @@ fun GroupBottomBar(
 fun TotalStatusBar(expense: GroupExpense) {
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colors.background)
+            .background(MaterialTheme.colorScheme.background)
             .padding(8.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
             text = "Total",
-            style = TextStyle(color = MaterialTheme.colors.onBackground)
+            style = TextStyle(color = MaterialTheme.colorScheme.onBackground)
         )
         Text(
             text = "$${expense.total}",
-            style = TextStyle(color = MaterialTheme.colors.onBackground)
+            style = TextStyle(color = MaterialTheme.colorScheme.onBackground)
         )
     }
 }

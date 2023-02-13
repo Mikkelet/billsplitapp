@@ -1,8 +1,8 @@
 package com.mikkelthygesen.billsplit.features.main.widgets
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +26,8 @@ fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .shadowModifier(
-                backgroundColor = MaterialTheme.colors.listItemColor(),
+                backgroundColor = listItemColor(),
+                cornerShape = MaterialTheme.shapes.extraLarge,
                 onClick = { onClick(group) },
                 outerPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
                 innerPadding = PaddingValues(32.dp)
@@ -36,7 +37,7 @@ fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
     ) {
         Text(
             text = group.nameState,
-            style = MaterialTheme.typography.body2.copy(fontSize = 18.sp)
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
         )
         when {
             debt.second > 0F -> Text(

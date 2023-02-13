@@ -7,7 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
@@ -45,7 +45,7 @@ data class PersonViewFlags(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonView(
     modifier: Modifier,
@@ -125,7 +125,7 @@ fun PersonView(
                     onClick = {
                         if (flags.enableEditName) showDialog = true
                     },
-                    style = TextStyle(fontSize = 15.sp, color = MaterialTheme.colors.onBackground),
+                    style = TextStyle(fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground),
                 )
                 if (flags.enableParticipationToggle)
                     CompositionLocalProvider(LocalMinimumTouchTargetEnforcement.provides(false)) {
@@ -199,7 +199,7 @@ private fun ProfileView(groupExpense: GroupExpense, expenseHolder: IndividualExp
                 tint = Color.White,
                 modifier = Modifier
                     .background(
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     )
                     .align(Center),
@@ -224,7 +224,7 @@ private fun ExpenseDisplay(
     else sharedExpense.toInt()
 
     val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontSize = 23.sp, color = MaterialTheme.colors.onBackground)) {
+        withStyle(style = SpanStyle(fontSize = 23.sp, color = MaterialTheme.colorScheme.onBackground)) {
             append(text = "$$expenseString")
         }
         if (isParticipant && sharedExpense > 0f)
@@ -239,6 +239,7 @@ private fun ExpenseDisplay(
         onClick = { onClick() })
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChangeNameDialog(
     textFieldValue: String,

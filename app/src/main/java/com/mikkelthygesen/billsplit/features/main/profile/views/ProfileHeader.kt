@@ -2,7 +2,7 @@ package com.mikkelthygesen.billsplit.features.main.profile.views
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.ui.shadowModifier
-import com.mikkelthygesen.billsplit.features.main.widgets.widgets.ProfilePictureWithUpload
+import com.mikkelthygesen.billsplit.features.main.widgets.ProfilePictureWithUpload
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
@@ -23,6 +23,7 @@ import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileHeader(
     user: Person,
@@ -39,7 +40,7 @@ fun ProfileHeader(
     ) {
         ProfilePictureWithUpload(user)
         Column(
-            Modifier.shadowModifier(MaterialTheme.colors.listItemColor())
+            Modifier.shadowModifier(listItemColor())
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -49,7 +50,7 @@ fun ProfileHeader(
                     modifier = Modifier.weight(1f),
                     value = user.nameState,
                     singleLine = true,
-                    textStyle = MaterialTheme.typography.body1.copy(fontSize = 20.sp),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp),
                     onValueChange = {
                         user.nameState = it
                         showSaveNameOptions = user.isNameChanged()
@@ -60,8 +61,8 @@ fun ProfileHeader(
                     colors = TextFieldDefaults.textFieldColors(
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
-                        backgroundColor = Color.Transparent,
-                        textColor = MaterialTheme.colors.onBackground
+                        containerColor = Color.Transparent,
+                        textColor = MaterialTheme.colorScheme.onBackground
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
@@ -98,7 +99,7 @@ fun ProfileHeader(
                                             .size(32.dp)
                                             .padding(end = 4.dp),
                                         iconResId = R.drawable.ic_outline_cancel_24,
-                                        tint = MaterialTheme.colors.error
+                                        tint = MaterialTheme.colorScheme.error
                                     ) {
                                         user.resetState()
                                         focusRequester.clearFocus()
@@ -113,7 +114,7 @@ fun ProfileHeader(
             Text(
                 modifier = Modifier.padding(16.dp),
                 text = user.email,
-                style = MaterialTheme.typography.body1.copy(fontSize = 20.sp)
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp)
             )
         }
     }

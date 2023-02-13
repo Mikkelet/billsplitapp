@@ -2,9 +2,9 @@ package com.mikkelthygesen.billsplit.features.main.widgets.dialogs
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
@@ -46,7 +46,7 @@ fun PersonListItem(
             Text(
                 modifier = Modifier.padding(start = 16.dp),
                 text = text,
-                style = MaterialTheme.typography.subtitle2
+                style = MaterialTheme.typography.bodyLarge
             )
         }
         Box {

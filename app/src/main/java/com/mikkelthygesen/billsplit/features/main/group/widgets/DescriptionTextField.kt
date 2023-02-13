@@ -2,7 +2,7 @@ package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.mikkelthygesen.billsplit.R
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DescriptionTextField(
     modifier: Modifier,
@@ -31,11 +32,11 @@ fun DescriptionTextField(
             Icon(
                 painter = painterResource(id = R.drawable.ic_baseline_edit_24),
                 contentDescription = "",
-                tint = MaterialTheme.colors.onBackground
+                tint = MaterialTheme.colorScheme.onBackground
             )
         },
         textStyle = TextStyle(
-            color = MaterialTheme.colors.onBackground
+            color = MaterialTheme.colorScheme.onBackground
         ),
         singleLine = true,
         onValueChange = {
@@ -46,7 +47,7 @@ fun DescriptionTextField(
         colors = TextFieldDefaults.textFieldColors(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
-            backgroundColor = MaterialTheme.colors.background.copy(alpha = .7f),
+            containerColor = MaterialTheme.colorScheme.background.copy(alpha = .7f),
             textColor = Color.White
         ),
         keyboardActions = KeyboardActions {

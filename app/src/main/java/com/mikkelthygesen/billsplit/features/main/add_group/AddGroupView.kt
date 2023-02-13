@@ -10,7 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
@@ -38,6 +38,7 @@ import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddGroupView(
     uiState: BaseViewModel.UiState,
@@ -87,7 +88,7 @@ fun AddGroupView(
                     bottom = 32.dp
                 ),
             text = if (uiState is AddGroupViewModel.AddName) "Add group" else group.nameState,
-            style = MaterialTheme.typography.h4
+            style = MaterialTheme.typography.titleLarge
         )
         Box(
             modifier = Modifier.fillMaxSize()
@@ -96,7 +97,7 @@ fun AddGroupView(
                 if (it is AddGroupViewModel.AddName)
                     OutlinedTextField(
                         modifier = Modifier
-                            .shadowModifier(MaterialTheme.colors.background)
+                            .shadowModifier(MaterialTheme.colorScheme.background)
                             .fillMaxWidth(),
                         value = group.nameState,
                         singleLine = true,
@@ -109,8 +110,8 @@ fun AddGroupView(
                         colors = TextFieldDefaults.textFieldColors(
                             unfocusedIndicatorColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
-                            backgroundColor = MaterialTheme.colors.background.copy(alpha = .7f),
-                            textColor = MaterialTheme.colors.onBackground
+                            containerColor = MaterialTheme.colorScheme.background.copy(alpha = .7f),
+                            textColor = MaterialTheme.colorScheme.onBackground
                         )
                     )
             }
@@ -141,12 +142,16 @@ fun AddGroupView(
                         .align(BottomCenter)
                 )
             else
-                FlatButton(modifier = Modifier
+                IconButton(modifier = Modifier
                     .padding(bottom = 16.dp)
                     .align(BottomCenter),
-                    icon = if (uiState is AddGroupViewModel.Ready)
-                        Icons.Filled.Check else Icons.Filled.ArrowForward,
-                    onClick = { onNextClicked() })
+                    onClick = { onNextClicked() }) {
+                    Icon(
+                        if (uiState is AddGroupViewModel.Ready)
+                            Icons.Filled.Check else Icons.Filled.ArrowForward,
+                        contentDescription = "Next step"
+                    )
+                }
         }
     }
 }
@@ -184,11 +189,11 @@ fun _AddGroupView(
                             start = 32.dp, top = 16.dp, bottom = 16.dp
                         ),
                     text = "Add Participants",
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.bodyLarge
                 )
             Column(
                 modifier = Modifier
-                    .shadowModifier(MaterialTheme.colors.background)
+                    .shadowModifier(MaterialTheme.colorScheme.background)
                     .animateContentSize()
             ) {
                 if (group.peopleState.isNotEmpty())
@@ -211,14 +216,14 @@ fun _AddGroupView(
                             Text(
                                 modifier = Modifier.padding(start = 16.dp),
                                 text = person.nameState,
-                                style = MaterialTheme.typography.subtitle2
+                                style = MaterialTheme.typography.titleSmall
                             )
                             Box(modifier = Modifier.weight(1F))
                             if (person != group.createdBy && isEditing)
                                 SimpleIconButton(
                                     Modifier.padding(end = 4.dp),
                                     iconResId = R.drawable.ic_baseline_remove_24,
-                                    tint = MaterialTheme.colors.error
+                                    tint = MaterialTheme.colorScheme.error
                                 ) {
                                     group.removePerson(person)
                                 }
