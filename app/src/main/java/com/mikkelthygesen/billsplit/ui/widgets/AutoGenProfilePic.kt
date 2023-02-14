@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,16 +25,22 @@ fun AutoProfilePic(modifier: Modifier = Modifier, user: Person) {
         val initials = split.map { it.first().toString() }
             .reduce { acc, c -> "$acc$c" }
         initials.substring(0..1)
-    } else userName
+    } else userName.first().toString()
+
+    val userColor = Color(user.uid.hashCode()).copy(alpha = 1f)
     Box(
         modifier = modifier
             .clip(CircleShape)
-            .background(Color(user.uid.hashCode()).copy(alpha = 1f))
+            .background(userColor)
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = displayName,
-            style = TextStyle(fontSize = 30.sp)
+            style = TextStyle(
+                fontSize = 30.sp,
+                color = if (userColor.luminance() > 0.5)
+                    Color.Black else Color.White
+            )
         )
     }
 }
