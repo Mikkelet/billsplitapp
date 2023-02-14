@@ -21,7 +21,8 @@ class MainViewModel @Inject constructor(
 
     private var isUserSynchronized = false
     fun initialize() {
-        if (!isUserSynchronized) syncUser()
+        if (!isUserSynchronized && loggedInUserFlow.value != null)
+            syncUser()
     }
 
     fun uninitialize() {

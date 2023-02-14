@@ -55,9 +55,11 @@ class AddExpenseFragment : Fragment() {
                             title = if (uiStateFlow.value is AddExpenseViewModel.ExpenseLoaded)
                                 "$${addExpenseViewModel.groupExpense.total.fmt2dec()}" else "",
                             trailingContent = {
-                                SimpleIconButton(iconResId = R.drawable.ic_check) {
-                                    addExpenseViewModel.saveExpense()
-                                }
+                                if (uiStateFlow.value is AddExpenseViewModel.ExpenseLoaded
+                                    && addExpenseViewModel.groupExpense.isChanged())
+                                    SimpleIconButton(iconResId = R.drawable.ic_check) {
+                                        addExpenseViewModel.saveExpense()
+                                    }
                             }
                         )
                     }) {

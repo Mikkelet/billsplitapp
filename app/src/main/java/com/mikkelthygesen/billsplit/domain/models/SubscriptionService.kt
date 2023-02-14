@@ -62,6 +62,6 @@ data class SubscriptionService(
         return payer != payerState
                 || monthlyExpenseState != monthlyExpense
                 || name != nameState
-                || participantsState != participants
+                || participantsState.sortedBy { it.nameState } != participants.sortedBy { it.nameState }
     }
 }
