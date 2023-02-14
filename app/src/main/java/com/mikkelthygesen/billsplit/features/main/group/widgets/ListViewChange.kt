@@ -2,9 +2,9 @@ package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -127,8 +127,8 @@ private fun TextStylePrimary(
 ) {
     Text(
         text = text,
-        style = MaterialTheme.typography.body1.merge(style)
-            .copy(color = MaterialTheme.colors.onPrimary)
+        style = MaterialTheme.typography.bodyMedium.merge(style)
+            .copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
     )
 }
 
@@ -139,7 +139,7 @@ private fun SmallRoundIcon(resId: Int) {
             .height(20.dp)
             .padding(horizontal = 16.dp),
         painter = painterResource(id = resId),
-        tint = MaterialTheme.colors.onPrimary,
+        tint = MaterialTheme.colorScheme.onPrimaryContainer,
         contentDescription = ""
     )
 }

@@ -5,8 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,12 +47,12 @@ private fun _ListViewExpense(
     }
     ExpandableView(
         modifier = Modifier
-            .clickable { expanded = !expanded }
             .let {
                 if (isFocused)
-                    it.border(2.dp, MaterialTheme.colors.secondary, RoundedCornerShape(2.dp))
+                    it.border(2.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(2.dp))
                 else it
-            },
+            }
+            .clickable { expanded = !expanded },
         title = {
             if (groupExpense.descriptionState.isNotBlank())
                 Text(
@@ -60,11 +60,11 @@ private fun _ListViewExpense(
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontStyle = FontStyle.Italic
-                    ).copy(color = MaterialTheme.colors.onPrimary)
+                    ).copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
                 )
             else Text(
                 text = "${groupExpense.createdBy.nameState} added a new expense!",
-                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
             )
         },
         expanded = expanded,
@@ -83,14 +83,14 @@ private fun _ListViewExpense(
                     style = TextStyle(
                         fontStyle = FontStyle.Italic,
                         fontSize = 20.sp,
-                        color = MaterialTheme.colors.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 )
             }
         else {
             Text(
                 text = "$${groupExpense.total.fmt2dec()} was paid by ${groupExpense.payeeState.nameState}",
-                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
             )
             Box(modifier = Modifier.height(8.dp))
             Row {
@@ -98,13 +98,13 @@ private fun _ListViewExpense(
                     if (groupExpense.sharedExpenseState > 0F)
                         Text(
                             text = "Shared",
-                            style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
                         )
                     groupExpense.individualExpenses.map {
                         if (it.expenseState > 0F) {
                             Text(
                                 text = it.person.nameState,
-                                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
                             )
 
                         }
@@ -115,7 +115,7 @@ private fun _ListViewExpense(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "$${groupExpense.sharedExpenseState.fmt2dec()} / ",
-                                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
                             )
                             val participants =
                                 groupExpense.individualExpenses
@@ -127,7 +127,7 @@ private fun _ListViewExpense(
                         if (it.expenseState > 0F) {
                             Text(
                                 text = "$${it.expenseState.fmt2dec()}",
-                                style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary)
+                                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
                             )
                         }
                     }

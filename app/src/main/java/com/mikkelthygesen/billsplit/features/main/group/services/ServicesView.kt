@@ -2,8 +2,6 @@ package com.mikkelthygesen.billsplit.features.main.group.services
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -17,7 +15,7 @@ import com.mikkelthygesen.billsplit.features.main.group.services.views.ServiceLi
 fun ServicesView() {
     val groupViewModel: GroupViewModel = viewModel()
     val servicesFlow = groupViewModel.servicesFlow().collectAsState(initial = emptyList())
-    val services = servicesFlow.value
+    val services = servicesFlow.value.sortedBy { it.nameState }
     if (services.isEmpty())
         CenteredMessage(text = "You have not added any subscription services")
     else
@@ -32,14 +30,4 @@ fun ServicesView() {
                 Box(Modifier.height(80.dp))
             }
         }
-}
-
-@Composable
-private fun Title() {
-    Text(
-        modifier = Modifier
-            .padding(32.dp),
-        text = "Services",
-        style = MaterialTheme.typography.h5
-    )
 }

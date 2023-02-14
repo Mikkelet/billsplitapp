@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.fmt2dec
 import com.mikkelthygesen.billsplit.ui.theme.listItemColor
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureComposable
 import com.mikkelthygesen.billsplit.ui.widgets.TriggerFutureState
@@ -51,13 +52,13 @@ private fun _DebtView(
         if (isDebt)
             Text(
                 modifier = Modifier.weight(2f),
-                text = "You owe $${debt.second} to ${debt.first.nameState}",
+                text = "You owe $${debt.second.fmt2dec()} to ${debt.first.nameState}",
                 style = TextStyle(color = Color.Red, fontSize = 20.sp)
             )
         else
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "${debt.first.nameState} owes you $${debt.second.absoluteValue}",
+                text = "${debt.first.nameState} owes you $${debt.second.absoluteValue.fmt2dec()}",
                 style = TextStyle(color = Color(0xFF0B9D3A), fontSize = 20.sp)
             )
         if (isDebt)

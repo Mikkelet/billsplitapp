@@ -12,11 +12,8 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.features.main.add_expense.views.ExpenseViewHeader
-import com.mikkelthygesen.billsplit.features.main.group.widgets.ParticipantView
 import com.mikkelthygesen.billsplit.features.main.add_expense.views.SharedExpensesView
-import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
-import com.mikkelthygesen.billsplit.ui.widgets.BackButton
-import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
+import com.mikkelthygesen.billsplit.features.main.group.widgets.ParticipantView
 import kotlin.math.roundToInt
 
 
@@ -35,18 +32,6 @@ fun ExpenseView() {
     }
 
     Column(modifier = Modifier.verticalScroll(scrollState)) {
-        BigTopBar(
-            leadingContent = {
-                BackButton {
-                    addExpenseViewModel.onBackButtonPressed()
-                }
-            },
-            trailingContent = {
-                SimpleIconButton(iconResId = com.mikkelthygesen.billsplit.R.drawable.ic_check) {
-                    addExpenseViewModel.saveExpense()
-                }
-            }
-        )
         SharedExpensesView(
             modifier = Modifier.onGloballyPositioned {
                 sharedExpensePositionY = it.positionInParent().y - SCROLL_OFFSET

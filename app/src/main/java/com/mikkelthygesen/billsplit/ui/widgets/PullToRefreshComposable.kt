@@ -4,15 +4,12 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 sealed class PullToRefreshState<T> {
@@ -82,17 +79,5 @@ fun <T> PullToRefreshComposable(
             modifier = Modifier
                 .align(Alignment.TopCenter),
         )
-    }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-private fun Preview() {
-    PullToRefreshComposable(initialCallback = {
-        delay(2000L)
-    }, onRefresh = {
-        delay(2000L)
-    }) {
-        Text("success!")
     }
 }

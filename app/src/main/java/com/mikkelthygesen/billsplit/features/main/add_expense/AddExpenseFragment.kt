@@ -9,12 +9,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ConfirmChangesDialog
 import com.mikkelthygesen.billsplit.features.main.popBackStack
+import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
+import com.mikkelthygesen.billsplit.fmt2dec
+import com.mikkelthygesen.billsplit.ui.widgets.BackButton
 import com.mikkelthygesen.billsplit.ui.widgets.LoadingView
+import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,7 +44,23 @@ class AddExpenseFragment : Fragment() {
                         ConfirmChangesDialog()
                 }
 
-                BaseScaffoldWithAuth(baseViewModel = addExpenseViewModel) {
+                BaseScaffoldWithAuth(baseViewModel = addExpenseViewModel,
+                    topBar = {
+                        BigTopBar(
+                            leadingContent = {
+                                BackButton {
+                                    addExpenseViewModel.onBackButtonPressed()
+                                }
+                            },
+                            title = if (uiStateFlow.value is AddExpenseViewModel.ExpenseLoaded)
+                                "$${addExpenseViewModel.groupExpense.total.fmt2dec()}" else "",
+                            trailingContent = {
+                                SimpleIconButton(iconResId = R.drawable.ic_check) {
+                                    addExpenseViewModel.saveExpense()
+                                }
+                            }
+                        )
+                    }) {
                     Crossfade(targetState = uiStateFlow.value) { uiState ->
                         when (uiState) {
                             is BaseViewModel.UiState.Loading -> LoadingView()

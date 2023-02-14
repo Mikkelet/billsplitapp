@@ -39,7 +39,9 @@ class AddServiceFragment : Fragment() {
                 BaseScaffoldWithAuth(addServiceViewModel,
                     topBar = {
                         BigTopBar(
-                            title = if(serviceId.isBlank()) "New service" else addServiceViewModel.service.nameState,
+                            title = if (uiStateFlow.value is AddServiceViewModel.ServiceLoaded) {
+                                if (serviceId.isBlank()) "New service" else addServiceViewModel.service.nameState
+                            } else "",
                             leadingContent = {
                                 BackButton {
                                     addServiceViewModel.onBackButtonPressed()
