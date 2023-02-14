@@ -160,25 +160,23 @@ fun _SignUpView(
                             })
                     }
                 }
-                Text(modifier = Modifier.padding(vertical = 16.dp), text = "⸺ OR  ⸺")
-                Button(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    onClick = onSignUpWithGoogleClicked
-                ) {
-                    Text(text = "Sign up with Google")
-                }
-                Button(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    onClick = onSignUpWithFacebookClicked
-                ) {
-                    Text(text = "Sign up with Facebook")
-                }
+                Text(modifier = Modifier.padding(vertical = 16.dp), text = "⸺ ><  ⸺")
                 FlatButton(
                     text = redirectText,
                     onClick = onAlreadySignedUpClicked,
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SignUpWithGoogle(){
+    Button(
+        modifier = Modifier.padding(bottom = 16.dp),
+        onClick = {  }
+    ) {
+        Text(text = "Sign up with Google")
     }
 }
 
