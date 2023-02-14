@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.ui.widgets
 
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,10 +13,10 @@ fun FlatButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit)
         modifier = modifier,
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colors.primary,
-            backgroundColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.primary,
+            containerColor = Color.Transparent,
         ),
-        elevation = ButtonDefaults.elevation(
+        elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp
         )
@@ -31,10 +31,10 @@ fun FlatButton(modifier: Modifier = Modifier, icon: ImageVector, onClick: () -> 
         modifier = modifier,
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colors.primary,
-            backgroundColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.primary,
+            containerColor = Color.Transparent,
         ),
-        elevation = ButtonDefaults.elevation(
+        elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp
         )
