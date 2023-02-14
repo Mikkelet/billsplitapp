@@ -2,6 +2,8 @@ package com.mikkelthygesen.billsplit.ui.widgets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -23,13 +25,14 @@ fun AutoProfilePic(modifier: Modifier = Modifier, user: Person) {
     val displayName = if (userName.trim().contains(" ")) {
         val split = userName.split(" ").filter { it.isNotBlank() }
         val initials = split.map { it.first().toString() }
-            .reduce { acc, c -> "$acc$c" }
-        initials.substring(0..1)
-    } else userName.first().toString()
+            .reduce { acc, c -> "${acc}$c" }
+        initials.substring(0..1).uppercase()
+    } else userName.first().toString().uppercase()
 
     val userColor = Color(user.uid.hashCode()).copy(alpha = 1f)
     Box(
         modifier = modifier
+            .aspectRatio(1f)
             .clip(CircleShape)
             .background(userColor)
     ) {
@@ -50,6 +53,15 @@ fun AutoProfilePic(modifier: Modifier = Modifier, user: Person) {
 @Composable
 private fun Preview() {
     Box(Modifier.size(100.dp)) {
-        AutoProfilePic(user = Person(name = "M E", uid = "13112dsfad312"))
+        AutoProfilePic(user = Person(name = "M e", uid = "13112dsfad312"))
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFfbddcc)
+@Preview(showBackground = true, backgroundColor = 0xFF123432)
+@Composable
+private fun Preview2() {
+    Box(Modifier.size(100.dp)) {
+        AutoProfilePic(user = Person(name = "mIkkel", uid = "13112dasdasd312"))
     }
 }
