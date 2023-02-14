@@ -19,7 +19,7 @@ fun ServicesView() {
     val servicesFlow = groupViewModel.servicesFlow().collectAsState(initial = emptyList())
     val services = servicesFlow.value
     if (services.isEmpty())
-        CenteredMessage("You have not added any subscription services")
+        CenteredMessage(text = "You have not added any subscription services")
     else
         LazyColumn(Modifier.fillMaxSize()) {
             items(services.size) { index ->

@@ -25,6 +25,8 @@ import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +39,7 @@ import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import com.mikkelthygesen.billsplit.sampleGroup
 import com.mikkelthygesen.billsplit.ui.widgets.*
+import androidx.compose.ui.platform.LocalFocusManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +52,10 @@ fun AddGroupView(
     onSubmitGroup: (Group) -> Unit,
     showSubmitLoader: Boolean
 ) {
-    val focusRequester = androidx.compose.ui.platform.LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember {
+        FocusRequester()
+    }
 
     val animateState by animateAlignmentAsState(
         targetAlignment =
@@ -59,6 +65,8 @@ fun AddGroupView(
     BackHandler {
         onBack()
     }
+
+
 
     fun onNextClicked() {
         when (uiState) {
@@ -94,9 +102,13 @@ fun AddGroupView(
             modifier = Modifier.fillMaxSize()
         ) {
             Crossfade(modifier = Modifier.align(animateState), targetState = uiState) {
+                LaunchedEffect(key1 = Unit, block = {
+                    focusRequester.requestFocus()
+                })
                 if (it is AddGroupViewModel.AddName)
                     OutlinedTextField(
                         modifier = Modifier
+                            .focusRequester(focusRequester)
                             .shadowModifier(MaterialTheme.colorScheme.background)
                             .fillMaxWidth(),
                         value = group.nameState,
@@ -105,7 +117,10 @@ fun AddGroupView(
                         placeholder = { Text(text = ("fx. Trip to Madrid")) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
-                            onDone = { focusRequester.clearFocus() }
+                            onDone = {
+                                focusManager.clearFocus()
+                                onNext()
+                            }
                         ),
                         colors = TextFieldDefaults.textFieldColors(
                             unfocusedIndicatorColor = Color.Transparent,

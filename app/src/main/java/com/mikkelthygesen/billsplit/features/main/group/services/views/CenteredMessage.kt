@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 import com.mikkelthygesen.billsplit.ui.widgets.Center
 
 @Composable
-fun CenteredMessage(text: String) {
-    Center(Modifier.padding(16.dp)) {
+fun CenteredMessage(modifier: Modifier = Modifier, text: String) {
+    Center(modifier.padding(16.dp)) {
         Text(
             text = text,
             style = TextStyle(

@@ -48,7 +48,7 @@ private fun _ViewDebt(
         horizontalAlignment = Alignment.Start
     ) {
         if (debt.none { it.second != 0F })
-            CenteredMessage("All debts are settled")
+            CenteredMessage(text = "All debts are settled")
         else
             (debt)
                 .sortedBy { it.second }

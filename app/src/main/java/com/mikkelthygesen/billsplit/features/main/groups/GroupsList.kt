@@ -52,7 +52,9 @@ fun GroupsList(
             }
             if (groups.isEmpty())
                 item {
-                    CenteredMessage(text = "Click below to add a new group!")
+                    CenteredMessage(
+                        modifier = Modifier.padding(vertical = 80.dp),
+                        text = "Click + below to add a new group!")
                 }
             else
                 items(groups.size) { index ->
