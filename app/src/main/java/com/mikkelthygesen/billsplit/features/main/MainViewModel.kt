@@ -15,7 +15,9 @@ class MainViewModel @Inject constructor(
     private val getFriendsUseCase: GetFriendsUseCase,
 ) : BaseViewModel() {
 
-    object Main : UiState
+    object UserSynchronized : UiState
+
+    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UserSynchronized)
 
     private var isUserSynchronized = false
     fun initialize() {
@@ -27,17 +29,24 @@ class MainViewModel @Inject constructor(
     }
 
     private fun syncUser() {
+        updateUiState(UiState.Loading)
         isUserSynchronized = true
         viewModelScope.launch {
             val response = runCatching {
                 getGroupsUseCase()
                 getFriendsUseCase()
             }
-            response.foldError {
-                isUserSynchronized = false
-            }
+            response.fold(
+                onSuccess = {
+                    updateUiState(UserSynchronized)
+                },
+                onFailure = {
+                    isUserSynchronized = false
+                    updateUiState(UserSynchronized)
+                    showDialog(DialogState.Error(it))
+                },
+            )
         }
     }
 
-    override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Main)
 }

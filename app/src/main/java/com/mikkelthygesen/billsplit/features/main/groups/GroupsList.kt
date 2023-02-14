@@ -21,14 +21,15 @@ import com.mikkelthygesen.billsplit.ui.widgets.*
 @Composable
 fun GroupsList(
     uiState: BaseViewModel.UiState,
+    isUserSynchronizing: Boolean
 ) {
     val groupsViewModel: GroupsViewModel = viewModel()
     val groupsFlow = groupsViewModel.observeGroups().collectAsState(initial = emptyList())
     val groups = groupsFlow.value.sortedBy { it.nameState }
     val user = groupsViewModel.requireLoggedInUser
-
+    val showLoader = uiState is BaseViewModel.UiState.Loading || isUserSynchronizing
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = uiState is BaseViewModel.UiState.Loading,
+        refreshing = showLoader,
         onRefresh = { groupsViewModel.syncGroups() },
         refreshingOffset = 80.dp
     )
@@ -39,7 +40,7 @@ fun GroupsList(
             .pullRefresh(pullRefreshState)
     ) {
         PullRefreshIndicator(
-            refreshing = uiState is BaseViewModel.UiState.Loading,
+            refreshing = showLoader,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
         )

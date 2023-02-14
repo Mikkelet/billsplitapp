@@ -23,6 +23,7 @@ class MainActivity : FragmentActivity() {
         setContentView(R.layout.activity_main)
         navController = findNavController(R.id.nav_host_fragment)
 
+        viewModel.initialize()
         listenToAuth()
         listenToEvents()
     }

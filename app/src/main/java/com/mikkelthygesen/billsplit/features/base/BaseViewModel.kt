@@ -35,7 +35,6 @@ abstract class BaseViewModel : ViewModel() {
 
     interface UiState {
         object Loading : UiState
-
     }
 
     interface UiEvent {

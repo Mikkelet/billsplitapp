@@ -14,9 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
+import com.mikkelthygesen.billsplit.features.main.MainViewModel
 import com.mikkelthygesen.billsplit.features.main.navigateToAddGroup
 import com.mikkelthygesen.billsplit.features.main.navigateToGroup
 import com.mikkelthygesen.billsplit.features.main.navigateToProfile
@@ -26,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class GroupsFragment : Fragment() {
 
     private val groupsViewModel: GroupsViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +38,9 @@ class GroupsFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                val uiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
+                val groupsUiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
+                val mainUiStateFlow = mainViewModel.uiStateFlow.collectAsState()
+                val mainUiState = mainUiStateFlow.value
                 BaseScaffoldWithAuth(
                     baseViewModel = groupsViewModel,
                     floatingActionButton = {
@@ -47,7 +53,8 @@ class GroupsFragment : Fragment() {
                     },
                 ) {
                     GroupsList(
-                        uiState = uiStateFlow.value,
+                        uiState = groupsUiStateFlow.value,
+                        isUserSynchronizing = mainUiState is BaseViewModel.UiState.Loading
                     )
                 }
             }
