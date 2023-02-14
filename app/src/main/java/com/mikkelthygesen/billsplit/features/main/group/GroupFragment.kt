@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -48,6 +51,8 @@ class GroupFragment : Fragment() {
             setContent {
                 val groupUiState = viewModel.uiStateFlow.collectAsState()
                 val uiState = groupUiState.value
+                val lazyListState = rememberLazyListState()
+                val firstVisibleIndexFlow = snapshotFlow { lazyListState.firstVisibleItemIndex }.collectAsState(0)
 
                 BaseScaffoldWithAuth(
                     baseViewModel = viewModel,
@@ -55,15 +60,23 @@ class GroupFragment : Fragment() {
                     topBar = { GroupTopBar2() },
                     floatingActionButton = {
                         if (uiState is GroupViewModel.Services || uiState is GroupViewModel.Chat)
-                            FloatingActionButton(
+                            ExtendedFloatingActionButton(
                                 modifier = Modifier.padding(16.dp),
                                 onClick = {
                                     if (uiState is GroupViewModel.Services)
                                         navigateToAddService(groupId = groupId)
                                     else navigateToAddExpense(groupId)
-                                }) {
-                                Icon(Icons.Filled.Add, contentDescription = "")
-                            }
+                                },
+                                expanded = firstVisibleIndexFlow.value == 0,
+                                icon = { Icon(Icons.Filled.Add, contentDescription = "Add") },
+                                text = {
+                                    val text = when (uiState) {
+                                        is GroupViewModel.Services -> "Service"
+                                        else -> "Expense"
+                                    }
+                                    Text(text = text)
+                                },
+                            )
                     }
                 ) {
                     Box {
@@ -72,7 +85,10 @@ class GroupFragment : Fragment() {
                         ) { state ->
                             when (state) {
                                 is BaseViewModel.UiState.Loading -> LoadingView()
-                                is GroupViewModel.Chat -> GroupEventsView(groupId = groupId)
+                                is GroupViewModel.Chat -> GroupEventsView(
+                                    groupId = groupId,
+                                    lazyListState = lazyListState
+                                )
                                 is GroupViewModel.ShowDebt -> ViewDebt()
                                 is GroupViewModel.Services -> ServicesView()
                             }

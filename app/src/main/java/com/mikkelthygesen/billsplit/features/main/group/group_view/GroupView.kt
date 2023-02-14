@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +28,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupEventsView(
     modifier: Modifier = Modifier,
-    groupId: String
+    groupId: String,
+    lazyListState: LazyListState = rememberLazyListState()
 ) {
     val viewModel: GroupViewModel = viewModel()
     val eventsFlowState = viewModel.eventsFlow().collectAsState(emptyList())
@@ -36,6 +38,7 @@ fun GroupEventsView(
         modifier = modifier,
         events = eventsState,
         loggedInUser = viewModel.requireLoggedInUser,
+        lazyListState = lazyListState
     )
 }
 
@@ -45,9 +48,9 @@ fun GroupEventsView(
 private fun _ListViewExpense(
     modifier: Modifier = Modifier,
     loggedInUser: Person,
-    events: List<Event>
+    events: List<Event>,
+    lazyListState: LazyListState = rememberLazyListState()
 ) {
-    val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     var focusListItemIndex by remember {
         mutableStateOf(-1)
