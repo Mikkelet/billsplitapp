@@ -2,16 +2,17 @@ package com.mikkelthygesen.billsplit.features.main.add_service
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -41,6 +42,15 @@ fun AddServiceView() {
         else mutableStateOf(service.monthlyExpenseState.fmt2dec())
     }
     val monthlyPerUser = service.monthlyExpenseState / service.participantsState.size
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember {
+        FocusRequester()
+    }
+
+    LaunchedEffect(key1 = Unit, block = {
+        if (service.nameState.isBlank())
+            focusRequester.requestFocus()
+    })
     Column(
         Modifier
             .fillMaxWidth()
@@ -48,6 +58,7 @@ fun AddServiceView() {
     ) {
         OutlinedTextField(
             modifier = Modifier
+                .focusRequester(focusRequester)
                 .fillMaxWidth()
                 .shadowModifier(listItemColor()),
             value = service.nameState,
@@ -55,6 +66,10 @@ fun AddServiceView() {
                 containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
             ),
             textStyle = TextStyle(fontSize = 20.sp),
             singleLine = true,
@@ -83,6 +98,11 @@ fun AddServiceView() {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
             ),
             leadingIcon = {
                 Icon(

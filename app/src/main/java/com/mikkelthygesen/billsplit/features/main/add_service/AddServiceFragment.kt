@@ -48,7 +48,9 @@ class AddServiceFragment : Fragment() {
                                 }
                             },
                             trailingContent = {
-                                SimpleIconButton(iconResId = R.drawable.ic_check) {
+                                if (uiStateFlow.value is AddServiceViewModel.ServiceLoaded &&
+                                    addServiceViewModel.service.isChanged()
+                                ) SimpleIconButton(iconResId = R.drawable.ic_check) {
                                     addServiceViewModel.submitSubscriptionService()
                                 }
                             }

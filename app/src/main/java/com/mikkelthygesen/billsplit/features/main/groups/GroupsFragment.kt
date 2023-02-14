@@ -9,6 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -16,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
@@ -41,13 +44,21 @@ class GroupsFragment : Fragment() {
                 val groupsUiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
                 val mainUiStateFlow = mainViewModel.uiStateFlow.collectAsState()
                 val mainUiState = mainUiStateFlow.value
+
+                // System ui color changes
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
+                systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
+
                 BaseScaffoldWithAuth(
                     baseViewModel = groupsViewModel,
                     floatingActionButton = {
                         FloatingActionButton(
                             modifier = Modifier.padding(32.dp), onClick = {
                                 navigateToAddGroup()
-                            }) {
+                            },
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        ) {
                             Icon(Icons.Filled.Add, contentDescription = "Add Group")
                         }
                     },

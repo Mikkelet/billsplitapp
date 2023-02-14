@@ -8,11 +8,9 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -52,7 +50,8 @@ class GroupFragment : Fragment() {
                 val groupUiState = viewModel.uiStateFlow.collectAsState()
                 val uiState = groupUiState.value
                 val lazyListState = rememberLazyListState()
-                val firstVisibleIndexFlow = snapshotFlow { lazyListState.firstVisibleItemIndex }.collectAsState(0)
+                val firstVisibleIndexFlow =
+                    snapshotFlow { lazyListState.firstVisibleItemIndex }.collectAsState(0)
 
                 BaseScaffoldWithAuth(
                     baseViewModel = viewModel,
@@ -67,6 +66,7 @@ class GroupFragment : Fragment() {
                                         navigateToAddService(groupId = groupId)
                                     else navigateToAddExpense(groupId)
                                 },
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                 expanded = firstVisibleIndexFlow.value == 0,
                                 icon = { Icon(Icons.Filled.Add, contentDescription = "Add") },
                                 text = {

@@ -27,4 +27,4 @@ fun BillSplitTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
 }
 
 @Composable
-fun listItemColor():Color = MaterialTheme.colorScheme.secondaryContainer
+fun listItemColor(): Color = MaterialTheme.colorScheme.secondaryContainer
