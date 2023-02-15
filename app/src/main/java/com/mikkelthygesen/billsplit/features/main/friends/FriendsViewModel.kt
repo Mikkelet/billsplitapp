@@ -1,8 +1,5 @@
 package com.mikkelthygesen.billsplit.features.main.friends
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Person
@@ -28,19 +25,24 @@ class FriendsViewModel @Inject constructor(
     object Friends : UiState
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(Friends)
-    var syncingFriends: Boolean by mutableStateOf(false)
 
     fun observeLocalFriends(): Flow<List<Friend>> = observeLocalFriendsUseCase()
 
     fun getFriends() {
         viewModelScope.launch {
-            syncingFriends = true
+            updateUiState(UiState.Loading)
             val response = runCatching {
                 getFriendsUseCase()
             }
-            response.foldSuccess {
-                syncingFriends = false
-            }
+            response.fold(
+                onSuccess = {
+                    updateUiState(Friends)
+                },
+                onFailure = {
+                    handleError(it)
+                    updateUiState(Friends)
+                }
+            )
         }
     }
 

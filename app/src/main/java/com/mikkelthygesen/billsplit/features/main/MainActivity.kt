@@ -33,6 +33,7 @@ class MainActivity : FragmentActivity() {
             viewModel.uiEventsState.collect { event ->
                 if (event is BaseViewModel.UiEvent.OnBackPressed)
                     onBackPressedDispatcher.onBackPressed()
+
             }
         }
     }

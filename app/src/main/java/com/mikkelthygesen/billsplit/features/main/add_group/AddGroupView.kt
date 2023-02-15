@@ -66,8 +66,6 @@ fun AddGroupView(
         onBack()
     }
 
-
-
     fun onNextClicked() {
         when (uiState) {
             is AddGroupViewModel.Ready -> onSubmitGroup(group)

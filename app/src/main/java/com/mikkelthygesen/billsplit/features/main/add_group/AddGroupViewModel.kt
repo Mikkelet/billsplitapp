@@ -24,7 +24,6 @@ class AddGroupViewModel @Inject constructor(
     object AddName : UiState
     object AddParticipants : UiState
     object Ready : UiState
-
     object ShowFriendsPressed : UiEvent
 
     data class GroupAdded(val group: Group) : UiEvent

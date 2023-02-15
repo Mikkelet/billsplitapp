@@ -39,6 +39,7 @@ class GroupsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         return ComposeView(requireContext()).apply {
             setContent {
                 val groupsUiStateFlow = groupsViewModel.uiStateFlow.collectAsState()
@@ -54,7 +55,8 @@ class GroupsFragment : Fragment() {
                     baseViewModel = groupsViewModel,
                     floatingActionButton = {
                         FloatingActionButton(
-                            modifier = Modifier.padding(32.dp), onClick = {
+                            modifier = Modifier.padding(32.dp),
+                            onClick = {
                                 navigateToAddGroup()
                             },
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer

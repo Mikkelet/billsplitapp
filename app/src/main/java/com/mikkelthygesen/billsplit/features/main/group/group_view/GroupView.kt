@@ -18,9 +18,10 @@ import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ChangesListView
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewExpense
 import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewPayment
+import com.mikkelthygesen.billsplit.features.main.group.widgets.Position
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.tryCatchDefault
-import com.mikkelthygesen.billsplit.ui.widgets.*
+import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -74,16 +75,32 @@ private fun _ListViewExpense(
         items(
             count = events.size,
             key = { events[it].id }) { index ->
+
+            val event = events[index]
+            val position: Position = let {
+                val isPrevEventByUser = tryCatchDefault(false) {
+                    events[index - 1].createdBy == event.createdBy
+                }
+                val isNextEventByUser = tryCatchDefault(false) {
+                    events[index + 1].createdBy == event.createdBy
+                }
+                when {
+                    !isPrevEventByUser && isNextEventByUser -> Position.Start
+                    isPrevEventByUser && !isNextEventByUser -> Position.End
+                    else -> Position.Middle
+                }
+            }
+            println("qqq position=$position")
+            val latestIndex =
+                tryCatchDefault(true) {
+                    events[index - 1].createdBy != event.createdBy
+                            || events[index - 1] is Payment
+                }
             Row(
                 Modifier.padding(vertical = 4.dp),
                 Arrangement.SpaceEvenly
             ) {
-                val event = events[index]
-                val latestIndex =
-                    tryCatchDefault(true) {
-                        events[index - 1].createdBy != event.createdBy
-                                || events[index - 1] is Payment
-                    }
+
                 if (event.createdBy != loggedInUser && event !is Payment) {
                     if (latestIndex)
                         ProfilePicture(
@@ -104,10 +121,12 @@ private fun _ListViewExpense(
                         is GroupExpense -> ListViewExpense(
                             groupExpense = event,
                             isFocused = index == focusListItemIndex,
+                            position = position
                         )
                         is Payment -> ListViewPayment(payment = event)
                         is GroupExpensesChanged -> ChangesListView(
                             groupExpensesChanged = event,
+                            position = position,
                             onClickGoToExpense = { id ->
                                 coroutineScope.launch {
                                     val groupExpense =

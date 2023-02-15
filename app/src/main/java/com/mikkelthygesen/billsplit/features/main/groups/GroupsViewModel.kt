@@ -35,6 +35,7 @@ class GroupsViewModel @Inject constructor(
                     updateUiState(ShowGroups)
                 },
                 onFailure = {
+                    handleError(it)
                     updateUiState(ShowGroups)
                 }
             )
@@ -47,9 +48,5 @@ class GroupsViewModel @Inject constructor(
 
     fun onGroupClicked(group: Group) {
         emitUiEvent(OnGroupClicked(group))
-    }
-
-    fun onAddGroupClicked() {
-        emitUiEvent(AddGroupClicked)
     }
 }

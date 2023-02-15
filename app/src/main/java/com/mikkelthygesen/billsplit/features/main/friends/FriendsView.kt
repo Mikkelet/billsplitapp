@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
 import com.mikkelthygesen.billsplit.domain.models.Friend
 import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.features.main.friends.views.AddFriendEmailTextField
 import com.mikkelthygesen.billsplit.features.main.friends.views.FriendView
 import com.mikkelthygesen.billsplit.features.main.widgets.BigTopBar
@@ -27,12 +28,17 @@ import com.mikkelthygesen.billsplit.ui.widgets.SimpleIconButton
 @Composable
 fun FriendsView() {
     val friendsViewModel: FriendsViewModel = viewModel()
+    val friendsUiStateFlow = friendsViewModel.uiStateFlow.collectAsState()
+    val friendsUiState = friendsUiStateFlow.value
+    val isLoading = friendsUiState is BaseViewModel.UiState.Loading
+
     val friendsFlow = friendsViewModel.observeLocalFriends().collectAsState(initial = emptyList())
     val friendsState = friendsFlow.value
+
     FriendsListWithTitle(
-        friends = if (friendsViewModel.syncingFriends)
+        friends = if (isLoading)
             emptyList() else friendsState.sortedBy { it.javaClass.simpleName },
-        showLoading = friendsViewModel.syncingFriends,
+        showLoading = isLoading,
         onRefreshClick = {
             friendsViewModel.getFriends()
         },

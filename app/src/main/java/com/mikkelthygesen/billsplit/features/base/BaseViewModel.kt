@@ -72,12 +72,6 @@ abstract class BaseViewModel : ViewModel() {
         _mutableUiStateFlow.value = event
     }
 
-    fun requireLoggedInUser(withUser: (Person) -> Unit) {
-        if (loggedInUserFlow.value != null)
-            withUser(requireLoggedInUser)
-        else handleError(NetworkExceptions.UserLoggedOutException)
-    }
-
     fun handleError(exception: Throwable) {
         if (BuildConfig.DEBUG) {
             Timber.e("error=$exception")
@@ -92,6 +86,8 @@ abstract class BaseViewModel : ViewModel() {
                 showDialog(DialogState.Error(Exception("Session timed out")))
             is com.google.firebase.auth.FirebaseAuthInvalidUserException ->
                 showDialog(DialogState.Error(Exception("User not found")))
+            is com.google.firebase.FirebaseNetworkException ->
+                showDialog(DialogState.Error(Exception("No network connection")))
             else -> {
                 showDialog(DialogState.Error(exception))
             }
@@ -103,11 +99,4 @@ abstract class BaseViewModel : ViewModel() {
         onFailure = ::handleError
     )
 
-    protected fun <T> Result<T>.foldError(onError: (Throwable) -> Unit) = fold(
-        onSuccess = {},
-        onFailure = {
-            handleError(it)
-            onError(it)
-        }
-    )
 }

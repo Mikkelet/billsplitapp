@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.mikkelthygesen.billsplit.BuildConfig
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.ui.shadowModifier
 import java.lang.Exception
@@ -43,7 +44,11 @@ fun ErrorDialog(
                     .copy(color = MaterialTheme.colorScheme.onBackground)
             )
             Text(
-                text = "(${exception.javaClass.simpleName}) ${exception.message}",
+                text = let {
+                    if(BuildConfig.DEBUG)
+                        "(${exception.javaClass.simpleName}) ${exception.message}"
+                    else "${exception.message}"
+                },
                 style = MaterialTheme.typography.bodyMedium
                     .copy(color = MaterialTheme.colorScheme.error)
             )

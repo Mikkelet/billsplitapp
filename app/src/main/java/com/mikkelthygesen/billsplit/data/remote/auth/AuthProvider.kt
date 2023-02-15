@@ -53,7 +53,7 @@ class AuthProvider @Inject constructor() {
     }
 
     suspend fun updateUserName() {
-        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
+        val currentUser = firebase.currentUser!!
         val request = UserProfileChangeRequest.Builder()
         request.displayName = requireLoggedInUser.nameState
         currentUser.updateProfile(request.build()).await()
@@ -62,7 +62,7 @@ class AuthProvider @Inject constructor() {
 
     @Suppress("KotlinConstantConditions")
     suspend fun updateProfilePicture(downloadUrl: Uri) {
-        val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
+        val currentUser = firebase.currentUser!!
         val updateRequest = UserProfileChangeRequest.Builder()
         updateRequest.photoUri = downloadUrl
         currentUser.updateProfile(updateRequest.build()).await()
@@ -87,12 +87,8 @@ class AuthProvider @Inject constructor() {
     }
 
     suspend fun getAuthToken(force: Boolean): String {
-        try {
-            val currentUser = firebase.currentUser ?: throw NetworkExceptions.UserLoggedOutException
-            val result = currentUser.getIdToken(force).await()
-            return result.token ?: throw NetworkExceptions.UserLoggedOutException
-        } catch (e: Exception) {
-            throw NetworkExceptions.UserLoggedOutException
-        }
+        val currentUser = firebase.currentUser
+        val result = currentUser?.getIdToken(force)?.await()
+        return result?.token!!
     }
 }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -27,11 +26,13 @@ fun ListViewExpense(
     viewModel: GroupViewModel = viewModel(),
     groupExpense: GroupExpense,
     isFocused: Boolean,
+    position: Position = Position.Middle
 ) {
     _ListViewExpense(
         groupExpense = groupExpense,
         isFocused = isFocused,
-        onActionClicked = viewModel::editSharedExpense
+        onActionClicked = viewModel::editSharedExpense,
+        position = position
     )
 }
 
@@ -41,6 +42,7 @@ private fun _ListViewExpense(
     groupExpense: GroupExpense,
     onActionClicked: (GroupExpense) -> Unit,
     isFocused: Boolean,
+    position: Position = Position.Middle
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -49,7 +51,7 @@ private fun _ListViewExpense(
         modifier = Modifier
             .let {
                 if (isFocused)
-                    it.border(2.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(2.dp))
+                    it.border(2.dp, MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium)
                 else it
             }
             .clickable { expanded = !expanded },
@@ -68,6 +70,7 @@ private fun _ListViewExpense(
             )
         },
         expanded = expanded,
+        position = position,
         iconResId = R.drawable.ic_baseline_edit_24,
         onIconClick = { onActionClicked(groupExpense) },
     ) {

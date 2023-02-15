@@ -68,7 +68,6 @@ fun AddServiceView() {
                 unfocusedIndicatorColor = Color.Transparent
             ),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
             ),
             textStyle = TextStyle(fontSize = 20.sp),

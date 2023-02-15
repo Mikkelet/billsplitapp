@@ -26,7 +26,8 @@ import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
 @Composable
 fun ChangesListView(
     groupExpensesChanged: GroupExpensesChanged,
-    onClickGoToExpense: (String) -> Unit
+    position: Position = Position.Middle,
+    onClickGoToExpense: (String) -> Unit,
 ) {
     val original = groupExpensesChanged.groupExpenseOriginal
     val updated = groupExpensesChanged.groupExpenseEdited
@@ -44,6 +45,7 @@ fun ChangesListView(
             .wrapContentHeight()
             .clickable { expanded = !expanded },
         expanded = expanded,
+        position = position,
         iconResId = R.drawable.ic_baseline_search_24,
         onIconClick = { onClickGoToExpense(groupExpensesChanged.groupExpenseOriginal.id) },
         title = {
