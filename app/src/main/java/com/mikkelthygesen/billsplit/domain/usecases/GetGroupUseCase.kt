@@ -1,12 +1,10 @@
 package com.mikkelthygesen.billsplit.domain.usecases
 
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
-import com.mikkelthygesen.billsplit.data.local.database.model.ExpenseChangeDb
-import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
-import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
-import com.mikkelthygesen.billsplit.data.local.database.model.SubscriptionServiceDb
+import com.mikkelthygesen.billsplit.data.local.database.model.*
 import com.mikkelthygesen.billsplit.data.remote.ServerApiImpl
 import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
+import com.mikkelthygesen.billsplit.domain.latestEvent
 import com.mikkelthygesen.billsplit.domain.models.Group
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
@@ -34,7 +32,7 @@ class GetGroupUseCase @Inject constructor(
             database.groupExpensesDao().clearTableForGroup(groupId)
             database.servicesDao().clearTable(groupId)
             // Add new
-            database.groupsDao().insert(groupDto.toDB())
+            database.groupsDao().insert(GroupDb(groupDto))
             database.groupExpensesDao().insert(groupExpensesDTO.map { GroupExpenseDb(groupId, it) })
             database.paymentsDao().insert(paymentsDTO.map { PaymentDb(groupId, it) })
             database.expenseChangesDao()
@@ -44,7 +42,7 @@ class GetGroupUseCase @Inject constructor(
             return Group(groupDto)
         } else {
             val groupDb = database.groupsDao().getGroup(groupId)
-            return Group(groupDb)
+            return Group(groupDb, groupDb.latestEvent(database))
         }
     }
 }

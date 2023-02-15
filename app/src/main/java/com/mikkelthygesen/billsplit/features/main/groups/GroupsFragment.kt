@@ -39,7 +39,6 @@ class GroupsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         return ComposeView(requireContext()).apply {
             setContent {
                 val groupsUiStateFlow = groupsViewModel.uiStateFlow.collectAsState()

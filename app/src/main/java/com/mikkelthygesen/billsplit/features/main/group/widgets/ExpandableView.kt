@@ -20,7 +20,8 @@ import com.mikkelthygesen.billsplit.sampleSharedExpenses
 enum class Position {
     Start,
     Middle,
-    End
+    End,
+    Single
 }
 
 @Composable
@@ -33,7 +34,6 @@ fun ExpandableView(
     title: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    println("qqq rec positon=$position")
     Column(
         modifier = modifier
             .animateContentSize()
@@ -56,12 +56,20 @@ fun ExpandableView(
                             bottomStart = MaterialTheme.shapes.extraLarge.bottomStart
                         )
                     )
-                    else -> mod.clip(
+                    Position.Middle -> mod.clip(
                         RoundedCornerShape(
                             topEnd = MaterialTheme.shapes.small.topEnd,
                             topStart = MaterialTheme.shapes.small.topStart,
                             bottomEnd = MaterialTheme.shapes.small.bottomEnd,
                             bottomStart = MaterialTheme.shapes.small.bottomStart
+                        )
+                    )
+                    Position.Single -> mod.clip(
+                        RoundedCornerShape(
+                            topEnd = MaterialTheme.shapes.extraLarge.topEnd,
+                            topStart = MaterialTheme.shapes.extraLarge.topStart,
+                            bottomEnd = MaterialTheme.shapes.extraLarge.bottomEnd,
+                            bottomStart = MaterialTheme.shapes.extraLarge.bottomStart
                         )
                     )
                 }

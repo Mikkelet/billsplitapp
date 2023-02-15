@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
+import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.reduceOrZero
 import com.mikkelthygesen.billsplit.tryCatchDefault
@@ -26,6 +27,16 @@ data class GroupExpense(
         sharedExpense = expenseDb.sharedExpense,
         individualExpenses = expenseDb.individualExpenses.map { IndividualExpense(it) },
         timeStamp = expenseDb.timeStamp,
+    )
+
+    constructor(expenseDTO: EventDTO.ExpenseDTO) : this(
+        id = expenseDTO.id,
+        createdBy = Person(expenseDTO.createdBy),
+        description = expenseDTO.description,
+        payee = Person(expenseDTO.payee),
+        sharedExpense = expenseDTO.sharedExpense,
+        individualExpenses = expenseDTO.individualExpenses.map { IndividualExpense(it) },
+        timeStamp = expenseDTO.timeStamp,
     )
 
     var descriptionState by mutableStateOf(description)
@@ -62,13 +73,6 @@ data class GroupExpense(
         payeeState = payee
         sharedExpenseState = sharedExpense
         individualExpenses.forEach { it.revertChanges() }
-    }
-
-    fun saveChanges() {
-        description = descriptionState
-        payee = payeeState
-        sharedExpense = sharedExpenseState
-        individualExpenses.forEach { it.saveChanges() }
     }
 
     fun copy(): GroupExpense = GroupExpense(

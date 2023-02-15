@@ -77,31 +77,15 @@ private fun _ListViewExpense(
             key = { events[it].id }) { index ->
 
             val event = events[index]
-            val position: Position = let {
-                val isPrevEventByUser = tryCatchDefault(false) {
-                    events[index - 1].createdBy == event.createdBy
-                }
-                val isNextEventByUser = tryCatchDefault(false) {
-                    events[index + 1].createdBy == event.createdBy
-                }
-                when {
-                    !isPrevEventByUser && isNextEventByUser -> Position.Start
-                    isPrevEventByUser && !isNextEventByUser -> Position.End
-                    else -> Position.Middle
-                }
-            }
-            println("qqq position=$position")
-            val latestIndex =
-                tryCatchDefault(true) {
-                    events[index - 1].createdBy != event.createdBy
-                            || events[index - 1] is Payment
-                }
+            val position: Position = getPosition(index, event, events)
+            val latestIndex = isLatestIndex(index, event, events)
+            val shouldShowProfilePictureLeft = event.createdBy != loggedInUser && event !is Payment
+            val shouldShowProfilePictureRight = event.createdBy == loggedInUser && event !is Payment
             Row(
                 Modifier.padding(vertical = 4.dp),
                 Arrangement.SpaceEvenly
             ) {
-
-                if (event.createdBy != loggedInUser && event !is Payment) {
+                if (shouldShowProfilePictureLeft) {
                     if (latestIndex)
                         ProfilePicture(
                             modifier = Modifier
@@ -139,7 +123,7 @@ private fun _ListViewExpense(
                         )
                     }
                 }
-                if (event.createdBy == loggedInUser && event !is Payment) {
+                if (shouldShowProfilePictureRight) {
                     if (latestIndex)
                         ProfilePicture(
                             modifier = Modifier
@@ -169,5 +153,29 @@ private fun PreviewSharedExpenseListItem() {
             loggedInUser = Person("Mikkel"),
             events = sampleSharedExpenses
         )
+    }
+}
+
+private fun isLatestIndex(index: Int, event: Event, events: List<Event>): Boolean {
+    return tryCatchDefault(true) {
+        events[index - 1].createdBy != event.createdBy
+                || events[index - 1] is Payment
+    }
+}
+
+private fun getPosition(index: Int, event: Event, events: List<Event>): Position {
+    val isPrevEventByUser = tryCatchDefault(false) {
+        val prevEvent = events[index - 1]
+        prevEvent.createdBy == event.createdBy && prevEvent !is Payment
+    }
+    val isNextEventByUser = tryCatchDefault(false) {
+        val nextEvent = events[index + 1]
+        nextEvent.createdBy == event.createdBy && nextEvent !is Payment
+    }
+    return when {
+        !isPrevEventByUser && isNextEventByUser -> Position.Start
+        isPrevEventByUser && !isNextEventByUser -> Position.End
+        isPrevEventByUser && isNextEventByUser -> Position.Middle
+        else -> Position.Single
     }
 }

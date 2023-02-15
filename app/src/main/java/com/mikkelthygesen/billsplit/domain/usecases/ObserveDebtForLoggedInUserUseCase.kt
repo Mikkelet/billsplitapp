@@ -3,6 +3,7 @@ package com.mikkelthygesen.billsplit.domain.usecases
 import com.mikkelthygesen.billsplit.DebtCalculator
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
 import com.mikkelthygesen.billsplit.data.remote.auth.AuthProvider
+import com.mikkelthygesen.billsplit.domain.latestEvent
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.Payment
@@ -25,7 +26,7 @@ class ObserveDebtForLoggedInUserUseCase @Inject constructor(
         val expensesFlow = billSplitDb.groupExpensesDao().getGroupExpensesFlow(groupId)
             .map { expenses -> expenses.map { dto -> GroupExpense(dto) } }
         return paymentsFlow.combine(expensesFlow) { payments: List<Payment>, expenses: List<GroupExpense> ->
-            val group = billSplitDb.groupsDao().getGroup(groupId).let { Group(it) }
+            val group = billSplitDb.groupsDao().getGroup(groupId).let { Group(it, it.latestEvent(billSplitDb)) }
             val calculator = DebtCalculator(group.peopleState, expenses, payments)
             calculator.calculateEffectiveDebtOfPerson(authProvider.requireLoggedInUser)
         }

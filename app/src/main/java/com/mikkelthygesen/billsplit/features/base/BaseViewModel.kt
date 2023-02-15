@@ -98,5 +98,4 @@ abstract class BaseViewModel : ViewModel() {
         onSuccess = onSuccess,
         onFailure = ::handleError
     )
-
 }
