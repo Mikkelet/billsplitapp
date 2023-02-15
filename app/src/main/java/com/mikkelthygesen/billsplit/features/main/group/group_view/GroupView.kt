@@ -34,7 +34,7 @@ fun GroupEventsView(
 ) {
     val viewModel: GroupViewModel = viewModel()
     val eventsFlowState = viewModel.eventsFlow().collectAsState(emptyList())
-    val eventsState = eventsFlowState.value
+    val eventsState = eventsFlowState.value.sortedBy { it.timeStamp }.reversed()
     _ListViewExpense(
         modifier = modifier,
         events = eventsState,
