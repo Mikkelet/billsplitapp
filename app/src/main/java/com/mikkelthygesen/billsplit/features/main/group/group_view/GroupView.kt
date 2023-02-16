@@ -15,10 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.domain.models.*
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
-import com.mikkelthygesen.billsplit.features.main.group.widgets.ChangesListView
-import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewExpense
-import com.mikkelthygesen.billsplit.features.main.group.widgets.ListViewPayment
-import com.mikkelthygesen.billsplit.features.main.group.widgets.Position
+import com.mikkelthygesen.billsplit.features.main.group.widgets.*
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
@@ -81,21 +78,16 @@ private fun _ListViewExpense(
                 Modifier.padding(vertical = 4.dp),
                 Arrangement.SpaceEvenly
             ) {
-                if (shouldShowProfilePictureLeft) {
-                    if (latestIndex)
-                        ProfilePicture(
-                            modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.Bottom)
-                                .padding(end = 8.dp),
-                            person = event.createdBy
-                        )
-                    else Box(modifier = Modifier.weight(1f))
-                }
+                ProfilePictureBubble(
+                    modifier = Modifier.align(Alignment.Bottom),
+                    createdBy = event.createdBy,
+                    isCreatedByUser = false,
+                    show = shouldShowProfilePictureLeft,
+                    isLatestIndex = latestIndex
+                )
                 Box(
                     modifier = Modifier
-                        .weight(6f)
-                        .fillMaxWidth(),
+                        .weight(1f),
                 ) {
                     when (event) {
                         is GroupExpense -> ListViewExpense(
@@ -119,21 +111,43 @@ private fun _ListViewExpense(
                         )
                     }
                 }
-                if (shouldShowProfilePictureRight) {
-                    if (latestIndex)
-                        ProfilePicture(
-                            modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.Bottom)
-                                .padding(start = 8.dp),
-                            person = event.createdBy
-                        )
-                    else Box(modifier = Modifier.weight(1f))
-                }
+                ProfilePictureBubble(
+                    modifier = Modifier.align(Alignment.Bottom),
+                    createdBy = loggedInUser,
+                    isCreatedByUser = true,
+                    show = shouldShowProfilePictureRight,
+                    isLatestIndex = latestIndex
+                )
             }
         }
         item { Box(modifier = Modifier.padding(top = 80.dp)) }
     }
+}
+
+private const val pfpBubbleSize = 48
+@Composable
+private fun ProfilePictureBubble(
+    modifier: Modifier,
+    createdBy: Person,
+    isCreatedByUser : Boolean,
+    show: Boolean,
+    isLatestIndex: Boolean
+) {
+    if (show) {
+        if (isLatestIndex)
+            ProfilePicture(
+                modifier = modifier
+                    .size(pfpBubbleSize.dp)
+                    .let {
+                        if (isCreatedByUser)
+                            it.padding(start = 8.dp)
+                        else it.padding(end = 8.dp)
+                    },
+                person = createdBy
+            )
+        else Box(modifier = Modifier.width(pfpBubbleSize.dp))
+    }
+
 }
 
 @Preview(showBackground = true)
