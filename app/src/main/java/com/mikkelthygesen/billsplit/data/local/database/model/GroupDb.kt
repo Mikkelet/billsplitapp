@@ -29,7 +29,7 @@ data class GroupDb(
     constructor(group: Group, debts: List<Pair<String, Float>>) : this(
         id = group.id,
         name = group.nameState,
-        createdBy = group.createdBy.toDb(),
+        createdBy = PersonDb(group.createdBy),
         timestamp = group.timeStamp,
         people = group.peopleState.map { PersonDb(it) },
         debts = debts.map { DebtDb(it.first, it.second) },

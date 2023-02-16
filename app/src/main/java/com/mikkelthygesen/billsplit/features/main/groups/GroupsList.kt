@@ -25,7 +25,7 @@ fun GroupsList(
 ) {
     val groupsViewModel: GroupsViewModel = viewModel()
     val groupsFlow = groupsViewModel.observeGroups().collectAsState(initial = emptyList())
-    val groups = groupsFlow.value.sortedBy { it.nameState }
+    val groups = groupsFlow.value.sortedBy { it.latestEvent?.timeStamp }.reversed()
     val user = groupsViewModel.requireLoggedInUser
     val showLoader = uiState is BaseViewModel.UiState.Loading || isUserSynchronizing
     val pullRefreshState = rememberPullRefreshState(

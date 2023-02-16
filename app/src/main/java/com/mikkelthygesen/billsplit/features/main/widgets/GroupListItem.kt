@@ -40,7 +40,6 @@ fun GroupListItem(user: Person, group: Group, onClick: (Group) -> Unit) {
                 text = group.nameState,
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
             )
-            Text(text = "${group.latestEvent?.timeStamp}")
         }
         when {
             debt.second > 0F -> Text(
