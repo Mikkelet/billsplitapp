@@ -5,20 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mikkelthygesen.billsplit.collectEvents
 import com.mikkelthygesen.billsplit.features.base.BaseScaffoldWithAuth
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
@@ -46,26 +47,39 @@ class GroupsFragment : Fragment() {
                 val mainUiState = mainUiStateFlow.value
 
                 // System ui color changes
+                /* Dark mode doesn't work yet
                 val systemUiController = rememberSystemUiController()
+                systemUiController.systemBarsDarkContentEnabled = isSystemInDarkTheme()
                 systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
-                systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
+                systemUiController.setNavigationBarColor(
+                    MaterialTheme.colorScheme.surfaceColorAtElevation(
+                        3.dp
+                    )
+                )
+                 */
+
+                val lazyListState = rememberLazyListState()
+                val firstVisibleIndexFlow = snapshotFlow { lazyListState.firstVisibleItemIndex }
+                    .collectAsState(initial = 0)
 
                 BaseScaffoldWithAuth(
                     baseViewModel = groupsViewModel,
                     floatingActionButton = {
-                        FloatingActionButton(
+                        ExtendedFloatingActionButton(
                             modifier = Modifier.padding(32.dp),
                             onClick = {
                                 navigateToAddGroup()
                             },
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                        ) {
-                            Icon(Icons.Filled.Add, contentDescription = "Add Group")
-                        }
+                            expanded = firstVisibleIndexFlow.value == 0,
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            text = { Text(text = "Group") },
+                            icon = { Icon(Icons.Filled.Add, contentDescription = "Add Group") }
+                        )
                     },
                 ) {
                     GroupsList(
                         uiState = groupsUiStateFlow.value,
+                        lazyListState = lazyListState,
                         isUserSynchronizing = mainUiState is BaseViewModel.UiState.Loading
                     )
                 }
