@@ -28,8 +28,15 @@ class AddEventUseCase @Inject constructor(
         when (eventDTO) {
             is EventDTO.ExpenseDTO -> database.groupExpensesDao()
                 .insert(GroupExpenseDb(group.id, eventDTO))
-            is EventDTO.ChangeDTO -> database.expenseChangesDao()
-                .insert(ExpenseChangeDb(group.id, eventDTO))
+            is EventDTO.ChangeDTO -> {
+                database.expenseChangesDao().insert(ExpenseChangeDb(group.id, eventDTO))
+                database.groupExpensesDao().insert(
+                    GroupExpenseDb(
+                        group.id,
+                        eventDTO.groupExpenseEdited as EventDTO.ExpenseDTO
+                    )
+                )
+            }
             is EventDTO.PaymentDTO -> database.paymentsDao().insert(PaymentDb(group.id, eventDTO))
         }
         return eventWithId

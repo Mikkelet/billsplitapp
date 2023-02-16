@@ -22,7 +22,6 @@ import com.mikkelthygesen.billsplit.features.main.group.widgets.Position
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 import com.mikkelthygesen.billsplit.tryCatchDefault
 import com.mikkelthygesen.billsplit.ui.widgets.ProfilePicture
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -56,10 +55,7 @@ private fun _ListViewExpense(
     var focusListItemIndex by remember {
         mutableStateOf(-1)
     }
-    LaunchedEffect(Unit) {
-        delay(5000L)
-        focusListItemIndex = -1
-    }
+
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 12.dp)

@@ -84,4 +84,15 @@ data class GroupExpense(
         individualExpenses.map { it.copy() },
         timeStamp
     )
+
+    fun original() = GroupExpense(
+        id,
+        createdBy,
+        description,
+        payee,
+        sharedExpense,
+        individualExpenses.map { it.original() },
+        timeStamp
+    )
+
 }

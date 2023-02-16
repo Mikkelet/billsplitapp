@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package com.mikkelthygesen.billsplit.data.remote
 
 import com.mikkelthygesen.billsplit.BuildConfig
@@ -14,6 +16,7 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -51,6 +54,7 @@ class KtorClient @Inject constructor(private val authProvider: AuthProvider) {
         serializersModule = module
         encodeDefaults = true
         prettyPrint = true
+        explicitNulls = false
     }
 
     val client = HttpClient {

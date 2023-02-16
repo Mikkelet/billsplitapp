@@ -89,30 +89,28 @@ fun ChangesListView(
                         ParticipantsView(list = updated.getParticipants())
                     }
                 }
-                if (wasDescriptionChanged) {
-                    HorizontalDivider()
-                    Column {
-                        original.individualExpenses.mapIndexed { index, originalExpense ->
-                            val updatedExpense = updated.individualExpenses[index]
-                            if (originalExpense.expenseState != updatedExpense.expenseState) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                HorizontalDivider()
+                Column {
+                    original.individualExpenses.mapIndexed { index, originalExpense ->
+                        val updatedExpense = updated.individualExpenses[index]
+                        if (originalExpense.expenseState != updatedExpense.expenseState) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
                                 ) {
-                                    Box(
+                                    ProfilePicture(
                                         modifier = Modifier
-                                            .padding(horizontal = 16.dp)
-                                    ) {
-                                        ProfilePicture(
-                                            modifier = Modifier
-                                                .size(20.dp),
-                                            person = updatedExpense.person
-                                        )
-                                    }
-                                    TextStylePrimary(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
+                                            .size(20.dp),
+                                        person = updatedExpense.person
+                                    )
                                 }
-                                if (index != original.individualExpenses.lastIndex)
-                                    HorizontalDivider()
+                                TextStylePrimary(text = "$${originalExpense.expenseState.fmt2dec()} ▶ $${updatedExpense.expenseState.fmt2dec()}")
                             }
+                            if (index != original.individualExpenses.lastIndex)
+                                HorizontalDivider()
                         }
                     }
                 }
