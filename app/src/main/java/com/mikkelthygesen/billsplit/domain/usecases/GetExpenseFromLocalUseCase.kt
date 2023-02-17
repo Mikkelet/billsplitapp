@@ -19,7 +19,7 @@ class GetExpenseFromLocalUseCase @Inject constructor(
         // if expenseId is empty, load new expense
         if (expenseId.isBlank()) {
             val groupDb = database.groupsDao().getGroup(groupId = groupId)
-            val group = Group(groupDb)
+            val group = Group(groupDb, null)
             return GroupExpense(
                 createdBy = authProvider.requireLoggedInUser,
                 payee = authProvider.requireLoggedInUser,

@@ -1,8 +1,12 @@
-package com.mikkelthygesen.billsplit
+package com.mikkelthygesen.billsplit.data
 
+import com.mikkelthygesen.billsplit.calculateDebtTo
+import com.mikkelthygesen.billsplit.calculateDebts
+import com.mikkelthygesen.billsplit.calculateEffectiveDebt
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.domain.models.Payment
 import com.mikkelthygesen.billsplit.domain.models.Person
+import com.mikkelthygesen.billsplit.reduceOrZero
 
 class DebtCalculator(
     private val people: List<Person>,

@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PaymentEventDao {
 
+    @Query("SELECT * FROM payments WHERE :id == id")
+    suspend fun getPayment(id:String): PaymentDb
+
     // Payment
     @Query("SELECT * FROM payments WHERE :groupId == groupId")
     suspend fun getPayments(groupId: String): List<PaymentDb>

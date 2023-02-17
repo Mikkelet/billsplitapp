@@ -51,7 +51,11 @@ private fun _ListViewExpense(
         modifier = Modifier
             .let {
                 if (isFocused)
-                    it.border(2.dp, MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.medium)
+                    it.border(
+                        2.dp,
+                        MaterialTheme.colorScheme.secondary,
+                        position.getShape(MaterialTheme.shapes)
+                    )
                 else it
             }
             .clickable { expanded = !expanded },

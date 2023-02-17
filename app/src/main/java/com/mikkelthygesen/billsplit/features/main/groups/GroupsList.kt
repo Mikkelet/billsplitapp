@@ -3,6 +3,8 @@ package com.mikkelthygesen.billsplit.features.main.groups
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.*
 import androidx.compose.runtime.*
@@ -21,11 +23,12 @@ import com.mikkelthygesen.billsplit.ui.widgets.*
 @Composable
 fun GroupsList(
     uiState: BaseViewModel.UiState,
-    isUserSynchronizing: Boolean
+    isUserSynchronizing: Boolean,
+    lazyListState: LazyListState = rememberLazyListState()
 ) {
     val groupsViewModel: GroupsViewModel = viewModel()
     val groupsFlow = groupsViewModel.observeGroups().collectAsState(initial = emptyList())
-    val groups = groupsFlow.value.sortedBy { it.nameState }
+    val groups = groupsFlow.value.sortedBy { it.latestEvent?.timeStamp }.reversed()
     val user = groupsViewModel.requireLoggedInUser
     val showLoader = uiState is BaseViewModel.UiState.Loading || isUserSynchronizing
     val pullRefreshState = rememberPullRefreshState(
@@ -44,7 +47,9 @@ fun GroupsList(
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
         )
-        LazyColumn {
+        LazyColumn(
+            state = lazyListState
+        ) {
             item {
                 GroupsTopBar()
             }

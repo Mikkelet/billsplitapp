@@ -21,9 +21,9 @@ class GroupExpenseDb(
     val sharedExpense: Float,
     val individualExpenses: List<IndividualExpenseDb>,
     val timeStamp: Long
-) {
+) : EventDb {
 
-    constructor(groupId: String, expenseDTO: EventDTO.ExpenseDTO):this(
+    constructor(groupId: String, expenseDTO: EventDTO.ExpenseDTO) : this(
         groupId = groupId,
         id = expenseDTO.id,
         createdBy = PersonDb(expenseDTO.createdBy),

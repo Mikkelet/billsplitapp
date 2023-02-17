@@ -15,7 +15,7 @@ import com.mikkelthygesen.billsplit.data.local.database.model.*
         PaymentDb::class,
         SubscriptionServiceDb::class,
         ExpenseChangeDb::class],
-    version = 11,
+    version = 12,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

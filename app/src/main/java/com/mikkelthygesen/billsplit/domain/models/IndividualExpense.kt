@@ -41,14 +41,15 @@ data class IndividualExpense(
         expenseState = expense
     }
 
-    fun saveChanges() {
-        isParticipant = isParticipantState
-        expense = expenseState
-    }
-
     override fun toString(): String {
         return "ExpenseHolder(name=$person, expense=$expenseState, isParticipant=$isParticipantState)"
     }
+
+    fun original() = IndividualExpense(
+        person,
+        expense,
+        isParticipant
+    )
 
     fun isShared() = person.uid == getSharedExpenseHolder().person.uid
 

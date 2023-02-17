@@ -1,6 +1,7 @@
 package com.mikkelthygesen.billsplit.domain.usecases
 
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
+import com.mikkelthygesen.billsplit.domain.latestEvent
 import com.mikkelthygesen.billsplit.domain.models.Group
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,11 @@ class ObserveLocalGroupsUseCase @Inject constructor(
 ) {
     fun observe(): Flow<List<Group>> {
         return database.groupsDao().getGroupsFlow()
-            .map { groups -> groups.map { Group(it) } }
+            .map { groups ->
+                groups.map { groupDb ->
+                    val latestEvent = groupDb.latestEvent(database)
+                    Group(groupDb, latestEvent)
+                }
+            }
     }
 }

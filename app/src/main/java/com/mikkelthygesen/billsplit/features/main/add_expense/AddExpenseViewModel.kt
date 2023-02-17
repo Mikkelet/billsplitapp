@@ -3,6 +3,7 @@ package com.mikkelthygesen.billsplit.features.main.add_expense
 import androidx.lifecycle.viewModelScope
 import com.mikkelthygesen.billsplit.domain.models.Group
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.domain.usecases.AddEventUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetExpenseFromLocalUseCase
 import com.mikkelthygesen.billsplit.domain.usecases.GetGroupUseCase
@@ -52,7 +53,10 @@ class AddExpenseViewModel @Inject constructor(
         viewModelScope.launch {
             val response =
                 runCatching {
-                    addEventUseCase.execute(group = group, event = groupExpense)
+                    if (groupExpense.id.isBlank())
+                        addEventUseCase.execute(group = group, event = groupExpense)
+                    else
+                        addEventUseCase.execute(group = group, event = getGroupExpenseChanged())
                 }
             response.fold(
                 onSuccess = {
@@ -64,6 +68,16 @@ class AddExpenseViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    private fun getGroupExpenseChanged(): GroupExpensesChanged {
+        val original = groupExpense.original()
+        return GroupExpensesChanged(
+            id = "",
+            createdBy = requireLoggedInUser,
+            groupExpenseOriginal = original,
+            groupExpenseEdited = groupExpense,
+        )
     }
 
     fun handleBack(): Boolean {

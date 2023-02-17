@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 fun <T> tryCatchDefault(defaultValue: T, callback: () -> T) = try {
     callback()
 } catch (e: Exception) {
-    println(e)
+    println("tryCatchDefault catch=$e, return=$defaultValue")
     defaultValue
 }
 

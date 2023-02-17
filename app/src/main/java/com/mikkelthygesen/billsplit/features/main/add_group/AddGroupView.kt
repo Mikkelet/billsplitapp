@@ -94,7 +94,7 @@ fun AddGroupView(
                     bottom = 32.dp
                 ),
             text = if (uiState is AddGroupViewModel.AddName) "Add group" else group.nameState,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.headlineLarge
         )
         Box(
             modifier = Modifier.fillMaxSize()

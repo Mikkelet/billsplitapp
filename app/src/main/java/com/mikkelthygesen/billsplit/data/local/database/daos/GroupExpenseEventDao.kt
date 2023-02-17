@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GroupExpenseEventDao {
 
+    @Query("SELECT * FROM group_expenses WHERE :id == id")
+    suspend fun getGroupExpense(id: String): GroupExpenseDb
+
     @Query("SELECT * FROM group_expenses WHERE :groupId == groupId")
     suspend fun getGroupExpenses(groupId: String): List<GroupExpenseDb>
 
     @Query("SELECT * FROM group_expenses WHERE :groupId == groupId")
     fun getGroupExpensesFlow(groupId: String): Flow<List<GroupExpenseDb>>
-
-    @Query("SELECT * FROM group_expenses WHERE id == :expenseId")
-    suspend fun getGroupExpense(expenseId: String): GroupExpenseDb
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(groupExpenseDb: GroupExpenseDb)

@@ -34,7 +34,6 @@ class AddGroupViewModel @Inject constructor(
             name = "",
             people = listOf(requireLoggedInUser),
             createdBy = requireLoggedInUser,
-            timeStamp = 0,
         )
     }
 

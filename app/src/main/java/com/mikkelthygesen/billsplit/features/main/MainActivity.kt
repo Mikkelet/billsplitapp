@@ -43,13 +43,13 @@ class MainActivity : FragmentActivity() {
             delay(1000)
             viewModel.loggedInUserFlow.collect {
                 if (it == null) {
+                    viewModel.uninitialize()
                     if (!isLandingDestination()) {
-                        viewModel.uninitialize()
                         navController.navigate(R.id.action_global_landingFragment)
                     }
                 } else {
+                    viewModel.initialize()
                     if (isLandingDestination()) {
-                        viewModel.initialize()
                         navController.popBackStack()
                     }
                 }
