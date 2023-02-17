@@ -1,6 +1,6 @@
 package com.mikkelthygesen.billsplit.domain.usecases
 
-import com.mikkelthygesen.billsplit.DebtCalculator
+import com.mikkelthygesen.billsplit.data.DebtCalculator
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
 import com.mikkelthygesen.billsplit.data.remote.auth.AuthProvider
 import com.mikkelthygesen.billsplit.domain.latestEvent
