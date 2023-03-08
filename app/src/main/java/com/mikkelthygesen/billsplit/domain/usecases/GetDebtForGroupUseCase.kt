@@ -3,6 +3,7 @@ package com.mikkelthygesen.billsplit.domain.usecases
 import com.mikkelthygesen.billsplit.data.DebtCalculator
 import com.mikkelthygesen.billsplit.data.local.database.BillSplitDb
 import com.mikkelthygesen.billsplit.domain.models.GroupExpense
+import com.mikkelthygesen.billsplit.domain.models.GroupExpensesChanged
 import com.mikkelthygesen.billsplit.domain.models.Payment
 import com.mikkelthygesen.billsplit.domain.models.Person
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
@@ -19,7 +20,18 @@ class GetDebtForGroupUseCase @Inject constructor(
         val people = group.people.map { Person(it) }
         val groupExpenses = billSplitDb.groupExpensesDao().getGroupExpenses(groupId)
             .map { GroupExpense(it) }
-            .let { if (event is GroupExpense) it.plus(event) else it }
+            .let { expenses ->
+                when (event) {
+                    is GroupExpense -> expenses.plus(event)
+                    is GroupExpensesChanged -> {
+                        expenses
+                            .filter { expense -> expense.id != event.groupExpenseOriginal.id }
+                            .plus(event.groupExpenseEdited)
+                    }
+                    else -> expenses
+                }
+            }
+
         val payments = billSplitDb.paymentsDao().getPayments(groupId)
             .map { payments -> Payment(payments) }
             .let { if (event is Payment) it.plus(event) else it }
