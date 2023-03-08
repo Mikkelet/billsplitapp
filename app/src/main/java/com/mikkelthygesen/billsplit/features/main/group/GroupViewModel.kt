@@ -15,6 +15,7 @@ import com.mikkelthygesen.billsplit.domain.usecases.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,9 +42,12 @@ class GroupViewModel @Inject constructor(
 
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
 
-    fun debtFlow(): Flow<List<Pair<Person, Float>>> = observeDebtForLoggedInUserUseCase.observe(group.id)
+    fun debtFlow(): Flow<List<Pair<Person, Float>>> =
+        observeDebtForLoggedInUserUseCase.observe(group.id)
 
-    fun eventsFlow(): Flow<List<Event>> = observeLocalEventsUseCase.observe(group.id)
+    fun eventsFlow(): Flow<List<Event>> = observeLocalEventsUseCase
+        .observe(group.id)
+        .map { events -> events.sortedBy { it.timeStamp }.reversed() }
 
     fun getGroup(groupId: String) {
         if (this::group.isInitialized) return
@@ -71,6 +75,7 @@ class GroupViewModel @Inject constructor(
 
     fun servicesFlow(): Flow<List<SubscriptionService>> =
         observeLocalServicesUseCase.observe(group.id)
+            .map { services -> services.sortedBy { it.nameState } }
 
     fun addExpense() {
         emitUiEvent(OnAddExpenseClicked)

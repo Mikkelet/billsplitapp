@@ -8,6 +8,7 @@ import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +26,7 @@ class GroupsViewModel @Inject constructor(
     override val _mutableUiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(ShowGroups)
 
     fun observeGroups(): Flow<List<Group>> = observeLocalGroupsUseCase.observe()
+        .map { groups -> groups.sortedBy { it.latestEvent?.timeStamp }.reversed() }
 
     fun syncGroups() {
         updateUiState(UiState.Loading)
