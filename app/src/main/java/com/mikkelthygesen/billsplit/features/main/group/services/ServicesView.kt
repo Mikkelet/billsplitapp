@@ -15,7 +15,7 @@ import com.mikkelthygesen.billsplit.features.main.group.services.views.ServiceLi
 fun ServicesView() {
     val groupViewModel: GroupViewModel = viewModel()
     val servicesFlow = groupViewModel.servicesFlow().collectAsState(initial = emptyList())
-    val services = servicesFlow.value.sortedBy { it.nameState }
+    val services = servicesFlow.value
     if (services.isEmpty())
         CenteredMessage(text = "You have not added any subscription services")
     else
