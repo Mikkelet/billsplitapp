@@ -23,6 +23,7 @@ import kotlinx.serialization.modules.polymorphic
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@ExperimentalSerializationApi
 @Singleton
 class KtorClient @Inject constructor(private val authProvider: AuthProvider) {
 
@@ -54,7 +55,7 @@ class KtorClient @Inject constructor(private val authProvider: AuthProvider) {
         serializersModule = module
         encodeDefaults = true
         prettyPrint = true
-        explicitNulls = false
+        explicitNulls = true
     }
 
     val client = HttpClient {
