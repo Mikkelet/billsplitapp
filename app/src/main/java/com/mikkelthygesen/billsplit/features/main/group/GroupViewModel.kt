@@ -4,11 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.mikkelthygesen.billsplit.domain.models.SubscriptionService
-import com.mikkelthygesen.billsplit.domain.models.GroupExpense
-import com.mikkelthygesen.billsplit.domain.models.Person
-import com.mikkelthygesen.billsplit.domain.models.Group
-import com.mikkelthygesen.billsplit.domain.models.Payment
+import com.mikkelthygesen.billsplit.domain.models.*
 import com.mikkelthygesen.billsplit.domain.models.interfaces.Event
 import com.mikkelthygesen.billsplit.features.base.BaseViewModel
 import com.mikkelthygesen.billsplit.domain.usecases.*
@@ -25,9 +21,9 @@ class GroupViewModel @Inject constructor(
     private val getGroupUseCase: GetGroupUseCase,
     private val observeLocalEventsUseCase: ObserveLocalEventsUseCase,
     private val observeLocalServicesUseCase: ObserveLocalServicesUseCase,
-    private val observeDebtForLoggedInUserUseCase: ObserveDebtForLoggedInUserUseCase
+    private val observeDebtForLoggedInUserUseCase: ObserveDebtForLoggedInUserUseCase,
+    private val deleteEventUseCase: DeleteEventUseCase
 ) : BaseViewModel() {
-    object Chat : UiState
     object ShowDebt : UiState
     object Services : UiState
     object OnAddExpenseClicked : UiEvent
@@ -58,7 +54,7 @@ class GroupViewModel @Inject constructor(
             }
             cacheResponse.foldSuccess { group ->
                 this@GroupViewModel.group = group
-                updateUiState(Chat)
+                updateUiState(UiState.Main)
             }
 
             // then sync with remote
@@ -103,7 +99,15 @@ class GroupViewModel @Inject constructor(
     }
 
     fun showChat() {
-        updateUiState(Chat)
+        updateUiState(UiState.Main)
+    }
+
+    fun deleteExpense(expense: GroupExpense) {
+        viewModelScope.launch {
+            updateUiState(UiState.Loading)
+            val response = runCatching { deleteEventUseCase(groupId = group.id, expense) }
+            response.foldDefault()
+        }
     }
 
     fun handleBack(): Boolean {

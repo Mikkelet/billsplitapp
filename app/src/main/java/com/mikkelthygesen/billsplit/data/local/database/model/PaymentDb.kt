@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.mikkelthygesen.billsplit.data.local.database.model.embedded.PersonDb
 import com.mikkelthygesen.billsplit.data.remote.dto.EventDTO
+import com.mikkelthygesen.billsplit.domain.models.Payment
 
 @Entity(tableName = "payments")
 data class PaymentDb(
@@ -19,7 +20,16 @@ data class PaymentDb(
     val timeStamp: Long,
 ) : EventDb {
 
-    constructor(groupId: String, paymentDTO: EventDTO.PaymentDTO):this(
+    constructor(groupId: String, paymentDTO: EventDTO.PaymentDTO) : this(
+        groupId = groupId,
+        id = paymentDTO.id,
+        createdBy = PersonDb(paymentDTO.createdBy),
+        timeStamp = paymentDTO.timeStamp,
+        paidTo = PersonDb(paymentDTO.paidTo),
+        amount = paymentDTO.amount,
+    )
+
+    constructor(groupId: String, paymentDTO: Payment) : this(
         groupId = groupId,
         id = paymentDTO.id,
         createdBy = PersonDb(paymentDTO.createdBy),

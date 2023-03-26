@@ -1,8 +1,9 @@
 package com.mikkelthygesen.billsplit.features.main.group.widgets
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,9 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikkelthygesen.billsplit.R
+import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.features.main.group.GroupViewModel
 import com.mikkelthygesen.billsplit.fmt2dec
-import com.mikkelthygesen.billsplit.domain.models.GroupExpense
 import com.mikkelthygesen.billsplit.sampleSharedExpenses
 
 @Composable
@@ -32,21 +33,25 @@ fun ListViewExpense(
         groupExpense = groupExpense,
         isFocused = isFocused,
         onActionClicked = viewModel::editSharedExpense,
-        position = position
+        onDeleteExpense = viewModel::deleteExpense,
+        position = position,
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("ComposableNaming")
 @Composable
 private fun _ListViewExpense(
     groupExpense: GroupExpense,
     onActionClicked: (GroupExpense) -> Unit,
+    onDeleteExpense: (GroupExpense) -> Unit,
     isFocused: Boolean,
     position: Position = Position.Middle
 ) {
     var expanded by remember {
         mutableStateOf(false)
     }
+
     ExpandableView(
         modifier = Modifier
             .let {
@@ -58,7 +63,11 @@ private fun _ListViewExpense(
                     )
                 else it
             }
-            .clickable { expanded = !expanded },
+            .combinedClickable(
+                onClick = {
+                    expanded = !expanded
+                }
+            ),
         title = {
             if (groupExpense.descriptionState.isNotBlank())
                 Text(

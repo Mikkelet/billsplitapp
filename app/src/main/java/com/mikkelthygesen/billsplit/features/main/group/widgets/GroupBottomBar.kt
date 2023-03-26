@@ -26,7 +26,7 @@ fun GroupBottomBar(
     val groupViewModel: GroupViewModel = viewModel()
     NavigationBar {
         NavigationBarItem(
-            selected = uiState is GroupViewModel.Chat,
+            selected = uiState is BaseViewModel.UiState.Main,
             label = {
                 Text(text = "Expenses")
             },

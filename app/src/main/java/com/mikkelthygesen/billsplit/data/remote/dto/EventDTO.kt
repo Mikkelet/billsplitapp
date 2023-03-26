@@ -51,6 +51,13 @@ sealed class EventDTO {
         const val TYPE_CHANGE = "change"
         const val TYPE_EXPENSE = "expense"
 
+        fun fromEvent(event: com.mikkelthygesen.billsplit.domain.models.interfaces.Event):EventDTO = when (event) {
+            is GroupExpense -> fromExpense(event)
+            is Payment -> fromPayment(event)
+            is GroupExpensesChanged -> fromChange(event)
+            else -> throw Exception("Invalid event")
+        }
+
         fun fromExpense(expense: GroupExpense): ExpenseDTO = ExpenseDTO(
             id = expense.id,
             description = expense.descriptionState,

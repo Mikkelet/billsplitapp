@@ -13,7 +13,7 @@ android {
         applicationId "com.mikkelthygesen.billsplit"
         minSdk 21
         targetSdk 33
-        versionCode 14
+        versionCode 15
         versionName "beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

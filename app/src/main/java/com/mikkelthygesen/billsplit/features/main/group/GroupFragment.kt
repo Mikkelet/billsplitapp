@@ -58,7 +58,7 @@ class GroupFragment : Fragment() {
                     bottomBar = { GroupBottomBar(uiState) },
                     topBar = { GroupTopBar2() },
                     floatingActionButton = {
-                        if (uiState is GroupViewModel.Services || uiState is GroupViewModel.Chat)
+                        if (uiState is GroupViewModel.Services || uiState is BaseViewModel.UiState.Main)
                             ExtendedFloatingActionButton(
                                 modifier = Modifier.padding(16.dp),
                                 onClick = {
@@ -85,7 +85,7 @@ class GroupFragment : Fragment() {
                         ) { state ->
                             when (state) {
                                 is BaseViewModel.UiState.Loading -> LoadingView()
-                                is GroupViewModel.Chat -> GroupEventsView(
+                                is BaseViewModel.UiState.Main -> GroupEventsView(
                                     groupId = groupId,
                                     lazyListState = lazyListState
                                 )

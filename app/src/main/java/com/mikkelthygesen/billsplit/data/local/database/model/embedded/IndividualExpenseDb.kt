@@ -16,6 +16,12 @@ data class IndividualExpenseDb(
         isParticipant = individualExpenseDTO.isParticipant
     )
 
+    constructor(individualExpenseDTO: IndividualExpense) : this(
+        person = PersonDb(individualExpenseDTO.person),
+        expense = individualExpenseDTO.expenseState,
+        isParticipant = individualExpenseDTO.isParticipantState
+    )
+
     fun toIndividualExpense() = IndividualExpense(
         person = person.toPerson(),
         expense = expense,
