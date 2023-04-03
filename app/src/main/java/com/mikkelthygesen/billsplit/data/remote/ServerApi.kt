@@ -18,6 +18,12 @@ class ServerApi @Inject constructor(
         }.body()
     }
 
+    suspend fun deleteEvent(body: DeleteEvent.Request) {
+        return client.delete("event"){
+            setBody(body)
+        }.body()
+    }
+
     suspend fun getGroup(params: GetGroup.Request): GetGroup.Response {
         return client.get("group/${params.groupId}").body()
     }

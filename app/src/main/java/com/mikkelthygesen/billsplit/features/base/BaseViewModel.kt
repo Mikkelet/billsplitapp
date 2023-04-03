@@ -34,6 +34,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     interface UiState {
+        object Main : UiState
         object Loading : UiState
     }
 
@@ -74,10 +75,11 @@ abstract class BaseViewModel : ViewModel() {
 
     fun handleError(exception: Throwable) {
         if (BuildConfig.DEBUG) {
-            Timber.e("error=$exception")
-            val stacktrace = exception.stackTrace.map { "$it" }
-                .reduce { acc, stackTraceElement -> "$acc\n$stackTraceElement" }
-            Timber.e("stacktrace=$stacktrace")
+            Timber.e("qqq error=$exception")
+            val stacktrace =
+                if (exception.stackTrace.isEmpty()) exception.stackTrace else exception.stackTrace.map { "$it" }
+                    .reduce { acc, stackTraceElement -> "$acc\n$stackTraceElement" }
+            Timber.e("qqq stacktrace=$stacktrace")
         }
         when (exception) {
             is java.util.concurrent.CancellationException -> Timber.e("java.util.concurrent.CancellationException")
@@ -97,5 +99,21 @@ abstract class BaseViewModel : ViewModel() {
     protected fun <T> Result<T>.foldSuccess(onSuccess: (T) -> Unit) = fold(
         onSuccess = onSuccess,
         onFailure = ::handleError
+    )
+
+    protected fun <T> Result<T>.foldDefault() = fold(
+        onSuccess = { updateUiState(UiState.Main) },
+        onFailure = {
+            handleError(it)
+            updateUiState(UiState.Main)
+        }
+    )
+
+    protected fun <T> Result<T>.foldSuccessDefault(onSuccess: (T) -> Unit) = fold(
+        onSuccess = onSuccess,
+        onFailure = {
+            handleError(it)
+            updateUiState(UiState.Main)
+        }
     )
 }

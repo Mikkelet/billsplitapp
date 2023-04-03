@@ -25,7 +25,7 @@ fun GroupTopBar2() {
             }
         },
         trailingContent = {
-            if (uiState is GroupViewModel.Chat)
+            if (uiState is BaseViewModel.UiState.Main)
                 SimpleIconButton(
                     iconResId = R.drawable.ic_baseline_settings_24,
                 ) {

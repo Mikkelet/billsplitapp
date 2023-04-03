@@ -34,6 +34,17 @@ class GroupExpenseDb(
         timeStamp = expenseDTO.timeStamp
     )
 
+    constructor(groupId: String, expense: GroupExpense) : this(
+        groupId = groupId,
+        id = expense.id,
+        createdBy = PersonDb(expense.createdBy),
+        description = expense.descriptionState,
+        payee = PersonDb(expense.payeeState),
+        sharedExpense = expense.sharedExpenseState,
+        individualExpenses = expense.individualExpenses.map { IndividualExpenseDb(it) },
+        timeStamp = expense.timeStamp
+    )
+
     fun toGroupExpense() = GroupExpense(
         id = id,
         createdBy = createdBy.toPerson(),

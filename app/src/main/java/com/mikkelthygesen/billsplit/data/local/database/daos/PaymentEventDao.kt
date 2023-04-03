@@ -1,9 +1,10 @@
 package com.mikkelthygesen.billsplit.data.local.database.daos
 
+import androidx.room.Query
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.Delete
 import com.mikkelthygesen.billsplit.data.local.database.model.PaymentDb
 import kotlinx.coroutines.flow.Flow
 
@@ -25,6 +26,9 @@ interface PaymentEventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(payments: List<PaymentDb>)
+
+    @Delete
+    suspend fun delete(payment: PaymentDb)
 
     @Query("DELETE FROM payments")
     suspend fun clearTable()

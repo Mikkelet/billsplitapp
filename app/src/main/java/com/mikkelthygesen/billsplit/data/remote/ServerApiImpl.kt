@@ -25,12 +25,7 @@ class ServerApiImpl @Inject constructor(
         event: Event,
         debts: List<Pair<String, Float>>
     ): EventDTO {
-        val eventDto: EventDTO = when (event) {
-            is GroupExpense -> EventDTO.fromExpense(event)
-            is Payment -> EventDTO.fromPayment(event)
-            is GroupExpensesChanged -> EventDTO.fromChange(event)
-            else -> throw Exception("Invalid event")
-        }
+        val eventDto: EventDTO = EventDTO.fromEvent(event)
         val debtsDto = debts.map {
             DebtDTO(
                 userId = it.first,
@@ -45,6 +40,20 @@ class ServerApiImpl @Inject constructor(
             )
         )
         return result.event
+    }
+
+    suspend fun deleteEvent(
+        groupId: String, event: Event, debts: List<Pair<String, Float>>
+    ) {
+        val eventDto: EventDTO = EventDTO.fromEvent(event)
+        val debtsDto = debts.map {
+            DebtDTO(
+                userId = it.first,
+                owes = it.second
+            )
+        }
+        val request = DeleteEvent.Request(groupId, eventDto, debtsDto)
+        serverApi.deleteEvent(request)
     }
 
     suspend fun getGroup(groupId: String): GetGroup.Response {
@@ -72,7 +81,7 @@ class ServerApiImpl @Inject constructor(
         return serverApi.addSubscriptionService(request).service
     }
 
-    suspend fun updateSubscriptionService(groupId: String, service: SubscriptionService){
+    suspend fun updateSubscriptionService(groupId: String, service: SubscriptionService) {
         val request = UpdateSubscriptionService.Request(groupId, ServiceDTO(service))
         serverApi.updateSubscriptionService(request)
     }

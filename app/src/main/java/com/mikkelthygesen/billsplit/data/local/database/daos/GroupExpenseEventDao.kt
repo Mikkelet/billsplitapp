@@ -1,9 +1,10 @@
 package com.mikkelthygesen.billsplit.data.local.database.daos
 
 import androidx.room.Dao
+import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.Delete
 import com.mikkelthygesen.billsplit.data.local.database.model.GroupExpenseDb
 import kotlinx.coroutines.flow.Flow
 
@@ -24,6 +25,9 @@ interface GroupExpenseEventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(groupExpenseDb: List<GroupExpenseDb>)
+
+    @Delete
+    suspend fun delete(groupExpenseDb: GroupExpenseDb)
 
     @Query("DELETE FROM group_expenses")
     suspend fun clearTable()

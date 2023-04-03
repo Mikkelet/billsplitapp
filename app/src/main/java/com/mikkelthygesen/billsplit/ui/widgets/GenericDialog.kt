@@ -21,7 +21,7 @@ fun GenericDialog(
     onDismiss: () -> Unit,
     primaryAction: () -> Unit,
     secondaryText: String,
-    secondaryAction: () -> Unit
+    secondaryAction: () -> Unit = onDismiss
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
